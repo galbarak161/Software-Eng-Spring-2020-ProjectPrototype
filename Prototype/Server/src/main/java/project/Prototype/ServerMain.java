@@ -22,6 +22,7 @@ public class ServerMain extends AbstractServer {
 			ServerMain server = new ServerMain(Integer.parseInt(args[0]));
 			server.listen();
 			System.out.println("Server ready!");
+			//did i just branched righ now??????
 		}
 	}
 }
