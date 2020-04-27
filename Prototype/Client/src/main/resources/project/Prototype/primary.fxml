@@ -12,7 +12,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="492.0" prefWidth="407.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.Prototype.PrimaryController">
    <top>
       <MenuBar prefWidth="137.0" BorderPane.alignment="CENTER">
@@ -28,7 +27,7 @@
    <center>
       <AnchorPane prefHeight="330.0" prefWidth="407.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="primaryButton" layoutX="152.0" layoutY="430.0" onAction="#sendMessageToServer" text="Update Request" />
+            <Button fx:id="primaryButton" layoutX="170.0" layoutY="428.0" onAction="#sendMessageToServer" text="Update Request" />
             <Label fx:id="title" layoutX="106.0" layoutY="14.0" text="Questions Editor">
                <font>
                   <Font name="Arial Bold" size="24.0" />
