@@ -16,6 +16,16 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.fxml.Initializable;
 
+/**
+ * the class should inherit from Initializable because we want to initialize the study combo box
+ * with the query that selects all studies.
+ * 
+ * at the moment the information is initialized with random input' until there will be a DB
+ * 
+ * @author orash and sagi
+ *
+ */
+
 public class PrimaryController implements Initializable {
 
     @FXML
@@ -113,11 +123,17 @@ public class PrimaryController implements Initializable {
 		}
     }
     
+    
+    //the way to initialize the strings for the combo boxes
     private ObservableList<String> dbStudy = FXCollections.observableArrayList("SQLite", "Moshe", "Sami", "Yaniv", "Baruch");
+    
+    
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     	study_combo.setItems(dbStudy);
+    	
+    	//in the initialize of the form we set all radio buttons as a group 
     	radioGroup = new ToggleGroup();
     	radio_1.setToggleGroup(radioGroup);
     	radio_2.setToggleGroup(radioGroup);
@@ -125,21 +141,82 @@ public class PrimaryController implements Initializable {
     	radio_4.setToggleGroup(radioGroup);
     }
     
+    
+    
+    /**
+     * when the user selects a course, we send a query to show us the relevant study
+     * we just enable the courses combo box, with the relevant courses (which linked to the chosen study)
+     * 
+     * @param event
+     */
     @FXML
     void onClickedStudy(ActionEvent event) {
-        ObservableList<String> dbCourse = FXCollections.observableArrayList(study_combo.getValue());
+    	
+        ObservableList<String> dbCourse = FXCollections.observableArrayList(study_combo.getValue(), "chino");
         course_combo.setItems(dbCourse);
+        
+        radio_1.setDisable(true);
+        radio_2.setDisable(true);
+        radio_3.setDisable(true);
+        radio_4.setDisable(true);
+    	
+        subject_text.setDisable(true);
+        question_text.setDisable(true);
+        
+        answer_line_1.setDisable(true);
+        answer_line_2.setDisable(true);
+        answer_line_3.setDisable(true);
+        answer_line_4.setDisable(true);
+        
+        question_combo.setDisable(true);
+        
+        primaryButton.setDisable(true);
+        
     	course_combo.setDisable(false);
     }
     
+    
+    
+    
+    /**
+     * when the user selects a course, we send a query to show us the relevant course
+     * we just enable the questions combo box
+     * 
+     * @param event
+     */
     @FXML
     void onCourseClicked(ActionEvent event) {
     	
+        
         ObservableList<String> dbQuest = FXCollections.observableArrayList(course_combo.getValue());
         question_combo.setItems(dbQuest);
         question_combo.setDisable(false);
+        
+        radio_1.setDisable(true);
+        radio_2.setDisable(true);
+        radio_3.setDisable(true);
+        radio_4.setDisable(true);
+    	
+        subject_text.setDisable(true);
+        question_text.setDisable(true);
+        
+        answer_line_1.setDisable(true);
+        answer_line_2.setDisable(true);
+        answer_line_3.setDisable(true);
+        answer_line_4.setDisable(true);
+        
+        primaryButton.setDisable(true);
     }
     
+    
+    
+    
+    /**
+     * when the user selects a question from the combo, we send a query to show us the relevant questiion
+     * As well all texts, radio buttons, submit are enabled
+     * 
+     * @param event
+     */
     @FXML
     void onClickedQuestion(ActionEvent event) {
     	
@@ -172,6 +249,33 @@ public class PrimaryController implements Initializable {
         radio_2.setSelected(true);
 
     }
+    
+    
+    
+    
+    /**
+     * the function is called when we want to disable all radio buttons, texts
+     * and the relevant combos
+     */
+ /*   public void DisableAll() {
+    	
+    	radio_1.setDisable(true);
+        radio_2.setDisable(true);
+        radio_3.setDisable(true);
+        radio_4.setDisable(true);
+    	
+        subject_text.setDisable(true);
+        question_text.setDisable(true);
+        
+        answer_line_1.setDisable(true);
+        answer_line_2.setDisable(true);
+        answer_line_3.setDisable(true);
+        answer_line_4.setDisable(true);
+        
+        question_combo.setDisable(true);
+        
+        primaryButton.setDisable(true);
+    }*/
 
 
 }
