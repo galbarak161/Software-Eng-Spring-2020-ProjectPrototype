@@ -18,7 +18,9 @@ public class App extends Application {
 	@Override
 	public void start(Stage stage) throws IOException {
 		scene = new Scene(loadFXML("primary"), 407, 492);
+		stage.setTitle("Questions Editor");
 		stage.setScene(scene);
+		stage.setResizable(false);
 		stage.show();
 	}
 
