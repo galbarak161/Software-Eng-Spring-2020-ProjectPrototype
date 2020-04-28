@@ -15,7 +15,7 @@ public class DataElements implements Serializable {
 
 	// Opcodes 0-9
 	public enum ClientToServerOpcodes {
-		GetAllStudies(0), GetAllCoursesInStudy(1), GetAllQuestionInCourse(2), UpdateQuestion(3);
+		GetAllStudies(0), GetAllCoursesInStudy(1), GetAllQuestionInCourse(2), UpdateQuestion(3), Error(-1);
 
 		public int value;
 
@@ -26,7 +26,7 @@ public class DataElements implements Serializable {
 
 	// Opcodes 10-19
 	public enum ServerToClientOpcodes {
-		SendAllStudies(10), SendAllCoursesInStudy(11), SendAllQuestionInCourse(12), UpdateQuestionResult(13);
+		SendAllStudies(10), SendAllCoursesInStudy(11), SendAllQuestionInCourse(12), UpdateQuestionResult(13), Error(-1);
 
 		public int value;
 
@@ -35,28 +35,37 @@ public class DataElements implements Serializable {
 		}
 	}
 
-	private int opcode;
+	private ClientToServerOpcodes opcodeFromClient;
+	private ServerToClientOpcodes opCodeFromServer;
 	private Object data;
 
 	public DataElements() {
 	}
 
 	public DataElements(ClientToServerOpcodes opCodeFromClient, Object data) {
-		this.opcode = opCodeFromClient.value;
+		this.opcodeFromClient = opCodeFromClient;
 		this.data = data;
 	}
 
 	public DataElements(ServerToClientOpcodes opCodeFromServer, Object data) {
-		this.opcode = opCodeFromServer.value;
+		this.opCodeFromServer = opCodeFromServer;
 		this.data = data;
 	}
 
-	public int getOpcode() {
-		return opcode;
+	public ClientToServerOpcodes getOpcodeFromClient() {
+		return opcodeFromClient;
 	}
 
-	public void setOpcode(int opcode) {
-		this.opcode = opcode;
+	public void setOpcodeFromClient(ClientToServerOpcodes opcodeFromClient) {
+		this.opcodeFromClient = opcodeFromClient;
+	}
+
+	public ServerToClientOpcodes getOpCodeFromServer() {
+		return opCodeFromServer;
+	}
+
+	public void setOpCodeFromServer(ServerToClientOpcodes opCodeFromServer) {
+		this.opCodeFromServer = opCodeFromServer;
 	}
 
 	public Object getData() {
@@ -66,4 +75,6 @@ public class DataElements implements Serializable {
 	public void setData(Object data) {
 		this.data = data;
 	}
+
+	
 }

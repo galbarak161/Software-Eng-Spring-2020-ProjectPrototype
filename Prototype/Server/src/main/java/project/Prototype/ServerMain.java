@@ -1,11 +1,12 @@
 package project.Prototype;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
-import project.Entities.Study;
+import project.Entities.*;
 import project.Prototype.DataElements;
 
 public class ServerMain extends AbstractServer {
@@ -25,16 +26,26 @@ public class ServerMain extends AbstractServer {
 		try {
 			de = (DataElements) msg;
 			Object dataFromDB = null;
-			System.out.println("Received message from client: opcode = " + de.getOpcode());
+			System.out.println("Received message from client: opcode = " + de.getOpcodeFromClient());
 			
-			switch (de.getOpcode()) {
-			case 0:
+			switch (de.getOpcodeFromClient()) {
+			case GetAllStudies:
 				dataFromDB = handleSendStudiesToUser();
-				de.setOpcode(DataElements.ServerToClientOpcodes.SendAllStudies.value);
+				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.SendAllStudies);
+				de.setData(dataFromDB);
+				break;
+			case GetAllCoursesInStudy:
+				dataFromDB = handleSendCoursesToUser(de.getData());
+				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.SendAllCoursesInStudy);
+				de.setData(dataFromDB);
+				break;
+			case GetAllQuestionInCourse:
+				dataFromDB = handleSendStudiesToUser();
+				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.SendAllQuestionInCourse);
 				de.setData(dataFromDB);
 				break;
 			default:
-				de.setOpcode(-1);
+				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.Error);
 				de.setData(null);
 			}
 
@@ -42,7 +53,7 @@ public class ServerMain extends AbstractServer {
 			e.printStackTrace();
 
 		} finally {
-			System.out.println("Send result to user! opcode = " + de.getOpcode());
+			System.out.println("Send result to user! opcode = " + de.getOpCodeFromServer());
 			sendToAllClients(de);
 		}
 	}
@@ -64,6 +75,32 @@ public class ServerMain extends AbstractServer {
 			e.printStackTrace();
 		}
 		return studiesName;
+	}
+	
+	private Object handleSendCoursesToUser(Object study) {
+		List<Course> listFromDB = null;
+		List<String> coursesName = new ArrayList<String>();
+		String[] names = null;
+		try {
+			listFromDB = HibernateMain.getDataFromDB(Course.class);
+			for (int i = 0; i < listFromDB.size(); i++) {
+				List<Study> studies = listFromDB.get(i).getStudies();
+				for (int j = 0; j < studies.size(); j++) {
+					if (studies.get(j).getStudyName().compareTo(study.toString()) == 0) {
+						coursesName.add(listFromDB.get(i).getCourseName());
+						break;
+					}
+				}
+			}
+			names = new String[coursesName.size()];
+			for (int i=0;i<coursesName.size(); i++) {
+				names[i] = coursesName.get(i);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return names;
 	}
 
 	public static void main(String[] args) throws IOException {

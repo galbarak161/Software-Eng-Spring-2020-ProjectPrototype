@@ -14,8 +14,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import project.Entities.Course;
-import project.Entities.Study;
+import project.Entities.*;
 
 public class HibernateMain {
 	static Session session;
@@ -41,6 +40,7 @@ public class HibernateMain {
 		Configuration configuration = new Configuration();
 		configuration.addAnnotatedClass(Study.class);
 		configuration.addAnnotatedClass(Course.class);
+		configuration.addAnnotatedClass(Question.class);
 
 		// Create new service and return it as session to DB
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
@@ -109,7 +109,7 @@ public class HibernateMain {
 		coursesName[4] = "Low";
 		coursesName[5] = "Business management";
 		coursesName[6] = "Geography";
-		coursesName[7] = "Computer Science ";
+		coursesName[7] = "Computer Science";
 		coursesName[8] = "Economics";
 		coursesName[9] = "Psychology";
 		for (int i = 0, j = 0; i < NUMBER_OF_COURSES && j< NUMBER_OF_STUDIES; j++) {
@@ -126,12 +126,6 @@ public class HibernateMain {
 		}
 		session.flush();
 		
-		
-		// Note: Person may own more than one car and more than one garage
-		// Note: Car may visit in more than one garage
-		// Note: Garage my be own to more than one person and my serve more than one car
-
-		// *** See Entities class for more info about entities connections ***
 	}
 
 	public static void main(String[] args) {
@@ -150,11 +144,7 @@ public class HibernateMain {
 			initializeData();
 
 			System.out.println("Hibernate: Get data from DB...\n");
-			// Get all data from DB - Select query
-			/*
-			 * cars = getDataFromDB(Car.class); persons = getDataFromDB(Person.class);
-			 * garages = getDataFromDB(Garage.class);
-			 */
+
 			System.out.println("Hibernate: Committing all queries before closing connection...\n");
 			session.getTransaction().commit();
 
@@ -171,8 +161,7 @@ public class HibernateMain {
 		}
 
 		System.out.println("############## Print data ##############\n");
-		// printObjects(cars);
-		// printObjects(garages);
+
 		System.out.println("############## Finish Print ##############\n");
 	}
 
