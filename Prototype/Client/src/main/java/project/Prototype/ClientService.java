@@ -9,7 +9,6 @@ import project.CloneEntities.Question;
 
 public class ClientService extends AbstractClient {
 	private static final Logger LOGGER = Logger.getLogger(ClientService.class.getName());
-
 	private ClientMain clientM;
 
 	public ClientService(String host, int port) {
@@ -72,6 +71,6 @@ public class ClientService extends AbstractClient {
 	}
 
 	private void handleGetQuestionsFromServer(Object object) {
-		PrimaryController.setDbCollect((Question[]) object);
+		PrimaryController.setDbQuestion((Question[]) object);
 	}
 }

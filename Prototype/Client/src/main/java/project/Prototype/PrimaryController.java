@@ -84,9 +84,16 @@ public class PrimaryController {
 
 	private static ObservableList<String> dbCollect = null;
 
+	private static ObservableList<Question> dbQuestion = null;
+
 	public static void setDbCollect(String[] object) {
 		PrimaryController.dbCollect = FXCollections.observableArrayList(object);
-		System.out.println("Recived dbStudy from server");
+		System.out.println("Recived dbStudy from server\n");
+	}
+
+	public static void setDbQuestion(Question[] object) {
+		PrimaryController.dbQuestion = FXCollections.observableArrayList(object);
+		System.out.println("Recived dbQuestions from server\n");
 	}
 
 	@FXML
@@ -160,11 +167,15 @@ public class PrimaryController {
 
 	@FXML
 	void onCourseClicked(ActionEvent event) {
-		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse,
+		ObservableList<Question> val = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
 				course_combo.getValue());
 		if (val == null)
 			return;
-		question_combo.setItems(val);
+		ObservableList<String> subjects = null;
+		for (Question q : val) {
+			subjects.add(q.getSubject() + " - " + Integer.toString(q.getId()));
+		}
+		question_combo.setItems(subjects);
 		DisableAll();
 		course_combo.setDisable(false);
 		question_combo.setDisable(false);
@@ -177,21 +188,36 @@ public class PrimaryController {
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
 
-		// ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetQuestion,
-		// question_combo.getValue());
+		String[] tokens = question_combo.getValue().split(" - ");
+		String CurrentSubject = tokens[0];
+		String CurrentID = tokens[1];
+		Question CurrentQuestion = null;
+
+		for (Question q : dbQuestion) {
+			if (CurrentSubject.compareTo(q.getSubject()) == 0
+					&& CurrentID.compareTo(Integer.toString(q.getId())) == 0) {
+				CurrentQuestion = q;
+				break;
+			}
+		}
 
 		subject_text.setDisable(false);
-		// subject_text.setText(val[0]);
+		subject_text.setText(CurrentQuestion.getSubject());
 
 		question_text.setDisable(false);
+		question_text.setText(CurrentQuestion.getQuestionText());
 
 		answer_line_1.setDisable(false);
+		answer_line_1.setText(CurrentQuestion.getAnswer_1());
 
 		answer_line_2.setDisable(false);
+		answer_line_2.setText(CurrentQuestion.getAnswer_2());
 
 		answer_line_3.setDisable(false);
+		answer_line_3.setText(CurrentQuestion.getAnswer_3());
 
 		answer_line_4.setDisable(false);
+		answer_line_4.setText(CurrentQuestion.getAnswer_4());
 
 		primaryButton.setDisable(false);
 
@@ -200,7 +226,16 @@ public class PrimaryController {
 		radio_3.setDisable(false);
 		radio_4.setDisable(false);
 
-		radio_2.setSelected(true);
+		switch (CurrentQuestion.getCorrectAnswer()) {
+		case 1:
+			radio_1.setSelected(true);
+		case 2:
+			radio_2.setSelected(true);
+		case 3:
+			radio_3.setSelected(true);
+		case 4:
+			radio_4.setSelected(true);
+		}
 
 	}
 
@@ -246,8 +281,16 @@ public class PrimaryController {
 		return dbCollect;
 	}
 
-	public static void setDbCollect(Question[] object) {
-		// TODO Auto-generated method stub
-		
+	ObservableList<Question> GetDataFromDBQuestion(ClientToServerOpcodes op, Object data) {
+		// Send message to server
+		DataElements de = new DataElements(op, data);
+		if (sendRequestForDataFromServer(de) == -1)
+			return null;
+
+		while (dbQuestion == null) {
+			System.out.print("");
+		}
+		return dbQuestion;
 	}
+
 }

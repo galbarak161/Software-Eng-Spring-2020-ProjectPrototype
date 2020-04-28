@@ -3,7 +3,6 @@ package project.Prototype;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 import project.Entities.*;
@@ -15,10 +14,8 @@ public class ServerMain extends AbstractServer {
 	}
 
 	/**
-	 * The function gets new msg from client
-	 * Parsing the opcode and data
-	 * Handle the client request
-	 * Send back results
+	 * The function gets new msg from client Parsing the opcode and data Handle the
+	 * client request Send back results
 	 */
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -27,7 +24,7 @@ public class ServerMain extends AbstractServer {
 			de = (DataElements) msg;
 			Object dataFromDB = null;
 			System.out.println("Received message from client: opcode = " + de.getOpcodeFromClient());
-			
+
 			switch (de.getOpcodeFromClient()) {
 			case GetAllStudies:
 				dataFromDB = handleSendStudiesToUser();
@@ -40,7 +37,7 @@ public class ServerMain extends AbstractServer {
 				de.setData(dataFromDB);
 				break;
 			case GetAllQuestionInCourse:
-				dataFromDB = handleSendStudiesToUser();
+				dataFromDB = handleSendQuestionsToUser(de.getData());
 				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.SendAllQuestionInCourse);
 				de.setData(dataFromDB);
 				break;
@@ -53,15 +50,31 @@ public class ServerMain extends AbstractServer {
 			e.printStackTrace();
 
 		} finally {
-			System.out.println("Send result to user! opcode = " + de.getOpCodeFromServer());
+			System.out.println("Send result to user! opcode = " + de.getOpCodeFromServer() + "\n");
 			sendToAllClients(de);
 		}
 	}
 
-	/**
-	 * handleSendStudiesToUser()
-	 * @return all studies names from DB
-	 */
+	private Object handleSendQuestionsToUser(Object course) {
+		List<Question> listFromDB = null;
+		List<Question> questionsFromCourse = new ArrayList<Question>();
+		try {
+			listFromDB = HibernateMain.getDataFromDB(Question.class);
+			for (int i = 0; i < listFromDB.size(); i++) {
+				List<Course> courses = listFromDB.get(i).getCourses();
+				for (int j = 0; j < courses.size(); j++) {
+					if (courses.get(j).getCourseName().compareTo(course.toString()) == 0) {
+						questionsFromCourse.add(listFromDB.get(i));
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return questionsFromCourse.toArray(new Question[questionsFromCourse.size()]);
+	}
+
 	private Object handleSendStudiesToUser() {
 		List<Study> listFromDB = null;
 		String[] studiesName = null;
@@ -76,7 +89,7 @@ public class ServerMain extends AbstractServer {
 		}
 		return studiesName;
 	}
-	
+
 	private Object handleSendCoursesToUser(Object study) {
 		List<Course> listFromDB = null;
 		List<String> coursesName = new ArrayList<String>();
@@ -93,14 +106,14 @@ public class ServerMain extends AbstractServer {
 				}
 			}
 			names = new String[coursesName.size()];
-			for (int i=0;i<coursesName.size(); i++) {
+			for (int i = 0; i < coursesName.size(); i++) {
 				names[i] = coursesName.get(i);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return names;
+		return coursesName.toArray(new String[coursesName.size()]);
 	}
 
 	public static void main(String[] args) throws IOException {
