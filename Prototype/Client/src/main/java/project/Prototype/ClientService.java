@@ -3,6 +3,8 @@ package project.Prototype;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import ocsf.client.AbstractClient;
 
 public class ClientService extends AbstractClient {
@@ -17,7 +19,6 @@ public class ClientService extends AbstractClient {
 
 	@Override
 	protected void connectionEstablished() {
-		// TODO Auto-generated method stub
 		super.connectionEstablished();
 		LOGGER.info("Connected to server.");
 
@@ -29,14 +30,36 @@ public class ClientService extends AbstractClient {
 	}
 
 	@Override
-	protected void handleMessageFromServer(Object msg) {
-		clientM.displayMessage(msg);
-	}
-
-	@Override
 	protected void connectionClosed() {
-		// TODO Auto-generated method stub
 		super.connectionClosed();
 		clientM.closeConnection();
+	}
+
+	
+	/**
+	 * The function gets new msg from server
+	 * Parsing the opcode and data
+	 * Handle the server results
+	 */
+	@Override
+	protected void handleMessageFromServer(Object msg) {
+		try {
+			DataElements de = (DataElements) msg;
+			System.out.println("Received message from server: opcode = " + de.getOpcode());
+			switch (de.getOpcode()) {
+			case 10:
+				handleGetCoursesFromServer(de.getData());
+				break;
+			default:
+				clientM.displayMessageOnConsole(msg.toString());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void handleGetCoursesFromServer(Object object) {
+		PrimaryController.setDbStudy((String[]) object);
 	}
 }

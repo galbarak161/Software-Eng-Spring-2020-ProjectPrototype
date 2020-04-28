@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="title_label" layoutX="157.0" layoutY="22.0" text="How to update a question?" textFill="RED">
+         <font>
+            <Font name="Book Antiqua" size="24.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="text_area" editable="false" layoutY="68.0" prefHeight="332.0" prefWidth="600.0" text="1. Choose the desired field of study from the list.&#10;&#10;2. Every field of study has a list of courses.&#10;    After choosing a field of study, its list of courses will be available- choose a course.&#10;&#10;3. After choosing a course, its questions will be available on the relevant list- choose a question.&#10;&#10;4. The chosen question will appear on the text field below the list of questions, its 4 answer&#10;     will appear below the question as well.&#10;&#10;5.  Edit the question and its answers as you wish, be aware of filling the all 4 answers!&#10;&#10;6. Select the correct answer by choosing the radio button beside it.&#10;&#10;7. When you're done, click &quot;Update Request&quot;- the button should be colored in yellow which means&#10;     the request is proccessing.&#10;&#10;8. If the update was made successfully the button will be colored in green, otherwise&#10;     it will be colored in red.">
+         <effect>
+            <Blend />
+         </effect>
+      </TextArea>
+   </children>
+</AnchorPane>
