@@ -23,14 +23,7 @@ public class ClientMain {
 		this.isRunning = true;
 	}
 
-	/**
-	 * sendMessageToServer(String)
-	 * 
-	 * @param message to server
-	 * @return 1 if message was sent. -1 if not
-	 * @throws IOException
-	 */
-	public static int sendMessageToServer(String message) throws IOException {
+	public static int sendMessageToServer(Object message) throws IOException {
 		try {
 			clientS.sendToServer(message);
 		} catch (Exception e) {
@@ -40,7 +33,7 @@ public class ClientMain {
 		return 1;
 	}
 
-	public void displayMessage(Object message) {
+	public void displayMessageOnConsole(Object message) {
 		if (isRunning) {
 			System.out.print("(Interrupted)\n");
 		}
