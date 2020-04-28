@@ -24,32 +24,27 @@ public class Course implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "courseId")
 	private int id;
-	
+
 	@Column(name = "courseName")
 	private String courseName;
-	
-	//@ManyToMany(mappedBy = "studies", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	//private List<Teacher> teachers;
 
 	@ManyToMany(mappedBy = "courses", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Question> questions;
-	
+
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "course_study", joinColumns = @JoinColumn(name = "courseId"), inverseJoinColumns = @JoinColumn(name = "studyId"))
 	private List<Study> studies;
-	
+
 	public Course() {
 		super();
-		//this.teachers = new ArrayList<Teacher>();
-		//this.questions = new ArrayList<Question>();
+		this.questions = new ArrayList<Question>();
 		this.studies = new ArrayList<Study>();
 	}
-	
+
 	public Course(String courseName) {
 		super();
 		this.courseName = courseName;
-		//this.teachers = new ArrayList<Teacher>();
-		//this.questions = new ArrayList<Question>();
+		this.questions = new ArrayList<Question>();
 		this.studies = new ArrayList<Study>();
 	}
 
@@ -65,24 +60,12 @@ public class Course implements Serializable {
 		this.courseName = courseName;
 	}
 
-	/*
-	public List<Teacher> getTeachers() {
-		return teachers;
-	}
-
-	public void addTeachers(Teacher... teachers) {
-		for(Teacher teacher : teachers) {
-			this.teachers.add(teacher);
-			//teacher.getCourses().add(this);
-		}
-	}*/
-
 	public List<Question> getQuestions() {
 		return questions;
 	}
 
 	public void addQuestions(Question... questions) {
-		for(Question question : questions) {
+		for (Question question : questions) {
 			this.questions.add(question);
 			question.getCourses().add(this);
 		}
@@ -93,7 +76,7 @@ public class Course implements Serializable {
 	}
 
 	public void addStudies(Study... studies) {
-		for(Study study : studies) {
+		for (Study study : studies) {
 			this.studies.add(study);
 			study.getCourses().add(this);
 		}

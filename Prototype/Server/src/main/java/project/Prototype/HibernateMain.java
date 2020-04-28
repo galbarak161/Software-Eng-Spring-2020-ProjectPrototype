@@ -20,7 +20,7 @@ public class HibernateMain {
 	static Session session;
 	static Random random = new Random();
 	static boolean hibernateSessionStatus = false;
-	
+
 	/*
 	 * static final int NUMBER_OF_CARS = 10; static final int NUMBER_OF_PERSONS = 7;
 	 * static final int NUMBER_OF_GARAGES = 2; static List<Car> cars; static
@@ -29,6 +29,7 @@ public class HibernateMain {
 
 	/**
 	 * The function create the session between the server and DB
+	 * 
 	 * @return new session to DB
 	 * @throws HibernateException
 	 */
@@ -51,7 +52,8 @@ public class HibernateMain {
 
 	/**
 	 * Get data collections from DB
-	 * @param <T> - Type of entity
+	 * 
+	 * @param <T>    - Type of entity
 	 * @param entity
 	 * @return List of entities from type <T>
 	 * @throws Exception
@@ -67,7 +69,8 @@ public class HibernateMain {
 
 	/**
 	 * Print object data using override toString() function
-	 * @param <T> - Type of entity
+	 * 
+	 * @param <T>        - Type of entity
 	 * @param objectList
 	 */
 	public static <T> void printObjects(List<T> objectList) {
@@ -78,12 +81,15 @@ public class HibernateMain {
 
 	/**
 	 * Initialize new object and set connections
+	 * 
 	 * @throws Exception
 	 */
 	private static void initializeData() throws Exception {
 
 		final int NUMBER_OF_STUDIES = 5;
 		final int NUMBER_OF_COURSES = 10;
+		final int NUMBER_OF_QUESTIONS = 10;
+
 		// Generate fields of study
 		Study[] studies = new Study[NUMBER_OF_STUDIES];
 		String[] studiesName = new String[NUMBER_OF_STUDIES];
@@ -112,7 +118,7 @@ public class HibernateMain {
 		coursesName[7] = "Computer Science";
 		coursesName[8] = "Economics";
 		coursesName[9] = "Psychology";
-		for (int i = 0, j = 0; i < NUMBER_OF_COURSES && j< NUMBER_OF_STUDIES; j++) {
+		for (int i = 0, j = 0; i < NUMBER_OF_COURSES && j < NUMBER_OF_STUDIES; j++) {
 			Course c1 = new Course(coursesName[i]);
 			c1.addStudies(studies[j]);
 			courses[i] = c1;
@@ -121,48 +127,107 @@ public class HibernateMain {
 			Course c2 = new Course(coursesName[i]);
 			c2.addStudies(studies[j]);
 			courses[i] = c2;
-			i++;	
+			i++;
 			session.save(c2);
 		}
 		session.flush();
+
+		// Generate questions
+		Question[] questions = new Question[NUMBER_OF_QUESTIONS];
+		String[] questionsSubject = new String[NUMBER_OF_QUESTIONS];
+		String questionsText = "What is the run time?";
+		String[][] questionsAnswers = new String[NUMBER_OF_QUESTIONS][4];
+		int[] correctAnswer = new int[NUMBER_OF_QUESTIONS];
+		questionsSubject[0] = "DFS";
+		questionsAnswers[0][0] = "O(n)";
+		questionsAnswers[0][1] = "O(n^2)";
+		questionsAnswers[0][2] = "O(n^3)";
+		questionsAnswers[0][3] = "O(n^4)";
+		correctAnswer[0] = 4;
+
+		questionsSubject[1] = "BFS";
+		questionsAnswers[1][0] = "O(n)";
+		questionsAnswers[1][1] = "O(n^2)";
+		questionsAnswers[1][2] = "O(n^3)";
+		questionsAnswers[1][3] = "O(n^4)";
+		correctAnswer[1] = 3;
+
+		questionsSubject[2] = "Fibo Heap";
+		questionsAnswers[2][0] = "O(n)";
+		questionsAnswers[2][1] = "O(n^2)";
+		questionsAnswers[2][2] = "O(n^3)";
+		questionsAnswers[2][3] = "O(n^4)";
+		correctAnswer[2] = 2;
+
+		questionsSubject[3] = "Arrays";
+		questionsAnswers[3][0] = "O(n)";
+		questionsAnswers[3][1] = "O(n^2)";
+		questionsAnswers[3][2] = "O(n^3)";
+		questionsAnswers[3][3] = "O(n^4)";
+		correctAnswer[3] = 1;
+
+		questionsSubject[4] = "Sockets";
+		questionsAnswers[4][0] = "O(n)";
+		questionsAnswers[4][1] = "O(n^2)";
+		questionsAnswers[4][2] = "O(n^3)";
+		questionsAnswers[4][3] = "O(n^4)";
+		correctAnswer[4] = 2;
+
+		questionsSubject[5] = "Ferma's Little";
+		questionsAnswers[5][0] = "O(n)";
+		questionsAnswers[5][1] = "O(n^2)";
+		questionsAnswers[5][2] = "O(n^3)";
+		questionsAnswers[5][3] = "O(n^4)";
+		correctAnswer[5] = 3;
+
+		questionsSubject[6] = "Integrals";
+		questionsAnswers[6][0] = "O(n)";
+		questionsAnswers[6][1] = "O(n^2)";
+		questionsAnswers[6][2] = "O(n^3)";
+		questionsAnswers[6][3] = "O(n^4)";
+		correctAnswer[6] = 3;
+
+		questionsSubject[7] = "Graphics";
+		questionsAnswers[7][0] = "O(n)";
+		questionsAnswers[7][1] = "O(n^2)";
+		questionsAnswers[7][2] = "O(n^3)";
+		questionsAnswers[7][3] = "O(n^4)";
+		correctAnswer[7] = 4;
+
+		questionsSubject[8] = "RegEx";
+		questionsAnswers[8][0] = "O(n)";
+		questionsAnswers[8][1] = "O(n^2)";
+		questionsAnswers[8][2] = "O(n^3)";
+		questionsAnswers[8][3] = "O(n^4)";
+		correctAnswer[8] = 2;
+
+		questionsSubject[9] = "Binary Search";
+		questionsAnswers[9][0] = "O(n)";
+		questionsAnswers[9][1] = "O(n^2)";
+		questionsAnswers[9][2] = "O(n^3)";
+		questionsAnswers[9][3] = "O(n^4)";
+		correctAnswer[9] = 3;
+
+		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
+			questions[i] = new Question(questionsText, questionsSubject[i], questionsAnswers[i][0],
+					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i]);
+			questions[i].addCourses(courses[i]);
+			session.save(questions[i]);
+		}
 		
+		session.flush();
+
+		session.clear();
 	}
 
 	public static void main(String[] args) {
-		try {
-			System.out.println("Hibernate: Create new session using getSessionFactory...\n");
-			SessionFactory sessionFactory = getSessionFactory();
+		initHibernate();
+		closeSession();
+	}
 
-			System.out.println("Hibernate: Open session...\n");
-			session = sessionFactory.openSession();
-
-			System.out.println("Hibernate: Begin Transaction...\n");
-			session.beginTransaction();
-
-			System.out.println("Hibernate: Generate and insert data to DB...\n");
-			// Initialize Data - Insert query
-			initializeData();
-
-			System.out.println("Hibernate: Get data from DB...\n");
-
-			System.out.println("Hibernate: Committing all queries before closing connection...\n");
-			session.getTransaction().commit();
-
-		} catch (Exception exception) {
-			if (session != null) {
-				session.getTransaction().rollback();
-			}
-			System.err.println("Hibernate: An error occured, changes have been rolled back.");
-			exception.printStackTrace();
-
-		} finally {
-			session.close();
-			System.out.println("Hibernate: Close session to DB!\n");
-		}
-
-		System.out.println("############## Print data ##############\n");
-
-		System.out.println("############## Finish Print ##############\n");
+	public static void closeSession() {
+		session.close();
+		System.out.println("Hibernate: Close session to DB!\n");
 	}
 
 	public static boolean initHibernate() {
@@ -184,7 +249,7 @@ public class HibernateMain {
 			session.getTransaction().commit();
 
 			status = true;
-			
+
 		} catch (Exception exception) {
 			if (session != null) {
 				session.getTransaction().rollback();

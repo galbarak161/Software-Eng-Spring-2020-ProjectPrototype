@@ -1,59 +1,28 @@
-package project.Entities;
+package project.CloneEntities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "Question")
 public class Question implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "questionId")
 	private int id;
 
-	@Column(name = "questionCode")
 	private int questionCode;
 
-	@Column(name = "subject", length = 180)
 	private String subject;
 
-	@Column(name = "questionText", length = 180)
 	private String questionText;
 
-	@Column(name = "answer_1", length = 180)
 	private String answer_1;
 
-	@Column(name = "answer_2", length = 180)
 	private String answer_2;
 
-	@Column(name = "answer_3", length = 180)
 	private String answer_3;
 
-	@Column(name = "answer_4", length = 180)
 	private String answer_4;
 
-	@Column(name = "correctAnswer")
 	private int correctAnswer;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "question_course", joinColumns = @JoinColumn(name = "questionId"), inverseJoinColumns = @JoinColumn(name = "courseId"))
-	private List<Course> courses;
-
 	public Question() {
-		this.courses = new ArrayList<Course>();
 	}
 
 	public Question(String subject, String questionText, String answer_1, String answer_2, String answer_3,
@@ -65,7 +34,6 @@ public class Question implements Serializable {
 		this.answer_3 = answer_3;
 		this.answer_4 = answer_4;
 		this.correctAnswer = correctAnswer;
-		this.courses = new ArrayList<Course>();
 	}
 
 	public int getId() {
@@ -130,16 +98,5 @@ public class Question implements Serializable {
 
 	public void setCorrectAnswer(int correctAnswer) {
 		this.correctAnswer = correctAnswer;
-	}
-
-	public List<Course> getCourses() {
-		return courses;
-	}
-
-	public void addCourses(Course... courses) {
-		for (Course course : courses) {
-			this.courses.add(course);
-			course.addQuestions(this);
-		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import ocsf.client.AbstractClient;
+import project.CloneEntities.Question;
 
 public class ClientService extends AbstractClient {
 	private static final Logger LOGGER = Logger.getLogger(ClientService.class.getName());
@@ -71,6 +72,6 @@ public class ClientService extends AbstractClient {
 	}
 
 	private void handleGetQuestionsFromServer(Object object) {
-		PrimaryController.setDbCollect((String[]) object);
+		PrimaryController.setDbCollect((Question[]) object);
 	}
 }

@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import project.CloneEntities.Question;
 import project.Prototype.DataElements.ClientToServerOpcodes;
 
 public class PrimaryController {
@@ -80,7 +81,7 @@ public class PrimaryController {
 	private TextArea question_text;
 
 	ToggleGroup radioGroup;
-	
+
 	private static ObservableList<String> dbCollect = null;
 
 	public static void setDbCollect(String[] object) {
@@ -132,49 +133,55 @@ public class PrimaryController {
 
 	public void initialize() {
 		// Send message to server
-		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllStudies,null);
-		if (val == null) return;
+		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllStudies, null);
+		if (val == null)
+			return;
 		study_combo.setItems(val);
 		radioGroup = new ToggleGroup();
 		radio_1.setToggleGroup(radioGroup);
 		radio_2.setToggleGroup(radioGroup);
 		radio_3.setToggleGroup(radioGroup);
 		radio_4.setToggleGroup(radioGroup);
-		
+
 		dbCollect = null;
 	}
 
 	@FXML
 	void onClickedStudy(ActionEvent event) {
-		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllCoursesInStudy,study_combo.getValue());
-		if (val == null) return;
+		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue());
+		if (val == null)
+			return;
 		course_combo.setItems(val);
 		DisableAll();
 		course_combo.setDisable(false);
-		
+
 		dbCollect = null;
 	}
 
 	@FXML
 	void onCourseClicked(ActionEvent event) {
-		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse,course_combo.getValue());
-		if (val == null) return;
+		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse,
+				course_combo.getValue());
+		if (val == null)
+			return;
 		question_combo.setItems(val);
 		DisableAll();
 		course_combo.setDisable(false);
 		question_combo.setDisable(false);
-		
+
 		dbCollect = null;
 	}
 
-	//TODO: After question entity is done, update this func. (parse subject, question, 4 answers and correct answer)
+	// TODO: After question entity is done, update this func. (parse subject,
+	// question, 4 answers and correct answer)
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-		
-		//ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetQuestion, question_combo.getValue());
-		
+
+		// ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetQuestion,
+		// question_combo.getValue());
+
 		subject_text.setDisable(false);
-		//subject_text.setText(val[0]);
+		// subject_text.setText(val[0]);
 
 		question_text.setDisable(false);
 
@@ -192,17 +199,17 @@ public class PrimaryController {
 		radio_2.setDisable(false);
 		radio_3.setDisable(false);
 		radio_4.setDisable(false);
-		
+
 		radio_2.setSelected(true);
 
 	}
-	
+
 	void DisableAll() {
-		
+
 		course_combo.setDisable(true);
-		
+
 		question_combo.setDisable(true);
-		
+
 		subject_text.setDisable(true);
 		question_text.setDisable(true);
 
@@ -215,14 +222,15 @@ public class PrimaryController {
 		radio_2.setDisable(true);
 		radio_3.setDisable(true);
 		radio_4.setDisable(true);
-		
+
 		primaryButton.setDisable(true);
-		
+
 	}
-	
+
 	/**
 	 * Creating request from server and getting data back from server
-	 * @param op- what type of request do we want (enums)
+	 * 
+	 * @param op-  what type of request do we want (enums)
 	 * @param data - relevant data for request (like a name of field of study)
 	 * @return
 	 */
@@ -236,5 +244,10 @@ public class PrimaryController {
 			System.out.print("");
 		}
 		return dbCollect;
+	}
+
+	public static void setDbCollect(Question[] object) {
+		// TODO Auto-generated method stub
+		
 	}
 }
