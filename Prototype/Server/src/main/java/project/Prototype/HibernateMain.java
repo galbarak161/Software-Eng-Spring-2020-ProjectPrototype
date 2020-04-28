@@ -21,12 +21,6 @@ public class HibernateMain {
 	static Random random = new Random();
 	static boolean hibernateSessionStatus = false;
 
-	/*
-	 * static final int NUMBER_OF_CARS = 10; static final int NUMBER_OF_PERSONS = 7;
-	 * static final int NUMBER_OF_GARAGES = 2; static List<Car> cars; static
-	 * List<Person> persons; static List<Garage> garages;
-	 */
-
 	/**
 	 * The function create the session between the server and DB
 	 * 
