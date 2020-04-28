@@ -1,10 +1,9 @@
 package project.Prototype;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import ocsf.client.AbstractClient;
 
 public class ClientService extends AbstractClient {
@@ -35,20 +34,24 @@ public class ClientService extends AbstractClient {
 		clientM.closeConnection();
 	}
 
-	
 	/**
-	 * The function gets new msg from server
-	 * Parsing the opcode and data
-	 * Handle the server results
+	 * The function gets new msg from server Parsing the opcode and data Handle the
+	 * server results
 	 */
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		try {
 			DataElements de = (DataElements) msg;
-			System.out.println("Received message from server: opcode = " + de.getOpcode());
-			switch (de.getOpcode()) {
-			case 10:
+			System.out.println("Received message from server: opcode = " + de.getOpcodeFromClient());
+			switch (de.getOpCodeFromServer()) {
+			case SendAllStudies:
+				handleGetStudiesFromServer(de.getData());
+				break;
+			case SendAllCoursesInStudy:
 				handleGetCoursesFromServer(de.getData());
+				break;
+			case SendAllQuestionInCourse:
+				handleGetQuestionsFromServer(de.getData());
 				break;
 			default:
 				clientM.displayMessageOnConsole(msg.toString());
@@ -59,7 +62,15 @@ public class ClientService extends AbstractClient {
 		}
 	}
 
+	private void handleGetStudiesFromServer(Object object) {
+		PrimaryController.setDbCollect((String[]) object);
+	}
+
 	private void handleGetCoursesFromServer(Object object) {
-		PrimaryController.setDbStudy((String[]) object);
+		PrimaryController.setDbCollect((String[]) object);
+	}
+
+	private void handleGetQuestionsFromServer(Object object) {
+		PrimaryController.setDbCollect((String[]) object);
 	}
 }
