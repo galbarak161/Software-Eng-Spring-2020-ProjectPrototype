@@ -1,53 +1,39 @@
-package project.Entities;
+package project.CloneEntities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
 
-@Entity
-@Table(name = "Question")
-public class Question{
+public class CloneQuestion implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "questionId")
 	private int id;
 
-	@Column(name = "questionCode")
 	private int questionCode;
 
-	@Column(name = "subject", length = 180)
 	private String subject;
 
-	@Column(name = "questionText", length = 180)
 	private String questionText;
 
-	@Column(name = "answer_1", length = 180)
 	private String answer_1;
 
-	@Column(name = "answer_2", length = 180)
 	private String answer_2;
 
-	@Column(name = "answer_3", length = 180)
 	private String answer_3;
 
-	@Column(name = "answer_4", length = 180)
 	private String answer_4;
 
-	@Column(name = "correctAnswer")
 	private int correctAnswer;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "question_course", joinColumns = @JoinColumn(name = "questionId"), inverseJoinColumns = @JoinColumn(name = "courseId"))
-	private List<Course> courses;
+	private List<CloneCourse> courses;
 
-	public Question() {
-		this.courses = new ArrayList<Course>();
+	public CloneQuestion() {
+		this.courses = new ArrayList<CloneCourse>();
 	}
 
-	public Question(String subject, String questionText, String answer_1, String answer_2, String answer_3,
-			String answer_4, int correctAnswer) {
-		this.questionCode = GenerateQuestionCode();
+	public CloneQuestion(int id, int questionCode, String subject, String questionText, String answer_1,
+			String answer_2, String answer_3, String answer_4, int correctAnswer) {
+		this.id = id;
+		this.questionCode = questionCode;
 		this.subject = subject;
 		this.questionText = questionText;
 		this.answer_1 = answer_1;
@@ -55,20 +41,23 @@ public class Question{
 		this.answer_3 = answer_3;
 		this.answer_4 = answer_4;
 		this.correctAnswer = correctAnswer;
-		this.courses = new ArrayList<Course>();
-	}
-
-	private int GenerateQuestionCode() {
-		// TODO Generate code according to CourseId and QuestionId
-		return 0;
+		this.courses = new ArrayList<CloneCourse>();
 	}
 
 	public int getId() {
 		return id;
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getQuestionCode() {
 		return questionCode;
+	}
+
+	public void setQuestionCode(int questionCode) {
+		this.questionCode = questionCode;
 	}
 
 	public String getSubject() {
@@ -127,14 +116,12 @@ public class Question{
 		this.correctAnswer = correctAnswer;
 	}
 
-	public List<Course> getCourses() {
+	public List<CloneCourse> getCourses() {
 		return courses;
 	}
 
-	public void addCourses(Course... courses) {
-		for (Course course : courses) {
-			this.courses.add(course);
-			course.addQuestions(this);
-		}
+	public void setCourses(List<CloneCourse> courses) {
+		this.courses = courses;
 	}
+
 }

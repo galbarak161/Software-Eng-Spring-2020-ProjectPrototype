@@ -1,10 +1,10 @@
-package project.Entities;
+package project.CloneEntities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Question implements Serializable {
+public class CloneQuestion implements Serializable {
 
 	private int id;
 
@@ -24,14 +24,16 @@ public class Question implements Serializable {
 
 	private int correctAnswer;
 
-	private List<Object> courses;
+	private List<CloneCourse> courses;
 
-	public Question() {
-		this.courses = new ArrayList<Object>();
+	public CloneQuestion() {
+		this.courses = new ArrayList<CloneCourse>();
 	}
 
-	public Question(String subject, String questionText, String answer_1, String answer_2, String answer_3,
+	public CloneQuestion(int id, int questionCode, String subject, String questionText, String answer_1, String answer_2, String answer_3,
 			String answer_4, int correctAnswer) {
+		this.id = id;
+		this.questionCode = questionCode;
 		this.subject = subject;
 		this.questionText = questionText;
 		this.answer_1 = answer_1;
@@ -39,15 +41,23 @@ public class Question implements Serializable {
 		this.answer_3 = answer_3;
 		this.answer_4 = answer_4;
 		this.correctAnswer = correctAnswer;
-		this.courses = new ArrayList<Object>();
+		this.courses = new ArrayList<CloneCourse>();
 	}
 
 	public int getId() {
 		return id;
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getQuestionCode() {
 		return questionCode;
+	}
+
+	public void setQuestionCode(int questionCode) {
+		this.questionCode = questionCode;
 	}
 
 	public String getSubject() {
@@ -105,10 +115,13 @@ public class Question implements Serializable {
 	public void setCorrectAnswer(int correctAnswer) {
 		this.correctAnswer = correctAnswer;
 	}
-	/*
-	 * public List<Course> getCourses() { return courses; }
-	 * 
-	 * public void addCourses(Course... courses) { for (Course course : courses) {
-	 * this.courses.add(course); course.addQuestions(this); } }
-	 */
+
+	public List<CloneCourse> getCourses() {
+		return courses;
+	}
+
+	public void setCourses(List<CloneCourse> courses) {
+		this.courses = courses;
+	}
+
 }

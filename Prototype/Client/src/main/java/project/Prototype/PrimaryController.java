@@ -1,6 +1,8 @@
 package project.Prototype;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import project.Entities.Question;
+import project.CloneEntities.*;
 import project.Prototype.DataElements.ClientToServerOpcodes;
 
 public class PrimaryController {
@@ -84,16 +86,16 @@ public class PrimaryController {
 
 	private static ObservableList<String> dbCollect = null;
 
-	private static ObservableList<Question> dbQuestion = null;
+	private static ObservableList<CloneQuestion> dbQuestion = null;
 
 	public static void setDbCollect(String[] object) {
 		PrimaryController.dbCollect = FXCollections.observableArrayList(object);
-		System.out.println("Recived dbStudy from server\n");
+		System.out.println("Recived data from server\n");
 	}
 
-	public static void setDbQuestion(Question[] object) {
+	public static void setDbQuestion(CloneQuestion[] object) {
 		PrimaryController.dbQuestion = FXCollections.observableArrayList(object);
-		System.out.println("Recived dbQuestions from server\n");
+		System.out.println("Recived data from server\n");
 	}
 
 	@FXML
@@ -167,24 +169,22 @@ public class PrimaryController {
 
 	@FXML
 	void onCourseClicked(ActionEvent event) {
-		ObservableList<Question> val = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
+		ObservableList<CloneQuestion> val = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
 				course_combo.getValue());
-		/*
 		if (val == null)
 			return;
-		ObservableList<String> subjects = null;
-		for (Question q : val) {
-			subjects.add(q.getSubject() + " - " + Integer.toString(q.getId()));
+		List<String> subjects = new ArrayList<String>();
+		for (CloneQuestion q : val) {
+			subjects.add(q.getSubject() + " - " + Integer.toString(q.getQuestionCode()));
 		}
-		question_combo.setItems(subjects);
+		ObservableList<String> final_subjects = FXCollections.observableArrayList(subjects);
+		question_combo.setItems(final_subjects);
 		DisableAll();
 		course_combo.setDisable(false);
 		question_combo.setDisable(false);
 
 		dbCollect = null;
-		*/
 	}
-	
 
 	// TODO: After question entity is done, update this func. (parse subject,
 	// question, 4 answers and correct answer)
@@ -194,9 +194,9 @@ public class PrimaryController {
 		String[] tokens = question_combo.getValue().split(" - ");
 		String CurrentSubject = tokens[0];
 		String CurrentID = tokens[1];
-		Question CurrentQuestion = null;
+		CloneQuestion CurrentQuestion = null;
 
-		for (Question q : dbQuestion) {
+		for (CloneQuestion q : dbQuestion) {
 			if (CurrentSubject.compareTo(q.getSubject()) == 0
 					&& CurrentID.compareTo(Integer.toString(q.getId())) == 0) {
 				CurrentQuestion = q;
@@ -284,15 +284,14 @@ public class PrimaryController {
 		return dbCollect;
 	}
 
-	ObservableList<Question> GetDataFromDBQuestion(ClientToServerOpcodes op, Object data) {
+	ObservableList<CloneQuestion> GetDataFromDBQuestion(ClientToServerOpcodes op, Object data) {
 		// Send message to server
 		DataElements de = new DataElements(op, data);
 		if (sendRequestForDataFromServer(de) == -1)
 			return null;
-/*
 		while (dbQuestion == null) {
 			System.out.print("");
-		}*/
+		}
 		return dbQuestion;
 	}
 

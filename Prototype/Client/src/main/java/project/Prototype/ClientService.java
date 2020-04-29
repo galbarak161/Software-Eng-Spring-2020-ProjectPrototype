@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import ocsf.client.AbstractClient;
-import project.Entities.Question;
+import project.CloneEntities.*;
 
 public class ClientService extends AbstractClient {
 	private static final Logger LOGGER = Logger.getLogger(ClientService.class.getName());
@@ -70,6 +70,6 @@ public class ClientService extends AbstractClient {
 	}
 
 	private void handleGetQuestionsFromServer(Object object) {
-		PrimaryController.setDbQuestion((Question[]) object);
+		PrimaryController.setDbQuestion((CloneQuestion[]) object);
 	}
 }

@@ -213,7 +213,7 @@ public class HibernateMain {
 
 		session.clear();
 	}
-
+	
 	public static void main(String[] args) {
 		initHibernate();
 		closeSession();

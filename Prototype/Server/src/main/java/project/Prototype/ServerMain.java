@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
+import project.CloneEntities.CloneQuestion;
 import project.Entities.*;
 import project.Prototype.DataElements;
 
@@ -72,7 +73,11 @@ public class ServerMain extends AbstractServer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return questionsFromCourse.toArray(new Question[questionsFromCourse.size()]);
+		// return questionsFromCourse.toArray(new Question[questionsFromCourse.size()]);
+		CloneQuestion[] q = new CloneQuestion[2];
+		q[0] = new CloneQuestion(1,999,"a", "a", "a", "a", "a", "a", 1);
+		q[1] = new CloneQuestion(2,998 ,"b", "b", "b", "b", "b", "b", 2);
+		return q;
 	}
 
 	private Object handleSendStudiesToUser() {
