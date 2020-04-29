@@ -203,9 +203,10 @@ public class HibernateMain {
 		correctAnswer[9] = 3;
 
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
-			questions[i] = new Question(questionsText, questionsSubject[i], questionsAnswers[i][0],
+			questions[i] = new Question(questionsSubject[i], questionsText, questionsAnswers[i][0],
 					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i]);
 			questions[i].addCourses(courses[i]);
+			questions[i].setQuestionCode(i * 10000);
 			session.save(questions[i]);
 		}
 		

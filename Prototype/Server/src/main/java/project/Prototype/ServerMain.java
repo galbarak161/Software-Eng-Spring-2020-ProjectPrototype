@@ -59,6 +59,7 @@ public class ServerMain extends AbstractServer {
 	private Object handleSendQuestionsToUser(Object course) {
 		List<Question> listFromDB = null;
 		List<Question> questionsFromCourse = new ArrayList<Question>();
+		CloneQuestion[] names = null;
 		try {
 			listFromDB = HibernateMain.getDataFromDB(Question.class);
 			for (int i = 0; i < listFromDB.size(); i++) {
@@ -70,14 +71,21 @@ public class ServerMain extends AbstractServer {
 					}
 				}
 			}
+			names = new CloneQuestion[questionsFromCourse.size()];
+			for (int i = 0; i < questionsFromCourse.size(); i++) {
+				Question q = questionsFromCourse.get(i);
+				names[i] = new CloneQuestion(q.getId(),q.getQuestionCode(),q.getSubject(), q.getQuestionText(), q.getAnswer_1(), 
+											 q.getAnswer_2(),q.getAnswer_3(),q.getAnswer_4(), q.getCorrectAnswer());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// return questionsFromCourse.toArray(new Question[questionsFromCourse.size()]);
-		CloneQuestion[] q = new CloneQuestion[2];
-		q[0] = new CloneQuestion(1,999,"a", "a", "a", "a", "a", "a", 1);
-		q[1] = new CloneQuestion(2,998 ,"b", "b", "b", "b", "b", "b", 2);
-		return q;
+		
+		return names;
+		//CloneQuestion[] q = new CloneQuestion[2];
+		//q[0] = new CloneQuestion(1,999,"a", "a", "a", "a", "a", "a", 1);
+		//q[1] = new CloneQuestion(2,998 ,"b", "b", "b", "b", "b", "b", 2);
+		//return q;
 	}
 
 	private Object handleSendStudiesToUser() {

@@ -169,6 +169,11 @@ public class PrimaryController {
 
 	@FXML
 	void onCourseClicked(ActionEvent event) {
+		if (course_combo.getValue() == null || course_combo.isDisable() == true) {
+			DisableAll();
+			course_combo.setDisable(false);
+			return;
+		}
 		ObservableList<CloneQuestion> val = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
 				course_combo.getValue());
 		if (val == null)
@@ -190,15 +195,21 @@ public class PrimaryController {
 	// question, 4 answers and correct answer)
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-
+		
+		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
+			DisableAll();
+			course_combo.setDisable(false);
+			question_combo.setDisable(false);
+			return;
+		} 
+		
 		String[] tokens = question_combo.getValue().split(" - ");
 		String CurrentSubject = tokens[0];
 		String CurrentID = tokens[1];
 		CloneQuestion CurrentQuestion = null;
 
 		for (CloneQuestion q : dbQuestion) {
-			if (CurrentSubject.compareTo(q.getSubject()) == 0
-					&& CurrentID.compareTo(Integer.toString(q.getId())) == 0) {
+			if (CurrentSubject.compareTo(q.getSubject()) == 0 && CurrentID.compareTo(Integer.toString(q.getQuestionCode())) == 0) {
 				CurrentQuestion = q;
 				break;
 			}
@@ -239,7 +250,8 @@ public class PrimaryController {
 		case 4:
 			radio_4.setSelected(true);
 		}
-
+		
+		dbQuestion = null;
 	}
 
 	void DisableAll() {
@@ -289,6 +301,7 @@ public class PrimaryController {
 		DataElements de = new DataElements(op, data);
 		if (sendRequestForDataFromServer(de) == -1)
 			return null;
+		
 		while (dbQuestion == null) {
 			System.out.print("");
 		}

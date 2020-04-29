@@ -70,6 +70,10 @@ public class Question{
 	public int getQuestionCode() {
 		return questionCode;
 	}
+	
+	public void setQuestionCode(int questionCode) {
+		this.questionCode = questionCode;
+	}
 
 	public String getSubject() {
 		return subject;

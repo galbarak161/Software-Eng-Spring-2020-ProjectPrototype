@@ -55,6 +55,7 @@ public class ClientMain {
 			ClientService client = new ClientService(host, port);
 			client.openConnection();
 			App.main(args);
+			client.closeConnection();
 		}
 	}
 }
