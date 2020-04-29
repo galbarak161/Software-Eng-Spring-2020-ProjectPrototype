@@ -1,6 +1,8 @@
-package project.CloneEntities;
+package project.Entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Question implements Serializable {
 
@@ -22,7 +24,10 @@ public class Question implements Serializable {
 
 	private int correctAnswer;
 
+	private List<Object> courses;
+
 	public Question() {
+		this.courses = new ArrayList<Object>();
 	}
 
 	public Question(String subject, String questionText, String answer_1, String answer_2, String answer_3,
@@ -34,6 +39,7 @@ public class Question implements Serializable {
 		this.answer_3 = answer_3;
 		this.answer_4 = answer_4;
 		this.correctAnswer = correctAnswer;
+		this.courses = new ArrayList<Object>();
 	}
 
 	public int getId() {
@@ -99,4 +105,10 @@ public class Question implements Serializable {
 	public void setCorrectAnswer(int correctAnswer) {
 		this.correctAnswer = correctAnswer;
 	}
+	/*
+	 * public List<Course> getCourses() { return courses; }
+	 * 
+	 * public void addCourses(Course... courses) { for (Course course : courses) {
+	 * this.courses.add(course); course.addQuestions(this); } }
+	 */
 }

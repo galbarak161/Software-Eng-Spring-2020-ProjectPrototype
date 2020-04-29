@@ -12,7 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import project.CloneEntities.Question;
+import project.Entities.Question;
 import project.Prototype.DataElements.ClientToServerOpcodes;
 
 public class PrimaryController {
@@ -169,6 +169,7 @@ public class PrimaryController {
 	void onCourseClicked(ActionEvent event) {
 		ObservableList<Question> val = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
 				course_combo.getValue());
+		/*
 		if (val == null)
 			return;
 		ObservableList<String> subjects = null;
@@ -181,7 +182,9 @@ public class PrimaryController {
 		question_combo.setDisable(false);
 
 		dbCollect = null;
+		*/
 	}
+	
 
 	// TODO: After question entity is done, update this func. (parse subject,
 	// question, 4 answers and correct answer)
@@ -286,10 +289,10 @@ public class PrimaryController {
 		DataElements de = new DataElements(op, data);
 		if (sendRequestForDataFromServer(de) == -1)
 			return null;
-
+/*
 		while (dbQuestion == null) {
 			System.out.print("");
-		}
+		}*/
 		return dbQuestion;
 	}
 
