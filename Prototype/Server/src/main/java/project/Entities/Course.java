@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
+import project.CloneEntities.CloneCourse;
+import project.CloneEntities.CloneQuestion;
+
 @Entity
 @Table(name = "Course")
 public class Course{
@@ -36,6 +39,11 @@ public class Course{
 		this.studies = new ArrayList<Study>();
 	}
 
+	public CloneCourse createClone() {
+		CloneCourse clone = new CloneCourse(this.id, this.courseName);
+		return clone;
+	}
+	
 	public int getId() {
 		return id;
 	}

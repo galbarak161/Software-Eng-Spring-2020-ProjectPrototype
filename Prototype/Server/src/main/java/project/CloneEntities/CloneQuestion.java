@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import project.Entities.Question;
+
 public class CloneQuestion implements Serializable {
 
 	private int id;
@@ -44,6 +46,18 @@ public class CloneQuestion implements Serializable {
 		this.courses = new ArrayList<CloneCourse>();
 	}
 
+	public void clone(CloneQuestion copyFrom) {
+		this.id = copyFrom.getId();
+		this.questionCode = copyFrom.getQuestionCode();
+		this.subject = copyFrom.getSubject();
+		this.questionText = copyFrom.getQuestionText();
+		this.answer_1 = copyFrom.getAnswer_1();
+		this.answer_2 = copyFrom.getAnswer_2();
+		this.answer_3 = copyFrom.getAnswer_3();
+		this.answer_4 = copyFrom.getAnswer_4();
+		this.correctAnswer = copyFrom.getCorrectAnswer();
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -123,5 +137,4 @@ public class CloneQuestion implements Serializable {
 	public void setCourses(List<CloneCourse> courses) {
 		this.courses = courses;
 	}
-
 }

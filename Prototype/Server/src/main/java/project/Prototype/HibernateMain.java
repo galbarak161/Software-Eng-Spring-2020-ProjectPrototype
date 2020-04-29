@@ -1,5 +1,6 @@
 package project.Prototype;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -61,6 +62,20 @@ public class HibernateMain {
 		return allQuery.getResultList();
 	}
 
+
+	public static List<Question> getDataQuestionsByCourseIdFromDB() {
+		//String hql = "SELECT Q.questionText FROM Question AS Q WHERE Q.questionCode = 10000";
+		String hql = "FROM question_course AS QC";
+		List data = session.createQuery(hql).list();
+		
+        //for (Iterator iterator = data.iterator(); iterator.hasNext();){
+        //	Question q = (Question) iterator.next(); 
+        //    System.out.print("get Question Text: " + q.getQuestionText()); 
+        // }
+        //session.getTransaction().commit();
+		return null;
+	}
+	
 	/**
 	 * Print object data using override toString() function
 	 * 
@@ -209,15 +224,20 @@ public class HibernateMain {
 			questions[i].setQuestionCode(i * 10000);
 			session.save(questions[i]);
 		}
-		
 		session.flush();
-
+		
 		session.clear();
 	}
 	
 	public static void main(String[] args) {
-		initHibernate();
-		closeSession();
+		try {
+			initHibernate();
+			getDataQuestionsByCourseIdFromDB();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			closeSession();
+		}	
 	}
 
 	public static void closeSession() {

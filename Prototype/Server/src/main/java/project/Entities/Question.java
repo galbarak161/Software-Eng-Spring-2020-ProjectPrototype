@@ -3,10 +3,11 @@ package project.Entities;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import project.CloneEntities.CloneQuestion;
 
 @Entity
 @Table(name = "Question")
-public class Question{
+public class Question {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,6 +59,12 @@ public class Question{
 		this.courses = new ArrayList<Course>();
 	}
 
+	public CloneQuestion createClone() {
+		CloneQuestion clone = new CloneQuestion(this.id, this.questionCode, this.subject, this.questionText,
+				this.answer_1, this.answer_2, this.answer_3, this.answer_4, this.correctAnswer);
+		return clone;
+	}
+
 	private int GenerateQuestionCode() {
 		// TODO Generate code according to CourseId and QuestionId
 		return 0;
@@ -70,7 +77,7 @@ public class Question{
 	public int getQuestionCode() {
 		return questionCode;
 	}
-	
+
 	public void setQuestionCode(int questionCode) {
 		this.questionCode = questionCode;
 	}

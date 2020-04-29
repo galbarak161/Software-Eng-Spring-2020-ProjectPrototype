@@ -49,6 +49,8 @@ public class ServerMain extends AbstractServer {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.Error);
+			de.setData(null);
 
 		} finally {
 			System.out.println("Send result to user! opcode = " + de.getOpCodeFromServer() + "\n");
@@ -58,34 +60,24 @@ public class ServerMain extends AbstractServer {
 
 	private Object handleSendQuestionsToUser(Object course) {
 		List<Question> listFromDB = null;
-		List<Question> questionsFromCourse = new ArrayList<Question>();
-		CloneQuestion[] names = null;
+		List<CloneQuestion> questionsFromCourse = new ArrayList<CloneQuestion>();
 		try {
+			//listFromDB = HibernateMain.getDataQuestionsByCourseIdFromDB();
 			listFromDB = HibernateMain.getDataFromDB(Question.class);
+			
 			for (int i = 0; i < listFromDB.size(); i++) {
 				List<Course> courses = listFromDB.get(i).getCourses();
 				for (int j = 0; j < courses.size(); j++) {
 					if (courses.get(j).getCourseName().compareTo(course.toString()) == 0) {
-						questionsFromCourse.add(listFromDB.get(i));
+						questionsFromCourse.add(listFromDB.get(i).createClone());
 						break;
 					}
 				}
 			}
-			names = new CloneQuestion[questionsFromCourse.size()];
-			for (int i = 0; i < questionsFromCourse.size(); i++) {
-				Question q = questionsFromCourse.get(i);
-				names[i] = new CloneQuestion(q.getId(),q.getQuestionCode(),q.getSubject(), q.getQuestionText(), q.getAnswer_1(), 
-											 q.getAnswer_2(),q.getAnswer_3(),q.getAnswer_4(), q.getCorrectAnswer());
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return names;
-		//CloneQuestion[] q = new CloneQuestion[2];
-		//q[0] = new CloneQuestion(1,999,"a", "a", "a", "a", "a", "a", 1);
-		//q[1] = new CloneQuestion(2,998 ,"b", "b", "b", "b", "b", "b", 2);
-		//return q;
+		return questionsFromCourse.toArray(new CloneQuestion[questionsFromCourse.size()]);
 	}
 
 	private Object handleSendStudiesToUser() {
