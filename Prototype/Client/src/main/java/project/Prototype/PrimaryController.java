@@ -195,21 +195,22 @@ public class PrimaryController {
 	// question, 4 answers and correct answer)
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-		
+
 		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
 			DisableAll();
 			course_combo.setDisable(false);
 			question_combo.setDisable(false);
 			return;
-		} 
-		
+		}
+
 		String[] tokens = question_combo.getValue().split(" - ");
 		String CurrentSubject = tokens[0];
 		String CurrentID = tokens[1];
 		CloneQuestion CurrentQuestion = null;
 
 		for (CloneQuestion q : dbQuestion) {
-			if (CurrentSubject.compareTo(q.getSubject()) == 0 && CurrentID.compareTo(Integer.toString(q.getQuestionCode())) == 0) {
+			if (CurrentSubject.compareTo(q.getSubject()) == 0
+					&& CurrentID.compareTo(Integer.toString(q.getQuestionCode())) == 0) {
 				CurrentQuestion = q;
 				break;
 			}
@@ -243,14 +244,20 @@ public class PrimaryController {
 		switch (CurrentQuestion.getCorrectAnswer()) {
 		case 1:
 			radio_1.setSelected(true);
+			break;
 		case 2:
 			radio_2.setSelected(true);
+			break;
 		case 3:
 			radio_3.setSelected(true);
+			break;
 		case 4:
 			radio_4.setSelected(true);
+			break;
+		default:
+			System.out.println("Unknown error");
 		}
-		
+
 		dbQuestion = null;
 	}
 
@@ -301,7 +308,7 @@ public class PrimaryController {
 		DataElements de = new DataElements(op, data);
 		if (sendRequestForDataFromServer(de) == -1)
 			return null;
-		
+
 		while (dbQuestion == null) {
 			System.out.print("");
 		}
