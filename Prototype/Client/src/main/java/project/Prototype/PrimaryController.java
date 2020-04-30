@@ -99,33 +99,47 @@ public class PrimaryController {
     private TabPane mainTab;
 
 	ToggleGroup radioGroup;
+	
+	private CloneStudy chosen_study;
+	
+	private CloneCourse chosen_course;
 
-	private static ObservableList<String> dbCollect = null;
+	private static ObservableList<CloneStudy> dbStudy = null;
+	
+	private static ObservableList<CloneCourse> dbCourse = null;
 
 	private static ObservableList<CloneQuestion> dbQuestion = null;
 
-	private static ObservableList<CloneQuestion> allQuestions;
+	private static List<CloneQuestion> allQuestions;
 
 	private CloneQuestion qToServer;
 
 	private Alert alert = new Alert(Alert.AlertType.ERROR);
 
-	public static void setDbCollect(String[] object) {
-		PrimaryController.dbCollect = FXCollections.observableArrayList(object);
+	public static void setDbStudy(Object object) {
+		PrimaryController.dbStudy = FXCollections.observableArrayList((List<CloneStudy>)object);
+		System.out.println("Recived data from server\n");
+	}
+	
+	public static void setDbCourse(Object object) {
+		PrimaryController.dbCourse = FXCollections.observableArrayList((List<CloneCourse>)object);
 		System.out.println("Recived data from server\n");
 	}
 
-	public static void setDbQuestion(CloneQuestion[] object) {
-		PrimaryController.dbQuestion = FXCollections.observableArrayList(object);
+	public static void setDbQuestion(Object object) {
+		PrimaryController.dbQuestion = FXCollections.observableArrayList((List<CloneQuestion>)object);
+		System.out.println("Recived data from server\n");
+	}
+	public static void setAllQuestion(Object object) {
+		PrimaryController.allQuestions = (List<CloneQuestion>)object;
 		System.out.println("Recived data from server\n");
 	}
 
 	// TODO: Limit the number of chars.
 	@FXML
 	void countChars(KeyEvent event) {
-		if (question_text.getLength() > 180) {
-			question_text.setStyle("-fx-text-inner-color: red;");
-		}
+		question_text.setTextFormatter(new TextFormatter<String>(change -> 
+        change.getControlNewText().length() <= 180 ? change : null));
 	}
 
 	@FXML
@@ -258,19 +272,28 @@ public class PrimaryController {
 
 	public void initialize() {
 		// Send message to server
-		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllStudies, null);
+		
+		ObservableList<CloneStudy> val = FXCollections.observableArrayList(GetDataFromDBStudy(ClientToServerOpcodes.GetAllStudies, null));
 		if (val == null)
 			return;
-		study_combo.setItems(val);
+		List<String> temp = new ArrayList<String>();
+		
+		for (CloneStudy s:val) {
+			temp.add(s.getStudyName());
+		}
+		
+		ObservableList<String> study_names = FXCollections.observableArrayList(temp);
+		
+		study_combo.setItems(study_names);
 		radioGroup = new ToggleGroup();
 		radio_1.setToggleGroup(radioGroup);
 		radio_2.setToggleGroup(radioGroup);
 		radio_3.setToggleGroup(radioGroup);
 		radio_4.setToggleGroup(radioGroup);
 
-		dbCollect = null;
-
-		allQuestions = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestion, null);
+		dbStudy = null;
+		
+		allQuestions = GetAllQuestions(ClientToServerOpcodes.GetAllQuestion, null);
 
 		if (allQuestions == null)
 			return;
@@ -278,14 +301,24 @@ public class PrimaryController {
 		for (CloneQuestion item : allQuestions) {
 			qList.getItems().add(item.getSubject());
 		}
+		
 	}
 
 	@FXML
 	void onClickedStudy(ActionEvent event) {
-		ObservableList<String> val = GetDataFromDB(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue());
+		ObservableList<CloneCourse> val = FXCollections.observableArrayList(GetDataFromDBCourse(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue()));
 		if (val == null)
 			return;
-		course_combo.setItems(val);
+		
+		List<String> temp = new ArrayList<String>();
+		
+		for (CloneCourse s:val) {
+			temp.add(s.getCourseName());
+		}
+		
+		ObservableList<String> course_names = FXCollections.observableArrayList(temp);
+		
+		course_combo.setItems(course_names);
 		ClearAllFields();
 		question_combo.setValue(" ");
 		course_combo.setDisable(false);
@@ -303,7 +336,7 @@ public class PrimaryController {
 		radio_3.setDisable(true);
 		radio_4.setDisable(true);
 
-		dbCollect = null;
+		dbStudy = null;
 	}
 
 	@FXML
@@ -326,8 +359,8 @@ public class PrimaryController {
 
 			return;
 		}
-		ObservableList<CloneQuestion> val = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
-				course_combo.getValue());
+		ObservableList<CloneQuestion> val = FXCollections.observableArrayList(GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
+				course_combo.getValue()));
 		if (val == null)
 			return;
 		List<String> subjects = new ArrayList<String>();
@@ -352,13 +385,15 @@ public class PrimaryController {
 		radio_3.setDisable(true);
 		radio_4.setDisable(true);
 
-		dbCollect = null;
+		dbCourse = null;
 	}
 
 	// TODO: After question entity is done, update this func. (parse subject,
 	// question, 4 answers and correct answer)
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
+		
+		if(dbQuestion == null) return;
 
 		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
 			course_combo.setDisable(false);
@@ -432,7 +467,9 @@ public class PrimaryController {
 
 	void addQuestionFields(CloneQuestion CurrentQuestion) {
 		qToServer = CurrentQuestion;
-
+		
+		course_combo.setDisable(false);
+		question_combo.setDisable(false);
 		subject_text.setText(CurrentQuestion.getSubject());
 		question_text.setText(CurrentQuestion.getQuestionText());
 
@@ -481,16 +518,28 @@ public class PrimaryController {
 	 * @param data - relevant data for request (like a name of field of study)
 	 * @return
 	 */
-	ObservableList<String> GetDataFromDB(ClientToServerOpcodes op, Object data) {
+	ObservableList<CloneStudy> GetDataFromDBStudy(ClientToServerOpcodes op, Object data) {
 		// Send message to server
 		DataElements de = new DataElements(op, data);
 		if (sendRequestForDataFromServer(de) == -1)
 			return null;
 
-		while (dbCollect == null) {
+		while (dbStudy == null) {
 			System.out.print("");
 		}
-		return dbCollect;
+		return dbStudy;
+	}
+	
+	ObservableList<CloneCourse> GetDataFromDBCourse(ClientToServerOpcodes op, Object data) {
+		// Send message to server
+		DataElements de = new DataElements(op, data);
+		if (sendRequestForDataFromServer(de) == -1)
+			return null;
+
+		while (dbCourse == null) {
+			System.out.print("");
+		}
+		return dbCourse;
 	}
 
 	ObservableList<CloneQuestion> GetDataFromDBQuestion(ClientToServerOpcodes op, Object data) {
@@ -503,6 +552,18 @@ public class PrimaryController {
 			System.out.print("");
 		}
 		return dbQuestion;
+	}
+	
+	List<CloneQuestion> GetAllQuestions(ClientToServerOpcodes op, Object data) {
+		// Send message to server
+		DataElements de = new DataElements(op, data);
+		if (sendRequestForDataFromServer(de) == -1)
+			return null;
+
+		while (allQuestions == null) {
+			System.out.print("");
+		}
+		return allQuestions;
 	}
 
 	/**

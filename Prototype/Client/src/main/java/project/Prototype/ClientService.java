@@ -52,6 +52,9 @@ public class ClientService extends AbstractClient {
 			case SendAllQuestionInCourse:
 				handleGetQuestionsFromServer(de.getData());
 				break;
+			case SendAllQuestion:
+				PrimaryController.setAllQuestion(de.getData());
+				break;
 			default:
 				clientM.displayMessageOnConsole(de.getData());
 			}
@@ -62,14 +65,14 @@ public class ClientService extends AbstractClient {
 	}
 
 	private void handleGetStudiesFromServer(Object object) {
-		PrimaryController.setDbCollect((String[]) object);
+		PrimaryController.setDbStudy(object);
 	}
 
 	private void handleGetCoursesFromServer(Object object) {
-		PrimaryController.setDbCollect((String[]) object);
+		PrimaryController.setDbCourse(object);
 	}
 
 	private void handleGetQuestionsFromServer(Object object) {
-		PrimaryController.setDbQuestion((CloneQuestion[]) object);
+		PrimaryController.setDbQuestion(object);
 	}
 }
