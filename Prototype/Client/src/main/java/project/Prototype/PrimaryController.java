@@ -13,9 +13,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import project.CloneEntities.*;
+import project.Entities.Question;
 import project.Prototype.DataElements.ClientToServerOpcodes;
 
 public class PrimaryController {
@@ -34,6 +36,12 @@ public class PrimaryController {
 
 	@FXML
 	private Label title;
+
+	@FXML
+	private Label title2;
+
+	@FXML
+	private ListView<String> qList;
 
 	@FXML
 	private Label question_label;
@@ -82,17 +90,27 @@ public class PrimaryController {
 
 	@FXML
 	private TextArea question_text;
-	
+
 	@FXML
-    private Button submitButton;
+	private Button submitButton;
+	
+    @FXML
+    private Tab edtiorTab;
+    
+    @FXML
+    private TabPane mainTab;
 
 	ToggleGroup radioGroup;
 
 	private static ObservableList<String> dbCollect = null;
 
 	private static ObservableList<CloneQuestion> dbQuestion = null;
-	
-	private CloneQuestion qToServer; 
+
+	private static ObservableList<CloneQuestion> allQuestions;
+
+	private CloneQuestion qToServer;
+
+	private Alert alert = new Alert(Alert.AlertType.ERROR);
 
 	public static void setDbCollect(String[] object) {
 		PrimaryController.dbCollect = FXCollections.observableArrayList(object);
@@ -103,10 +121,13 @@ public class PrimaryController {
 		PrimaryController.dbQuestion = FXCollections.observableArrayList(object);
 		System.out.println("Recived data from server\n");
 	}
-	
+
+	// TODO: Limit the number of chars.
 	@FXML
-	void countChars(ActionEvent event) {
-		System.out.print("Sup Nigga");
+	void countChars(KeyEvent event) {
+		if (question_text.getLength() > 180) {
+			question_text.setStyle("-fx-text-inner-color: red;");
+		}
 	}
 
 	@FXML
@@ -126,51 +147,95 @@ public class PrimaryController {
 	}
 
 	@FXML
+	void onClickedEdit(ActionEvent event) {
+		int count = 0;
+		ObservableList<String> selected_q = qList.getSelectionModel().getSelectedItems();
+		if (selected_q.isEmpty()) {
+			alert.setHeaderText("Please select a question");
+			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("No question has been selected")));
+			alert.showAndWait();
+			return;
+		}
+
+		for (String item : selected_q) {
+			count++;
+		}
+
+		if (count > 1) {
+			alert.setHeaderText("Please select only one question");
+			alert.getDialogPane()
+					.setExpandableContent(new ScrollPane(new TextArea("Multiple questions has benn selected")));
+			alert.showAndWait();
+			return;
+		}
+		ObservableList<String> choose_q = question_combo.getItems();
+		choose_q.add(selected_q.get(0));
+		question_combo.setItems(choose_q);
+		question_combo.setValue(selected_q.get(0));
+		for(CloneQuestion curr:allQuestions) {
+			if(curr.getSubject().compareTo(selected_q.get(0)) == 0) {
+				addQuestionFields(curr);
+				mainTab.getSelectionModel().select(edtiorTab);
+				return;
+			}
+		}
+		
+	}
+
+	@FXML
 	void onClickedSubmit(ActionEvent event) throws Exception {
 		try {
 			CloneQuestion q = new CloneQuestion();
 			q.clone(qToServer);
-			if (subject_text.getText().isEmpty()) throw new Exception("Subject is empty");
+			if (subject_text.getText().isEmpty())
+				throw new Exception("Subject is empty");
 			q.setSubject(subject_text.getText());
-			if (question_text.getText().isEmpty()) throw new Exception("Question is empty");
+			if (question_text.getText().isEmpty())
+				throw new Exception("Question is empty");
 			q.setQuestionText(question_text.getText());
-			if (answer_line_1.getText().isEmpty()) throw new Exception("Answer 1 is empty");
+			if (answer_line_1.getText().isEmpty())
+				throw new Exception("Answer 1 is empty");
 			q.setAnswer_1(answer_line_1.getText());
-			if (answer_line_2.getText().isEmpty()) throw new Exception("Answer 2 is empty");
+			if (answer_line_2.getText().isEmpty())
+				throw new Exception("Answer 2 is empty");
 			q.setAnswer_2(answer_line_2.getText());
-			if (answer_line_3.getText().isEmpty()) throw new Exception("Answer 3 is empty");
+			if (answer_line_3.getText().isEmpty())
+				throw new Exception("Answer 3 is empty");
 			q.setAnswer_3(answer_line_3.getText());
-			if (answer_line_4.getText().isEmpty()) throw new Exception("Answer 4 is empty");
+			if (answer_line_4.getText().isEmpty())
+				throw new Exception("Answer 4 is empty");
 			q.setAnswer_4(answer_line_4.getText());
 			RadioButton chk = (RadioButton) radioGroup.getSelectedToggle();
 			switch (chk.getText()) {
-				case "a.":
-					q.setCorrectAnswer(1);
-					break;
-				case "b.":
-					q.setCorrectAnswer(2);
-					break;
-				case "c.":
-					q.setCorrectAnswer(3);
-					break;
-				case "d.":
-					q.setCorrectAnswer(4);
-					break;
-				default:
-					throw new Exception("No correct answer");
+			case "a.":
+				q.setCorrectAnswer(1);
+				break;
+			case "b.":
+				q.setCorrectAnswer(2);
+				break;
+			case "c.":
+				q.setCorrectAnswer(3);
+				break;
+			case "d.":
+				q.setCorrectAnswer(4);
+				break;
+			default:
+				throw new Exception("No correct answer");
 			}
 			sendMessageToServer(q);
 		} catch (Exception e) {
-			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setHeaderText("Invalid input");
 			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("Please fill all the fields")));
 			alert.showAndWait();
 		}
 	}
-	
+
 	void sendMessageToServer(Object obj) {
 		try {
-			ClientMain.sendMessageToServer(obj);
+			DataElements de = new DataElements();
+			de.setData(obj);
+			de.setOpcodeFromClient(ClientToServerOpcodes.UpdateQuestion);
+			ClientMain.sendMessageToServer(de);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -206,6 +271,15 @@ public class PrimaryController {
 		radio_4.setToggleGroup(radioGroup);
 
 		dbCollect = null;
+
+		allQuestions = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestion, null);
+
+		if (allQuestions == null)
+			return;
+
+		for (CloneQuestion item : allQuestions) {
+			qList.getItems().add(item.getSubject());
+		}
 	}
 
 	@FXML
@@ -260,7 +334,7 @@ public class PrimaryController {
 			return;
 		List<String> subjects = new ArrayList<String>();
 		for (CloneQuestion q : val) {
-			subjects.add(q.getSubject() + " - " + Integer.toString(q.getQuestionCode()));
+			subjects.add(q.getSubject());
 		}
 		ObservableList<String> final_subjects = FXCollections.observableArrayList(subjects);
 		question_combo.setItems(final_subjects);
@@ -280,7 +354,6 @@ public class PrimaryController {
 		radio_3.setDisable(true);
 		radio_4.setDisable(true);
 
-
 		dbCollect = null;
 	}
 
@@ -288,7 +361,7 @@ public class PrimaryController {
 	// question, 4 answers and correct answer)
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-		
+
 		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
 			course_combo.setDisable(false);
 			question_combo.setDisable(false);
@@ -305,31 +378,26 @@ public class PrimaryController {
 			radio_3.setDisable(true);
 			radio_4.setDisable(true);
 			return;
-		} 
-		
-		String[] tokens = question_combo.getValue().split(" - ");
-		if (tokens.length < 2)
-			return;
-		String CurrentSubject = tokens[0];
-		String CurrentID = tokens[1];
+		}
+
 		CloneQuestion CurrentQuestion = null;
 		for (CloneQuestion q : dbQuestion) {
-			if (CurrentSubject.compareTo(q.getSubject()) == 0 && CurrentID.compareTo(Integer.toString(q.getQuestionCode())) == 0) {
+			if (question_combo.getValue().compareTo(q.getSubject()) == 0) {
 				CurrentQuestion = q;
 				break;
 			}
 		}
 
 		qToServer = CurrentQuestion;
-		
+
 		subject_text.setText(CurrentQuestion.getSubject());
 		question_text.setText(CurrentQuestion.getQuestionText());
-		
+
 		answer_line_1.setText(CurrentQuestion.getAnswer_1());
 		answer_line_2.setText(CurrentQuestion.getAnswer_2());
 		answer_line_3.setText(CurrentQuestion.getAnswer_3());
 		answer_line_4.setText(CurrentQuestion.getAnswer_4());
-		
+
 		switch (CurrentQuestion.getCorrectAnswer()) {
 		case 1:
 			radio_1.setSelected(true);
@@ -345,10 +413,9 @@ public class PrimaryController {
 			break;
 		default:
 			break;
-		
+
 		}
-		
-		
+
 		question_text.setDisable(false);
 		subject_text.setDisable(false);
 		answer_line_1.setDisable(false);
@@ -360,9 +427,53 @@ public class PrimaryController {
 		radio_3.setDisable(false);
 		radio_4.setDisable(false);
 		submitButton.setDisable(false);
-		
+
 		dbQuestion = null; // check if we should change the place of the nulling
-		
+
+	}
+
+	void addQuestionFields(CloneQuestion CurrentQuestion) {
+		qToServer = CurrentQuestion;
+
+		subject_text.setText(CurrentQuestion.getSubject());
+		question_text.setText(CurrentQuestion.getQuestionText());
+
+		answer_line_1.setText(CurrentQuestion.getAnswer_1());
+		answer_line_2.setText(CurrentQuestion.getAnswer_2());
+		answer_line_3.setText(CurrentQuestion.getAnswer_3());
+		answer_line_4.setText(CurrentQuestion.getAnswer_4());
+
+		switch (CurrentQuestion.getCorrectAnswer()) {
+		case 1:
+			radio_1.setSelected(true);
+			break;
+		case 2:
+			radio_2.setSelected(true);
+			break;
+		case 3:
+			radio_3.setSelected(true);
+			break;
+		case 4:
+			radio_4.setSelected(true);
+			break;
+		default:
+			break;
+
+		}
+
+		question_text.setDisable(false);
+		subject_text.setDisable(false);
+		answer_line_1.setDisable(false);
+		answer_line_2.setDisable(false);
+		answer_line_3.setDisable(false);
+		answer_line_4.setDisable(false);
+		radio_1.setDisable(false);
+		radio_2.setDisable(false);
+		radio_3.setDisable(false);
+		radio_4.setDisable(false);
+		submitButton.setDisable(false);
+
+
 	}
 
 	/**
@@ -389,35 +500,34 @@ public class PrimaryController {
 		DataElements de = new DataElements(op, data);
 		if (sendRequestForDataFromServer(de) == -1)
 			return null;
-		
+
 		while (dbQuestion == null) {
 			System.out.print("");
 		}
 		return dbQuestion;
 	}
-	
-	
+
 	/**
 	 * 
-	 * we call this function every time there's change of a combo,
-	 * therefore we want to clear all fields that linked to the data of a question
+	 * we call this function every time there's change of a combo, therefore we want
+	 * to clear all fields that linked to the data of a question
 	 * 
 	 */
 	public void ClearAllFields() {
-		
+
 		subject_text.clear();
 		question_text.clear();
-		
+
 		answer_line_1.clear();
 		answer_line_2.clear();
 		answer_line_3.clear();
 		answer_line_4.clear();
-		
+
 		radio_1.setSelected(false);
 		radio_2.setSelected(false);
 		radio_3.setSelected(false);
 		radio_4.setSelected(false);
-		
+
 	}
 
 }
