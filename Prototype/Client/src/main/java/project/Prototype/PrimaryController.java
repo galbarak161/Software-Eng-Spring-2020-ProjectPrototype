@@ -81,6 +81,9 @@ public class PrimaryController {
 
 	@FXML
 	private TextArea question_text;
+	
+	@FXML
+    private Button submitButton;
 
 	ToggleGroup radioGroup;
 
@@ -161,8 +164,22 @@ public class PrimaryController {
 		if (val == null)
 			return;
 		course_combo.setItems(val);
-		DisableAll();
+		ClearAllFields();
+		question_combo.setValue(" ");
 		course_combo.setDisable(false);
+		question_combo.setDisable(true);
+		subject_text.setDisable(true);
+		question_text.setDisable(true);
+
+		answer_line_1.setDisable(true);
+		answer_line_2.setDisable(true);
+		answer_line_3.setDisable(true);
+		answer_line_4.setDisable(true);
+
+		radio_1.setDisable(true);
+		radio_2.setDisable(true);
+		radio_3.setDisable(true);
+		radio_4.setDisable(true);
 
 		dbCollect = null;
 	}
@@ -170,8 +187,21 @@ public class PrimaryController {
 	@FXML
 	void onCourseClicked(ActionEvent event) {
 		if (course_combo.getValue() == null || course_combo.isDisable() == true) {
-			DisableAll();
+			ClearAllFields();
 			course_combo.setDisable(false);
+			subject_text.setDisable(true);
+			question_text.setDisable(true);
+
+			answer_line_1.setDisable(true);
+			answer_line_2.setDisable(true);
+			answer_line_3.setDisable(true);
+			answer_line_4.setDisable(true);
+
+			radio_1.setDisable(true);
+			radio_2.setDisable(true);
+			radio_3.setDisable(true);
+			radio_4.setDisable(true);
+
 			return;
 		}
 		ObservableList<CloneQuestion> val = GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
@@ -184,9 +214,22 @@ public class PrimaryController {
 		}
 		ObservableList<String> final_subjects = FXCollections.observableArrayList(subjects);
 		question_combo.setItems(final_subjects);
-		DisableAll();
+		ClearAllFields();
 		course_combo.setDisable(false);
 		question_combo.setDisable(false);
+		subject_text.setDisable(true);
+		question_text.setDisable(true);
+
+		answer_line_1.setDisable(true);
+		answer_line_2.setDisable(true);
+		answer_line_3.setDisable(true);
+		answer_line_4.setDisable(true);
+
+		radio_1.setDisable(true);
+		radio_2.setDisable(true);
+		radio_3.setDisable(true);
+		radio_4.setDisable(true);
+
 
 		dbCollect = null;
 	}
@@ -195,52 +238,45 @@ public class PrimaryController {
 	// question, 4 answers and correct answer)
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-
+		
 		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
-			DisableAll();
 			course_combo.setDisable(false);
 			question_combo.setDisable(false);
-			return;
-		}
+			subject_text.setDisable(true);
+			question_text.setDisable(true);
 
+			answer_line_1.setDisable(true);
+			answer_line_2.setDisable(true);
+			answer_line_3.setDisable(true);
+			answer_line_4.setDisable(true);
+
+			radio_1.setDisable(true);
+			radio_2.setDisable(true);
+			radio_3.setDisable(true);
+			radio_4.setDisable(true);
+			return;
+		} 
+		
 		String[] tokens = question_combo.getValue().split(" - ");
+		if (tokens.length < 2)
+			return;
 		String CurrentSubject = tokens[0];
 		String CurrentID = tokens[1];
 		CloneQuestion CurrentQuestion = null;
-
 		for (CloneQuestion q : dbQuestion) {
-			if (CurrentSubject.compareTo(q.getSubject()) == 0
-					&& CurrentID.compareTo(Integer.toString(q.getQuestionCode())) == 0) {
+			if (CurrentSubject.compareTo(q.getSubject()) == 0 && CurrentID.compareTo(Integer.toString(q.getQuestionCode())) == 0) {
 				CurrentQuestion = q;
 				break;
 			}
 		}
-
-		subject_text.setDisable(false);
 		subject_text.setText(CurrentQuestion.getSubject());
-
-		question_text.setDisable(false);
 		question_text.setText(CurrentQuestion.getQuestionText());
-
-		answer_line_1.setDisable(false);
+		
 		answer_line_1.setText(CurrentQuestion.getAnswer_1());
-
-		answer_line_2.setDisable(false);
 		answer_line_2.setText(CurrentQuestion.getAnswer_2());
-
-		answer_line_3.setDisable(false);
 		answer_line_3.setText(CurrentQuestion.getAnswer_3());
-
-		answer_line_4.setDisable(false);
 		answer_line_4.setText(CurrentQuestion.getAnswer_4());
-
-		primaryButton.setDisable(false);
-
-		radio_1.setDisable(false);
-		radio_2.setDisable(false);
-		radio_3.setDisable(false);
-		radio_4.setDisable(false);
-
+		
 		switch (CurrentQuestion.getCorrectAnswer()) {
 		case 1:
 			radio_1.setSelected(true);
@@ -255,33 +291,25 @@ public class PrimaryController {
 			radio_4.setSelected(true);
 			break;
 		default:
-			System.out.println("Unknown error");
+			break;
+		
 		}
-
-		dbQuestion = null;
-	}
-
-	void DisableAll() {
-
-		course_combo.setDisable(true);
-
-		question_combo.setDisable(true);
-
-		subject_text.setDisable(true);
-		question_text.setDisable(true);
-
-		answer_line_1.setDisable(true);
-		answer_line_2.setDisable(true);
-		answer_line_3.setDisable(true);
-		answer_line_4.setDisable(true);
-
-		radio_1.setDisable(true);
-		radio_2.setDisable(true);
-		radio_3.setDisable(true);
-		radio_4.setDisable(true);
-
-		primaryButton.setDisable(true);
-
+		
+		
+		question_text.setDisable(false);
+		subject_text.setDisable(false);
+		answer_line_1.setDisable(false);
+		answer_line_2.setDisable(false);
+		answer_line_3.setDisable(false);
+		answer_line_4.setDisable(false);
+		radio_1.setDisable(false);
+		radio_2.setDisable(false);
+		radio_3.setDisable(false);
+		radio_4.setDisable(false);
+		submitButton.setDisable(false);
+		
+		dbQuestion = null; // check if we should change the place of the nulling
+		
 	}
 
 	/**
@@ -308,11 +336,35 @@ public class PrimaryController {
 		DataElements de = new DataElements(op, data);
 		if (sendRequestForDataFromServer(de) == -1)
 			return null;
-
+		
 		while (dbQuestion == null) {
 			System.out.print("");
 		}
 		return dbQuestion;
+	}
+	
+	
+	/**
+	 * 
+	 * we call this function every time there's change of a combo,
+	 * therefore we want to clear all fields that linked to the data of a question
+	 * 
+	 */
+	public void ClearAllFields() {
+		
+		subject_text.clear();
+		question_text.clear();
+		
+		answer_line_1.clear();
+		answer_line_2.clear();
+		answer_line_3.clear();
+		answer_line_4.clear();
+		
+		radio_1.setSelected(false);
+		radio_2.setSelected(false);
+		radio_3.setSelected(false);
+		radio_4.setSelected(false);
+		
 	}
 
 }
