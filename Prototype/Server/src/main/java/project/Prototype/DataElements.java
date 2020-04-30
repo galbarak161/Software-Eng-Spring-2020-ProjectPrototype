@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 /**
  * DataElements is a shared class for both server and client This file has to be
- * the same in both projects Last update - 28/04/20
+ * the same in both projects Last update - 30/04/20
  * 
- * @author Gal
+ * @author Or!
  *
  */
 
@@ -15,7 +15,7 @@ public class DataElements implements Serializable {
 
 	// Opcodes 0-9
 	public enum ClientToServerOpcodes {
-		GetAllStudies(0), GetAllCoursesInStudy(1), GetAllQuestionInCourse(2), UpdateQuestion(3), Error(-1);
+		GetAllStudies(0), GetAllCoursesInStudy(1), GetAllQuestionInCourse(2), UpdateQuestion(3), GetAllQuestion(4), Error(-1);
 
 		public int value;
 
@@ -26,7 +26,7 @@ public class DataElements implements Serializable {
 
 	// Opcodes 10-19
 	public enum ServerToClientOpcodes {
-		SendAllStudies(10), SendAllCoursesInStudy(11), SendAllQuestionInCourse(12), UpdateQuestionResult(13), Error(-1);
+		SendAllStudies(10), SendAllCoursesInStudy(11), SendAllQuestionInCourse(12), UpdateQuestionResult(13), SendAllQuestion(14),  Error(-1);
 
 		public int value;
 

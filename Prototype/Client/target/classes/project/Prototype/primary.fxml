@@ -29,7 +29,7 @@
    <center>
       <AnchorPane prefHeight="330.0" prefWidth="407.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="submitButton" disable="true" layoutX="177.0" layoutY="504.0" onAction="#sendMessageToServer" text="Submit" />
+            <Button fx:id="submitButton" disable="true" layoutX="177.0" layoutY="504.0" onAction="#onClickedSubmit" text="Submit" />
             <Label fx:id="title" layoutX="106.0" layoutY="14.0" text="Questions Editor">
                <font>
                   <Font name="Arial Bold" size="24.0" />
@@ -54,7 +54,7 @@
             <RadioButton fx:id="radio_4" disable="true" layoutX="13.0" layoutY="470.0" mnemonicParsing="false" text="d." toggleGroup="$radioGroup" />
             <Label layoutX="13.0" layoutY="180.0" prefHeight="18.0" prefWidth="59.0" text="Subject:" />
             <TextField fx:id="subject_text" disable="true" layoutX="76.0" layoutY="177.0" prefHeight="26.0" prefWidth="316.0" />
-            <TextArea fx:id="question_text" disable="true" layoutX="51.0" layoutY="229.0" prefHeight="63.0" prefWidth="340.0" wrapText="true" />
+            <TextArea fx:id="question_text" disable="true" layoutX="51.0" layoutY="229.0" onKeyTyped="#countChars" prefHeight="63.0" prefWidth="340.0" wrapText="true" />
          </children>
       </AnchorPane>
    </center>

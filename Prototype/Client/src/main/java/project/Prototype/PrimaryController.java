@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import project.CloneEntities.*;
 import project.Prototype.DataElements.ClientToServerOpcodes;
@@ -90,6 +91,8 @@ public class PrimaryController {
 	private static ObservableList<String> dbCollect = null;
 
 	private static ObservableList<CloneQuestion> dbQuestion = null;
+	
+	private CloneQuestion qToServer; 
 
 	public static void setDbCollect(String[] object) {
 		PrimaryController.dbCollect = FXCollections.observableArrayList(object);
@@ -99,6 +102,11 @@ public class PrimaryController {
 	public static void setDbQuestion(CloneQuestion[] object) {
 		PrimaryController.dbQuestion = FXCollections.observableArrayList(object);
 		System.out.println("Recived data from server\n");
+	}
+	
+	@FXML
+	void countChars(ActionEvent event) {
+		System.out.print("Sup Nigga");
 	}
 
 	@FXML
@@ -118,9 +126,51 @@ public class PrimaryController {
 	}
 
 	@FXML
-	void sendMessageToServer(ActionEvent event) {
+	void onClickedSubmit(ActionEvent event) throws Exception {
 		try {
-			ClientMain.sendMessageToServer("Check this message");
+			CloneQuestion q = new CloneQuestion();
+			q.clone(qToServer);
+			if (subject_text.getText().isEmpty()) throw new Exception("Subject is empty");
+			q.setSubject(subject_text.getText());
+			if (question_text.getText().isEmpty()) throw new Exception("Question is empty");
+			q.setQuestionText(question_text.getText());
+			if (answer_line_1.getText().isEmpty()) throw new Exception("Answer 1 is empty");
+			q.setAnswer_1(answer_line_1.getText());
+			if (answer_line_2.getText().isEmpty()) throw new Exception("Answer 2 is empty");
+			q.setAnswer_2(answer_line_2.getText());
+			if (answer_line_3.getText().isEmpty()) throw new Exception("Answer 3 is empty");
+			q.setAnswer_3(answer_line_3.getText());
+			if (answer_line_4.getText().isEmpty()) throw new Exception("Answer 4 is empty");
+			q.setAnswer_4(answer_line_4.getText());
+			RadioButton chk = (RadioButton) radioGroup.getSelectedToggle();
+			switch (chk.getText()) {
+				case "a.":
+					q.setCorrectAnswer(1);
+					break;
+				case "b.":
+					q.setCorrectAnswer(2);
+					break;
+				case "c.":
+					q.setCorrectAnswer(3);
+					break;
+				case "d.":
+					q.setCorrectAnswer(4);
+					break;
+				default:
+					throw new Exception("No correct answer");
+			}
+			sendMessageToServer(q);
+		} catch (Exception e) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setHeaderText("Invalid input");
+			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("Please fill all the fields")));
+			alert.showAndWait();
+		}
+	}
+	
+	void sendMessageToServer(Object obj) {
+		try {
+			ClientMain.sendMessageToServer(obj);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -269,6 +319,9 @@ public class PrimaryController {
 				break;
 			}
 		}
+
+		qToServer = CurrentQuestion;
+		
 		subject_text.setText(CurrentQuestion.getSubject());
 		question_text.setText(CurrentQuestion.getQuestionText());
 		

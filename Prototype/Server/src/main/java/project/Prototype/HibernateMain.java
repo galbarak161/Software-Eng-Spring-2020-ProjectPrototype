@@ -114,33 +114,6 @@ public class HibernateMain {
 		}
 		session.flush();
 
-		// Generate courses
-		Course[] courses = new Course[NUMBER_OF_COURSES];
-		String[] coursesName = new String[NUMBER_OF_COURSES];
-		coursesName[0] = "Music";
-		coursesName[1] = "Theatre and Dance";
-		coursesName[2] = "Health Sciences";
-		coursesName[3] = "Pharmacy";
-		coursesName[4] = "Low";
-		coursesName[5] = "Business management";
-		coursesName[6] = "Geography";
-		coursesName[7] = "Computer Science";
-		coursesName[8] = "Economics";
-		coursesName[9] = "Psychology";
-		for (int i = 0, j = 0; i < NUMBER_OF_COURSES && j < NUMBER_OF_STUDIES; j++) {
-			Course c1 = new Course(coursesName[i]);
-			c1.addStudies(studies[j]);
-			courses[i] = c1;
-			i++;
-			session.save(c1);
-			Course c2 = new Course(coursesName[i]);
-			c2.addStudies(studies[j]);
-			courses[i] = c2;
-			i++;
-			session.save(c2);
-		}
-		session.flush();
-
 		// Generate questions
 		Question[] questions = new Question[NUMBER_OF_QUESTIONS];
 		String[] questionsSubject = new String[NUMBER_OF_QUESTIONS];
@@ -220,12 +193,42 @@ public class HibernateMain {
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
 			questions[i] = new Question(questionsSubject[i], questionsText, questionsAnswers[i][0],
 					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i]);
-			questions[i].addCourses(courses[i]);
+			//questions[i].addCourses(courses[i]);
 			questions[i].setQuestionCode(i * 10000);
 			session.save(questions[i]);
 		}
 		session.flush();
 		
+		// Generate courses
+		Course[] courses = new Course[NUMBER_OF_COURSES];
+		String[] coursesName = new String[NUMBER_OF_COURSES];
+		coursesName[0] = "Music";
+		coursesName[1] = "Theatre and Dance";
+		coursesName[2] = "Health Sciences";
+		coursesName[3] = "Pharmacy";
+		coursesName[4] = "Low";
+		coursesName[5] = "Business management";
+		coursesName[6] = "Geography";
+		coursesName[7] = "Computer Science";
+		coursesName[8] = "Economics";
+		coursesName[9] = "Psychology";
+		for (int i = 1, j = 0; i < NUMBER_OF_COURSES -1 && j < NUMBER_OF_STUDIES; j++) {
+			Course c1 = new Course(coursesName[i]);
+			c1.addStudies(studies[j]);
+			c1.addQuestions(questions[i+1]);
+			courses[i] = c1;
+			i++;
+			session.save(c1);
+			Course c2 = new Course(coursesName[i]);
+			c2.addStudies(studies[j]);
+			c2.addQuestions(questions[i-1]);
+			courses[i] = c2;
+			
+			i++;
+			session.save(c2);
+		}
+		session.flush();
+
 		session.clear();
 	}
 	
