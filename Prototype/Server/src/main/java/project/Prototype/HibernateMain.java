@@ -62,20 +62,6 @@ public class HibernateMain {
 		return allQuery.getResultList();
 	}
 
-
-	public static List<Question> getDataQuestionsByCourseIdFromDB() {
-		//String hql = "SELECT Q.questionText FROM Question AS Q WHERE Q.questionCode = 10000";
-		String hql = "FROM question_course AS QC";
-		List data = session.createQuery(hql).list();
-		
-        //for (Iterator iterator = data.iterator(); iterator.hasNext();){
-        //	Question q = (Question) iterator.next(); 
-        //    System.out.print("get Question Text: " + q.getQuestionText()); 
-        // }
-        //session.getTransaction().commit();
-		return null;
-	}
-	
 	/**
 	 * Print object data using override toString() function
 	 * 
@@ -193,7 +179,6 @@ public class HibernateMain {
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
 			questions[i] = new Question(questionsSubject[i], questionsText, questionsAnswers[i][0],
 					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i]);
-			//questions[i].addCourses(courses[i]);
 			questions[i].setQuestionCode(i * 10000);
 			session.save(questions[i]);
 		}
@@ -212,16 +197,16 @@ public class HibernateMain {
 		coursesName[7] = "Computer Science";
 		coursesName[8] = "Economics";
 		coursesName[9] = "Psychology";
-		for (int i = 1, j = 0; i < NUMBER_OF_COURSES -1 && j < NUMBER_OF_STUDIES; j++) {
+		for (int i = 0, j = 0; i < NUMBER_OF_COURSES && j < NUMBER_OF_STUDIES; j++) {
 			Course c1 = new Course(coursesName[i]);
 			c1.addStudies(studies[j]);
-			c1.addQuestions(questions[i+1]);
+			c1.addQuestions(questions[i]);
 			courses[i] = c1;
 			i++;
 			session.save(c1);
 			Course c2 = new Course(coursesName[i]);
 			c2.addStudies(studies[j]);
-			c2.addQuestions(questions[i-1]);
+			c2.addQuestions(questions[i]);
 			courses[i] = c2;
 			
 			i++;
@@ -235,7 +220,6 @@ public class HibernateMain {
 	public static void main(String[] args) {
 		try {
 			initHibernate();
-			getDataQuestionsByCourseIdFromDB();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {

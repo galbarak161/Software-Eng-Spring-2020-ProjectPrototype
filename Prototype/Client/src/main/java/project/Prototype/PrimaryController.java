@@ -14,10 +14,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import project.CloneEntities.*;
-import project.Entities.Question;
 import project.Prototype.DataElements.ClientToServerOpcodes;
 
 public class PrimaryController {

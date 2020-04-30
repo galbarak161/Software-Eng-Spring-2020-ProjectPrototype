@@ -19,7 +19,7 @@ public class Study{
 	@Column(name = "studyName")
 	private String studyName;
 
-	@ManyToMany(mappedBy = "studies", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(mappedBy = "studies", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Course> courses;
 
 	public Study() {

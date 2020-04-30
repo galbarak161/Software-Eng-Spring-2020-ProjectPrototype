@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
-import project.CloneEntities.CloneQuestion;
+import project.CloneEntities.*;
 import project.Entities.*;
 import project.Prototype.DataElements;
 
@@ -33,24 +33,34 @@ public class ServerMain extends AbstractServer {
 				de.setData(dataFromDB);
 				break;
 			case GetAllCoursesInStudy:
-				dataFromDB = handleSendCoursesToUser(de.getData());
+				dataFromDB = handleSendCoursesFromStudy((CloneStudy) de.getData());
 				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.SendAllCoursesInStudy);
 				de.setData(dataFromDB);
 				break;
 			case GetAllQuestionInCourse:
-				dataFromDB = handleSendQuestionsToUser(de.getData());
+				dataFromDB = handleSendQuestionsFromCourse((CloneCourse) de.getData());
 				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.SendAllQuestionInCourse);
+				de.setData(dataFromDB);
+				break;
+			case GetAllQuestion:
+				dataFromDB = handleSendAllQuestions();
+				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.SendAllQuestion);
+				de.setData(dataFromDB);
+				break;
+			case UpdateQuestion:
+				dataFromDB = handleUpdateQuestion((CloneQuestion)de.getData());
+				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.UpdateQuestionResult);
 				de.setData(dataFromDB);
 				break;
 			default:
 				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.Error);
-				de.setData(null);
+				de.setData("handleMessageFromClient: Unknown Error");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.Error);
-			de.setData(null);
+			de.setData(e.getMessage());
 
 		} finally {
 			System.out.println("Send result to user! opcode = " + de.getOpCodeFromServer() + "\n");
@@ -58,67 +68,75 @@ public class ServerMain extends AbstractServer {
 		}
 	}
 
-	private Object handleSendQuestionsToUser(Object course) {
+	private Object handleUpdateQuestion(CloneQuestion data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Object handleSendAllQuestions() {
 		List<Question> listFromDB = null;
-		List<CloneQuestion> questionsFromCourse = new ArrayList<CloneQuestion>();
+		List<CloneQuestion> cloneQuestion = new ArrayList<CloneQuestion>();
 		try {
-			//listFromDB = HibernateMain.getDataQuestionsByCourseIdFromDB();
 			listFromDB = HibernateMain.getDataFromDB(Question.class);
-			
-			for (int i = 0; i < listFromDB.size(); i++) {
-				List<Course> courses = listFromDB.get(i).getCourses();
-				for (int j = 0; j < courses.size(); j++) {
-					if (courses.get(j).getCourseName().compareTo(course.toString()) == 0) {
-						questionsFromCourse.add(listFromDB.get(i).createClone());
-						break;
-					}
-				}
+			for (Question q : listFromDB) {
+				cloneQuestion.add(q.createClone());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		cloneQuestion.forEach(q -> System.out.println(q.getQuestionCode()));
+		return cloneQuestion;
+	}
+
+	private Object handleSendQuestionsFromCourse(CloneCourse cloneCourse) {
+		List<Course> listFromDB = null;
+		List<CloneQuestion> questionsFromCourse = new ArrayList<CloneQuestion>();
+		try {
+			listFromDB = HibernateMain.getDataFromDB(Course.class);
+			for (Course c : listFromDB) {
+				if(c.getId() == cloneCourse.getId()) {
+					c.getQuestions().forEach(q -> questionsFromCourse.add(q.createClone()));
+					break;
+				}
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		questionsFromCourse.forEach(q -> System.out.println(q.getQuestionCode()));
 		return questionsFromCourse.toArray(new CloneQuestion[questionsFromCourse.size()]);
 	}
 
 	private Object handleSendStudiesToUser() {
 		List<Study> listFromDB = null;
-		String[] studiesName = null;
+		List<CloneStudy> cloneStudies = new ArrayList<CloneStudy>();
 		try {
 			listFromDB = HibernateMain.getDataFromDB(Study.class);
-			studiesName = new String[listFromDB.size()];
-			for (int i = 0; i < listFromDB.size(); i++) {
-				studiesName[i] = listFromDB.get(i).getStudyName();
+			for (Study study : listFromDB) {
+				cloneStudies.add(study.createClone());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return studiesName;
+		cloneStudies.forEach(q -> System.out.println(q.getStudyName()));
+		return cloneStudies;
 	}
 
-	private Object handleSendCoursesToUser(Object study) {
-		List<Course> listFromDB = null;
-		List<String> coursesName = new ArrayList<String>();
-		String[] names = null;
+	private Object handleSendCoursesFromStudy(CloneStudy cloneStudy) {
+		List<Study> listFromDB = null;
+		List<CloneCourse> courses = new ArrayList<CloneCourse>();
 		try {
-			listFromDB = HibernateMain.getDataFromDB(Course.class);
-			for (int i = 0; i < listFromDB.size(); i++) {
-				List<Study> studies = listFromDB.get(i).getStudies();
-				for (int j = 0; j < studies.size(); j++) {
-					if (studies.get(j).getStudyName().compareTo(study.toString()) == 0) {
-						coursesName.add(listFromDB.get(i).getCourseName());
-						break;
-					}
+			listFromDB = HibernateMain.getDataFromDB(Study.class);
+			for (Study study : listFromDB) {
+				if (study.getId() == cloneStudy.getId()) {
+					study.getCourses().forEach(course -> courses.add(course.createClone()));
+					break;
 				}
-			}
-			names = new String[coursesName.size()];
-			for (int i = 0; i < coursesName.size(); i++) {
-				names[i] = coursesName.get(i);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		return coursesName.toArray(new String[coursesName.size()]);
+		courses.forEach(q -> System.out.println(q.getCourseName()));
+		return courses.toArray(new CloneCourse[courses.size()]);
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -133,6 +151,33 @@ public class ServerMain extends AbstractServer {
 			}
 			server.listen();
 			System.out.println("Server ready!");
+			
+			System.out.println("Print data from handle functions\n");
+			DataElements de = new DataElements();
+		
+			System.out.println("Check: handleSendStudiesToUser()");
+			de.setOpcodeFromClient(DataElements.ClientToServerOpcodes.GetAllStudies);
+			de.setData(null);
+			server.handleSendStudiesToUser();
+			System.out.println();
+			
+			System.out.println("Check: handleSendAllCourses(CloneStudy)");
+			de.setOpcodeFromClient(DataElements.ClientToServerOpcodes.GetAllStudies);
+			de.setData(new CloneStudy(1,"Arts"));
+			server.handleSendCoursesFromStudy((CloneStudy)de.getData());
+			System.out.println();
+			
+			System.out.println("Check: handleSendQuestionsFromCourseToUser(CloneCourse)");
+			de.setOpcodeFromClient(DataElements.ClientToServerOpcodes.GetAllQuestionInCourse);
+			de.setData(new CloneCourse(2,"Pharmacy"));
+			server.handleSendQuestionsFromCourse((CloneCourse)de.getData());
+			System.out.println();
+			
+			System.out.println("Check: handleSendAllQuestionsToUser()");
+			de.setOpcodeFromClient(DataElements.ClientToServerOpcodes.GetAllQuestion);
+			de.setData(new CloneStudy(1,"Arts"));
+			server.handleSendAllQuestions();
+			System.out.println();
 		}
 	}
 }

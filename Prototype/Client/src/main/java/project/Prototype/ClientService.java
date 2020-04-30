@@ -53,7 +53,7 @@ public class ClientService extends AbstractClient {
 				handleGetQuestionsFromServer(de.getData());
 				break;
 			default:
-				clientM.displayMessageOnConsole(msg.toString());
+				clientM.displayMessageOnConsole(de.getData());
 			}
 
 		} catch (Exception e) {
