@@ -7,6 +7,7 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +20,8 @@ import project.CloneEntities.*;
 import project.Prototype.DataElements.ClientToServerOpcodes;
 
 public class PrimaryController {
+	
+	/******************* Variables *******************/
 
 	@FXML
 	private MenuBar menu;
@@ -39,13 +42,13 @@ public class PrimaryController {
 	private Label title2;
 
 	@FXML
-	private ListView<String> qList;
+	private ListView<CloneQuestion> qList;
 
 	@FXML
 	private Label question_label;
 
 	@FXML
-	private ComboBox<String> question_combo;
+	private ComboBox<CloneQuestion> question_combo;
 
 	@FXML
 	private Label course_label;
@@ -54,10 +57,10 @@ public class PrimaryController {
 	private Label study_label;
 
 	@FXML
-	private ComboBox<String> course_combo;
+	private ComboBox<CloneCourse> course_combo;
 
 	@FXML
-	private ComboBox<String> study_combo;
+	private ComboBox<CloneStudy> study_combo;
 
 	@FXML
 	private TextField answer_line_1;
@@ -99,10 +102,6 @@ public class PrimaryController {
     private TabPane mainTab;
 
 	ToggleGroup radioGroup;
-	
-	private CloneStudy chosen_study;
-	
-	private CloneCourse chosen_course;
 
 	private static ObservableList<CloneStudy> dbStudy = null;
 	
@@ -115,134 +114,35 @@ public class PrimaryController {
 	private CloneQuestion qToServer;
 
 	private Alert alert = new Alert(Alert.AlertType.ERROR);
-
-	public static void setDbStudy(Object object) {
-		PrimaryController.dbStudy = FXCollections.observableArrayList((List<CloneStudy>)object);
-		System.out.println("Recived data from server\n");
-	}
 	
-	public static void setDbCourse(Object object) {
-		PrimaryController.dbCourse = FXCollections.observableArrayList((List<CloneCourse>)object);
-		System.out.println("Recived data from server\n");
-	}
-
-	public static void setDbQuestion(Object object) {
-		PrimaryController.dbQuestion = FXCollections.observableArrayList((List<CloneQuestion>)object);
-		System.out.println("Recived data from server\n");
-	}
-	public static void setAllQuestion(Object object) {
-		PrimaryController.allQuestions = (List<CloneQuestion>)object;
-		System.out.println("Recived data from server\n");
-	}
-
-	// TODO: Limit the number of chars.
-	@FXML
-	void countChars(KeyEvent event) {
-		question_text.setTextFormatter(new TextFormatter<String>(change -> 
-        change.getControlNewText().length() <= 180 ? change : null));
-	}
-
-	@FXML
-	void openInstructions(ActionEvent event) {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Instructions.fxml"));
-			Parent root1 = (Parent) fxmlLoader.load();
-			Stage stage = new Stage();
-			stage.setTitle("Insructions");
-			stage.getIcons().add(new Image(App.class.getResource("help_icon.jpeg").toExternalForm()));
-			stage.setScene(new Scene(root1));
-			stage.setResizable(false);
-			stage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@FXML
-	void onClickedEdit(ActionEvent event) {
-		int count = 0;
-		ObservableList<String> selected_q = qList.getSelectionModel().getSelectedItems();
-		if (selected_q.isEmpty()) {
-			alert.setHeaderText("Please select a question");
-			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("No question has been selected")));
-			alert.showAndWait();
+	/************************************** Functions (non-attached to dialogs) **************************************/
+	
+	public void initialize() {
+		
+		ObservableList<CloneStudy> val = FXCollections.observableArrayList(GetDataFromDBStudy(ClientToServerOpcodes.GetAllStudies, null));
+		if (val == null)
 			return;
-		}
+		study_combo.setItems(val);
+		radioGroup = new ToggleGroup();
+		radio_1.setToggleGroup(radioGroup);
+		radio_2.setToggleGroup(radioGroup);
+		radio_3.setToggleGroup(radioGroup);
+		radio_4.setToggleGroup(radioGroup);
 
-		for (String item : selected_q) {
-			count++;
-		}
+		dbStudy = null;
+		
+		allQuestions = GetAllQuestions(ClientToServerOpcodes.GetAllQuestion, null);
 
-		if (count > 1) {
-			alert.setHeaderText("Please select only one question");
-			alert.getDialogPane()
-					.setExpandableContent(new ScrollPane(new TextArea("Multiple questions has benn selected")));
-			alert.showAndWait();
+		if (allQuestions == null)
 			return;
-		}
-		ObservableList<String> choose_q = question_combo.getItems();
-		choose_q.add(selected_q.get(0));
-		question_combo.setItems(choose_q);
-		question_combo.setValue(selected_q.get(0));
-		for(CloneQuestion curr:allQuestions) {
-			if(curr.getSubject().compareTo(selected_q.get(0)) == 0) {
-				addQuestionFields(curr);
-				mainTab.getSelectionModel().select(edtiorTab);
-				return;
-			}
+
+		for (CloneQuestion item : allQuestions) {
+			qList.getItems().add(item);
 		}
 		
 	}
-
-	@FXML
-	void onClickedSubmit(ActionEvent event) throws Exception {
-		try {
-			CloneQuestion q = new CloneQuestion();
-			q.clone(qToServer);
-			if (subject_text.getText().isEmpty())
-				throw new Exception("Subject is empty");
-			q.setSubject(subject_text.getText());
-			if (question_text.getText().isEmpty())
-				throw new Exception("Question is empty");
-			q.setQuestionText(question_text.getText());
-			if (answer_line_1.getText().isEmpty())
-				throw new Exception("Answer 1 is empty");
-			q.setAnswer_1(answer_line_1.getText());
-			if (answer_line_2.getText().isEmpty())
-				throw new Exception("Answer 2 is empty");
-			q.setAnswer_2(answer_line_2.getText());
-			if (answer_line_3.getText().isEmpty())
-				throw new Exception("Answer 3 is empty");
-			q.setAnswer_3(answer_line_3.getText());
-			if (answer_line_4.getText().isEmpty())
-				throw new Exception("Answer 4 is empty");
-			q.setAnswer_4(answer_line_4.getText());
-			RadioButton chk = (RadioButton) radioGroup.getSelectedToggle();
-			switch (chk.getText()) {
-			case "a.":
-				q.setCorrectAnswer(1);
-				break;
-			case "b.":
-				q.setCorrectAnswer(2);
-				break;
-			case "c.":
-				q.setCorrectAnswer(3);
-				break;
-			case "d.":
-				q.setCorrectAnswer(4);
-				break;
-			default:
-				throw new Exception("No correct answer");
-			}
-			sendMessageToServer(q);
-		} catch (Exception e) {
-			alert.setHeaderText("Invalid input");
-			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("Please fill all the fields")));
-			alert.showAndWait();
-		}
-	}
-
-	void sendMessageToServer(Object obj) {
+	
+	void sendUpdateToServer(Object obj) {
 		try {
 			DataElements de = new DataElements();
 			de.setData(obj);
@@ -270,201 +170,27 @@ public class PrimaryController {
 		return status;
 	}
 
-	public void initialize() {
-		// Send message to server
-		
-		ObservableList<CloneStudy> val = FXCollections.observableArrayList(GetDataFromDBStudy(ClientToServerOpcodes.GetAllStudies, null));
-		if (val == null)
-			return;
-		List<String> temp = new ArrayList<String>();
-		
-		for (CloneStudy s:val) {
-			temp.add(s.getStudyName());
-		}
-		
-		ObservableList<String> study_names = FXCollections.observableArrayList(temp);
-		
-		study_combo.setItems(study_names);
-		radioGroup = new ToggleGroup();
-		radio_1.setToggleGroup(radioGroup);
-		radio_2.setToggleGroup(radioGroup);
-		radio_3.setToggleGroup(radioGroup);
-		radio_4.setToggleGroup(radioGroup);
-
-		dbStudy = null;
-		
-		allQuestions = GetAllQuestions(ClientToServerOpcodes.GetAllQuestion, null);
-
-		if (allQuestions == null)
-			return;
-
-		for (CloneQuestion item : allQuestions) {
-			qList.getItems().add(item.getSubject());
-		}
-		
+	public static void setDbStudy(Object object) {
+		PrimaryController.dbStudy = FXCollections.observableArrayList((List<CloneStudy>)object);
+		System.out.println("Recived all Studies from server\n");
+	}
+	
+	public static void setDbCourse(Object object) {
+		PrimaryController.dbCourse = FXCollections.observableArrayList((List<CloneCourse>)object);
+		System.out.println("Recived Courses from server\n");
 	}
 
-	@FXML
-	void onClickedStudy(ActionEvent event) {
-		ObservableList<CloneCourse> val = FXCollections.observableArrayList(GetDataFromDBCourse(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue()));
-		if (val == null)
-			return;
-		
-		List<String> temp = new ArrayList<String>();
-		
-		for (CloneCourse s:val) {
-			temp.add(s.getCourseName());
-		}
-		
-		ObservableList<String> course_names = FXCollections.observableArrayList(temp);
-		
-		course_combo.setItems(course_names);
-		ClearAllFields();
-		question_combo.setValue(" ");
-		course_combo.setDisable(false);
-		question_combo.setDisable(true);
-		subject_text.setDisable(true);
-		question_text.setDisable(true);
-
-		answer_line_1.setDisable(true);
-		answer_line_2.setDisable(true);
-		answer_line_3.setDisable(true);
-		answer_line_4.setDisable(true);
-
-		radio_1.setDisable(true);
-		radio_2.setDisable(true);
-		radio_3.setDisable(true);
-		radio_4.setDisable(true);
-
-		dbStudy = null;
+	public static void setDbQuestion(Object object) {
+		PrimaryController.dbQuestion = FXCollections.observableArrayList((List<CloneQuestion>)object);
+		System.out.println("Recived Questions from server\n");
 	}
-
-	@FXML
-	void onCourseClicked(ActionEvent event) {
-		if (course_combo.getValue() == null || course_combo.isDisable() == true) {
-			ClearAllFields();
-			course_combo.setDisable(false);
-			subject_text.setDisable(true);
-			question_text.setDisable(true);
-
-			answer_line_1.setDisable(true);
-			answer_line_2.setDisable(true);
-			answer_line_3.setDisable(true);
-			answer_line_4.setDisable(true);
-
-			radio_1.setDisable(true);
-			radio_2.setDisable(true);
-			radio_3.setDisable(true);
-			radio_4.setDisable(true);
-
-			return;
-		}
-		ObservableList<CloneQuestion> val = FXCollections.observableArrayList(GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
-				course_combo.getValue()));
-		if (val == null)
-			return;
-		List<String> subjects = new ArrayList<String>();
-		for (CloneQuestion q : val) {
-			subjects.add(q.getSubject());
-		}
-		ObservableList<String> final_subjects = FXCollections.observableArrayList(subjects);
-		question_combo.setItems(final_subjects);
-		ClearAllFields();
-		course_combo.setDisable(false);
-		question_combo.setDisable(false);
-		subject_text.setDisable(true);
-		question_text.setDisable(true);
-
-		answer_line_1.setDisable(true);
-		answer_line_2.setDisable(true);
-		answer_line_3.setDisable(true);
-		answer_line_4.setDisable(true);
-
-		radio_1.setDisable(true);
-		radio_2.setDisable(true);
-		radio_3.setDisable(true);
-		radio_4.setDisable(true);
-
-		dbCourse = null;
+	
+	@SuppressWarnings("unchecked")
+	public static void setAllQuestion(Object object) {
+		PrimaryController.allQuestions = (List<CloneQuestion>)object;
+		System.out.println("Recived ALL Questions from server\n");
 	}
-
-	// TODO: After question entity is done, update this func. (parse subject,
-	// question, 4 answers and correct answer)
-	@FXML
-	void onClickedQuestion(ActionEvent event) {
-		
-		if(dbQuestion == null) return;
-
-		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
-			course_combo.setDisable(false);
-			question_combo.setDisable(false);
-			subject_text.setDisable(true);
-			question_text.setDisable(true);
-
-			answer_line_1.setDisable(true);
-			answer_line_2.setDisable(true);
-			answer_line_3.setDisable(true);
-			answer_line_4.setDisable(true);
-
-			radio_1.setDisable(true);
-			radio_2.setDisable(true);
-			radio_3.setDisable(true);
-			radio_4.setDisable(true);
-			return;
-		}
-
-		CloneQuestion CurrentQuestion = null;
-		for (CloneQuestion q : dbQuestion) {
-			if (question_combo.getValue().compareTo(q.getSubject()) == 0) {
-				CurrentQuestion = q;
-				break;
-			}
-		}
-
-		qToServer = CurrentQuestion;
-
-		subject_text.setText(CurrentQuestion.getSubject());
-		question_text.setText(CurrentQuestion.getQuestionText());
-
-		answer_line_1.setText(CurrentQuestion.getAnswer_1());
-		answer_line_2.setText(CurrentQuestion.getAnswer_2());
-		answer_line_3.setText(CurrentQuestion.getAnswer_3());
-		answer_line_4.setText(CurrentQuestion.getAnswer_4());
-
-		switch (CurrentQuestion.getCorrectAnswer()) {
-		case 1:
-			radio_1.setSelected(true);
-			break;
-		case 2:
-			radio_2.setSelected(true);
-			break;
-		case 3:
-			radio_3.setSelected(true);
-			break;
-		case 4:
-			radio_4.setSelected(true);
-			break;
-		default:
-			break;
-
-		}
-
-		question_text.setDisable(false);
-		subject_text.setDisable(false);
-		answer_line_1.setDisable(false);
-		answer_line_2.setDisable(false);
-		answer_line_3.setDisable(false);
-		answer_line_4.setDisable(false);
-		radio_1.setDisable(false);
-		radio_2.setDisable(false);
-		radio_3.setDisable(false);
-		radio_4.setDisable(false);
-		submitButton.setDisable(false);
-
-		dbQuestion = null; // check if we should change the place of the nulling
-
-	}
-
+	
 	void addQuestionFields(CloneQuestion CurrentQuestion) {
 		qToServer = CurrentQuestion;
 		
@@ -507,7 +233,6 @@ public class PrimaryController {
 		radio_3.setDisable(false);
 		radio_4.setDisable(false);
 		submitButton.setDisable(false);
-
 
 	}
 
@@ -574,6 +299,7 @@ public class PrimaryController {
 	 */
 	public void ClearAllFields() {
 
+		question_combo.getItems().clear();
 		subject_text.clear();
 		question_text.clear();
 
@@ -587,6 +313,222 @@ public class PrimaryController {
 		radio_3.setSelected(false);
 		radio_4.setSelected(false);
 
+	}
+	
+
+	/************************************** Functions (attached to dialogs) **************************************/
+
+	@FXML
+	void openInstructions(ActionEvent event) {
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Instructions.fxml"));
+			Parent root1 = (Parent) fxmlLoader.load();
+			Stage stage = new Stage();
+			stage.setTitle("Insructions");
+			stage.getIcons().add(new Image(App.class.getResource("help_icon.jpeg").toExternalForm()));
+			stage.setScene(new Scene(root1));
+			stage.setResizable(false);
+			stage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	void onClickedEdit(ActionEvent event) {
+		ObservableList<CloneQuestion> selected_q = qList.getSelectionModel().getSelectedItems();
+		if (selected_q.isEmpty()) {
+			alert.setHeaderText("Please select a question");
+			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("No question has been selected")));
+			alert.showAndWait();
+			return;
+		}
+
+		if (selected_q.size() > 1) {
+			alert.setHeaderText("Please select only one question");
+			alert.getDialogPane()
+					.setExpandableContent(new ScrollPane(new TextArea("Multiple questions has benn selected")));
+			alert.showAndWait();
+			return;
+		}
+		ObservableList<CloneQuestion> allQ = FXCollections.observableArrayList(allQuestions);
+		
+		EventHandler<ActionEvent> handler = question_combo.getOnAction();
+		question_combo.setOnAction(null);
+		question_combo.setItems(allQ);
+		question_combo.setOnAction(handler);
+		
+		question_combo.setValue(selected_q.get(0));
+		
+		mainTab.getSelectionModel().select(edtiorTab);
+		
+		handler = study_combo.getOnAction();
+		study_combo.setOnAction(null);
+		study_combo.getSelectionModel().clearSelection();
+		study_combo.setOnAction(handler);
+		
+		handler = course_combo.getOnAction();
+		course_combo.setOnAction(null);
+		course_combo.getItems().clear();
+		course_combo.setOnAction(handler);
+	}
+
+
+	@FXML
+	void onClickedStudy(ActionEvent event) {
+		ObservableList<CloneCourse> val = FXCollections.observableArrayList(GetDataFromDBCourse(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue()));
+		if (val == null)
+			return;
+		
+		course_combo.setItems(val);
+		ClearAllFields();
+		course_combo.setDisable(false);
+		question_combo.setDisable(true);
+		subject_text.setDisable(true);
+		question_text.setDisable(true);
+
+		answer_line_1.setDisable(true);
+		answer_line_2.setDisable(true);
+		answer_line_3.setDisable(true);
+		answer_line_4.setDisable(true);
+
+		radio_1.setDisable(true);
+		radio_2.setDisable(true);
+		radio_3.setDisable(true);
+		radio_4.setDisable(true);
+
+		dbStudy = null;
+	}
+
+	@FXML
+	void onCourseClicked(ActionEvent event) {
+		if (course_combo.getValue() == null || course_combo.isDisable() == true) {
+			ClearAllFields();
+			course_combo.setDisable(false);
+			subject_text.setDisable(true);
+			question_text.setDisable(true);
+
+			answer_line_1.setDisable(true);
+			answer_line_2.setDisable(true);
+			answer_line_3.setDisable(true);
+			answer_line_4.setDisable(true);
+
+			radio_1.setDisable(true);
+			radio_2.setDisable(true);
+			radio_3.setDisable(true);
+			radio_4.setDisable(true);
+
+			return;
+		}
+		ObservableList<CloneQuestion> val = FXCollections.observableArrayList(GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
+				course_combo.getValue()));
+		if (val == null)
+			return;
+		ClearAllFields();
+		question_combo.setItems(val);
+		course_combo.setDisable(false);
+		question_combo.setDisable(false);
+		subject_text.setDisable(true);
+		question_text.setDisable(true);
+
+		answer_line_1.setDisable(true);
+		answer_line_2.setDisable(true);
+		answer_line_3.setDisable(true);
+		answer_line_4.setDisable(true);
+
+		radio_1.setDisable(true);
+		radio_2.setDisable(true);
+		radio_3.setDisable(true);
+		radio_4.setDisable(true);
+
+		dbCourse = null;
+	}
+
+	// TODO: After question entity is done, update this func. (parse subject,
+	// question, 4 answers and correct answer)
+	@FXML
+	void onClickedQuestion(ActionEvent event) {
+		
+		if(dbQuestion == null) {
+		addQuestionFields(qList.getSelectionModel().getSelectedItems().get(0));
+		} else {
+			
+			if (question_combo.getValue() == null || question_combo.isDisable() == true) {
+				course_combo.setDisable(false);
+				question_combo.setDisable(false);
+				subject_text.setDisable(true);
+				question_text.setDisable(true);
+
+				answer_line_1.setDisable(true);
+				answer_line_2.setDisable(true);
+				answer_line_3.setDisable(true);
+				answer_line_4.setDisable(true);
+
+				radio_1.setDisable(true);
+				radio_2.setDisable(true);
+				radio_3.setDisable(true);
+				radio_4.setDisable(true);
+				return;
+			}
+			
+			addQuestionFields(question_combo.getValue());
+			dbQuestion = null; // check if we should change the place of the nulling
+		}	
+
+	}
+	
+	@FXML
+	void onClickedSubmit(ActionEvent event) throws Exception {
+		try {
+			CloneQuestion q = new CloneQuestion();
+			q.clone(qToServer);
+			if (subject_text.getText().isEmpty())
+				throw new Exception("Subject is empty");
+			q.setSubject(subject_text.getText());
+			if (question_text.getText().isEmpty())
+				throw new Exception("Question is empty");
+			q.setQuestionText(question_text.getText());
+			if (answer_line_1.getText().isEmpty())
+				throw new Exception("Answer 1 is empty");
+			q.setAnswer_1(answer_line_1.getText());
+			if (answer_line_2.getText().isEmpty())
+				throw new Exception("Answer 2 is empty");
+			q.setAnswer_2(answer_line_2.getText());
+			if (answer_line_3.getText().isEmpty())
+				throw new Exception("Answer 3 is empty");
+			q.setAnswer_3(answer_line_3.getText());
+			if (answer_line_4.getText().isEmpty())
+				throw new Exception("Answer 4 is empty");
+			q.setAnswer_4(answer_line_4.getText());
+			RadioButton chk = (RadioButton) radioGroup.getSelectedToggle();
+			switch (chk.getText()) {
+			case "a.":
+				q.setCorrectAnswer(1);
+				break;
+			case "b.":
+				q.setCorrectAnswer(2);
+				break;
+			case "c.":
+				q.setCorrectAnswer(3);
+				break;
+			case "d.":
+				q.setCorrectAnswer(4);
+				break;
+			default:
+				throw new Exception("No correct answer");
+			}
+			sendUpdateToServer(q);
+		} catch (Exception e) {
+			alert.setHeaderText("Invalid input");
+			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("Please fill all the fields")));
+			alert.showAndWait();
+		}
+	}
+	
+	@FXML
+	void countChars(KeyEvent event) {
+		question_text.setTextFormatter(new TextFormatter<String>(change -> 
+        change.getControlNewText().length() <= 180 ? change : null));
 	}
 
 }

@@ -56,6 +56,11 @@ public class CloneQuestion implements Serializable {
 		this.correctAnswer = copyFrom.getCorrectAnswer();
 	}
 	
+	@Override
+	public String toString() {
+	    return this.getSubject();
+	}
+	
 	public int getId() {
 		return id;
 	}
