@@ -3,6 +3,10 @@ package project.Prototype;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
+import org.hibernate.Hibernate;
+
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 import project.CloneEntities.*;
@@ -10,9 +14,46 @@ import project.Entities.*;
 import project.Prototype.DataElements;
 
 public class ServerMain extends AbstractServer {
+	static int numberOfConnectedClients;
 	public ServerMain(int port) {
 		super(port);
+		numberOfConnectedClients = 0;
 	}
+
+	
+	@Override
+	protected synchronized void clientDisconnected(ConnectionToClient client) {
+		System.out.println("Client disconnected from server");
+		super.clientDisconnected(client);
+		numberOfConnectedClients = this.getNumberOfClients() - 1;
+		System.out.println("Number of connected client(s): " + numberOfConnectedClients + "\n");
+		System.out.print("Do you want to close the server? (Yes \\ No): ");
+		
+		Scanner input = new Scanner(System.in);
+		String stringInput = input.nextLine().toLowerCase();
+        if(stringInput.equals("yes")){
+            try {
+				this.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }
+	}
+
+	@Override
+	protected void clientConnected(ConnectionToClient client) {
+		System.out.println("New client connected.");
+		super.clientConnected(client);
+		numberOfConnectedClients = this.getNumberOfClients();
+		System.out.println("Number of connected client(s): " + numberOfConnectedClients + "\n");
+	}
+	
+	@Override
+	protected void serverClosed() {
+		HibernateMain.closeSession();
+		super.serverClosed();
+	}
+
 
 	/**
 	 * The function gets new msg from client Parsing the opcode and data Handle the
@@ -63,14 +104,56 @@ public class ServerMain extends AbstractServer {
 			de.setData(e.getMessage());
 
 		} finally {
+			if (de.getData() == null)
+				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.Error);
 			System.out.println("Send result to user! opcode = " + de.getOpCodeFromServer() + "\n");
 			sendToAllClients(de);
 		}
 	}
 
-	private Object handleUpdateQuestion(CloneQuestion data) {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * handleUpdateQuestion(CloneQuestion) Update Question object in DB according to
+	 * CloneQuestion received from DB Get the original Question from DB Set all
+	 * properties according to CloneQustion Update Question in DB
+	 * 
+	 * @param questionToUpdate
+	 * @return
+	 */
+	private CloneQuestion handleUpdateQuestion(CloneQuestion questionToUpdate) {
+		Question originalQustion = null;
+		List<Question> listFromDB = null;
+		try {
+			listFromDB = HibernateMain.getDataFromDB(Question.class);
+			for (Question question : listFromDB) {
+				if (question.getId() == questionToUpdate.getId()) {
+					originalQustion = question;
+					break;
+				}
+			}
+
+			if (originalQustion == null)
+				throw new Exception("Question with id " + questionToUpdate.getId() + " was not found!");
+
+			originalQustion.setAnswer_1(questionToUpdate.getAnswer_1());
+			originalQustion.setAnswer_2(questionToUpdate.getAnswer_2());
+			originalQustion.setAnswer_3(questionToUpdate.getAnswer_3());
+			originalQustion.setAnswer_4(questionToUpdate.getAnswer_4());
+			originalQustion.setCorrectAnswer(questionToUpdate.getCorrectAnswer());
+			originalQustion.setQuestionText(questionToUpdate.getQuestionText());
+			originalQustion.setSubject(questionToUpdate.getSubject());
+
+			int updateResult = HibernateMain.questionToUpdate(originalQustion);
+
+			if (updateResult == -1)
+				originalQustion = null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		System.out.println("Question " + originalQustion.getId() + " (QuestionCode = "
+				+ originalQustion.getQuestionCode() + ") - Was updated.");
+		return originalQustion.createClone();
 	}
 
 	/**
@@ -89,10 +172,11 @@ public class ServerMain extends AbstractServer {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		cloneQuestion.forEach(q -> System.out.println(q.getQuestionCode()));
+
+		cloneQuestion.forEach(q -> System.out.println(q.getQuestionCode() + " - " + q.getSubject()));
 		return cloneQuestion;
-		// return cloneQuestion.toArray(new CloneQuestion[cloneQuestion.size()]);;
 	}
 
 	/**
@@ -114,10 +198,12 @@ public class ServerMain extends AbstractServer {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		questionsFromCourse.forEach(q -> System.out.println(q.getQuestionCode()));
-		return questionsFromCourse; // .toArray(new CloneQuestion[questionsFromCourse.size()]);
 
+		System.out.println("List of questions from course " + cloneCourse.getCourseName());
+		questionsFromCourse.forEach(q -> System.out.println(q.getQuestionCode()));
+		return questionsFromCourse;
 	}
 
 	/**
@@ -136,8 +222,10 @@ public class ServerMain extends AbstractServer {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		cloneStudies.forEach(q -> System.out.println(q.getStudyName()));
+
+		cloneStudies.forEach(s -> System.out.println(s.getStudyName()));
 		return cloneStudies;
 	}
 
@@ -160,11 +248,20 @@ public class ServerMain extends AbstractServer {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
+
+		System.out.println("List of courses from study " + cloneStudy.getStudyName());
 		courses.forEach(q -> System.out.println(q.getCourseName()));
-		return courses;// .toArray(new CloneCourse[courses.size()]);
+		return courses;
 	}
 
+	/**
+	 * Entry point to server
+	 * 
+	 * @param args - <port>
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		if (args.length != 1) {
 			System.out.println("Required argument: <port>");
@@ -177,9 +274,9 @@ public class ServerMain extends AbstractServer {
 			System.out.println("Error during Hibernate initialization");
 			return;
 		}
-		
+
 		server.listen();
-		System.out.println("Server ready!");
+		System.out.println("Server ready!\n");
 
 	}
 }
