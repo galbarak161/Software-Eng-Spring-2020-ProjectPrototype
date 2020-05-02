@@ -15,6 +15,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+
+import project.CloneEntities.CloneQuestion;
 import project.Entities.*;
 
 public class HibernateMain {
@@ -63,6 +65,25 @@ public class HibernateMain {
 	}
 
 	/**
+	 * questionToUpdate(Question) update the question in DB
+	 * 
+	 * @param orignalQustion after updated fields
+	 * @return 1 for success and -1 for failure
+	 */
+	public static int questionToUpdate(Question orignalQustion) {
+		try {
+			session.beginTransaction();
+			session.evict(orignalQustion);
+			session.update(orignalQustion);
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+		return 1;
+	}
+
+	/**
 	 * Print object data using override toString() function
 	 * 
 	 * @param <T>        - Type of entity
@@ -75,7 +96,7 @@ public class HibernateMain {
 	}
 
 	/**
-	 * Initialize new object and set connections
+	 * Initialize new objects and set connections
 	 * 
 	 * @throws Exception
 	 */
@@ -183,7 +204,7 @@ public class HibernateMain {
 			session.save(questions[i]);
 		}
 		session.flush();
-		
+
 		// Generate courses
 		Course[] courses = new Course[NUMBER_OF_COURSES];
 		String[] coursesName = new String[NUMBER_OF_COURSES];
@@ -208,7 +229,7 @@ public class HibernateMain {
 			c2.addStudies(studies[j]);
 			c2.addQuestions(questions[i]);
 			courses[i] = c2;
-			
+
 			i++;
 			session.save(c2);
 		}
@@ -216,15 +237,53 @@ public class HibernateMain {
 
 		session.clear();
 	}
-	
+
 	public static void main(String[] args) {
 		try {
 			initHibernate();
+			CheckUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			closeSession();
-		}	
+		}
+	}
+
+	private static void CheckUpdate() {
+		Question orignalQustion = null;
+		List<Question> listFromDB = null;
+		try {
+			listFromDB = HibernateMain.getDataFromDB(Question.class);
+			for (Question question : listFromDB) {
+				if (question.getId() == 1) {
+					orignalQustion = question;
+					break;
+				}
+			}
+
+			if (orignalQustion == null)
+				throw new Exception("Question with id 1 was not found!");
+
+			orignalQustion.setAnswer_1("new answer");
+			orignalQustion.setAnswer_2("new answer");
+			orignalQustion.setAnswer_3("new answer");
+			orignalQustion.setAnswer_4("new answer");
+			orignalQustion.setCorrectAnswer(2);
+			orignalQustion.setQuestionText("New Question Text");
+			orignalQustion.setSubject("New subject");
+
+			int updateResult = HibernateMain.questionToUpdate(orignalQustion);
+
+			if (updateResult == -1)
+				orignalQustion = null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		System.out.println("Question " + orignalQustion.getId() + " (QuestionCode = " + orignalQustion.getQuestionCode()
+				+ ") - Was updated.");
+		return;
 	}
 
 	public static void closeSession() {
