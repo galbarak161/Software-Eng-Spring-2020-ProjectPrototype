@@ -15,6 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import project.CloneEntities.*;
 import project.Prototype.DataElements.ClientToServerOpcodes;
@@ -110,10 +112,10 @@ public class PrimaryController {
 	private static ObservableList<CloneQuestion> dbQuestion = null;
 
 	private static List<CloneQuestion> allQuestions;
+	
+	private static CloneQuestion dbUpdatedQ = null;
 
-	private CloneQuestion qToServer;
-
-	private Alert alert = new Alert(Alert.AlertType.ERROR);
+	private static Alert alert = new Alert(Alert.AlertType.ERROR);
 	
 	/************************************** Functions (non-attached to dialogs) **************************************/
 	
@@ -135,11 +137,10 @@ public class PrimaryController {
 
 		if (allQuestions == null)
 			return;
-
+		
 		for (CloneQuestion item : allQuestions) {
 			qList.getItems().add(item);
 		}
-		
 	}
 	
 	void sendUpdateToServer(Object obj) {
@@ -151,6 +152,18 @@ public class PrimaryController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void handleUpdateQuestionsFromServer(CloneQuestion object) {
+		dbUpdatedQ = object;
+	}
+	
+	public static void popError(String object) {
+		
+		alert.setHeaderText("Error from server");
+		alert.getDialogPane()
+				.setExpandableContent(new ScrollPane(new TextArea(object)));
+		alert.showAndWait();
 	}
 
 	/**
@@ -192,7 +205,6 @@ public class PrimaryController {
 	}
 	
 	void addQuestionFields(CloneQuestion CurrentQuestion) {
-		qToServer = CurrentQuestion;
 		
 		course_combo.setDisable(false);
 		question_combo.setDisable(false);
@@ -334,6 +346,14 @@ public class PrimaryController {
 		}
 	}
 
+	
+    @FXML
+    void onDoubleClick(MouseEvent event) {
+        if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2 ) {
+        	onClickedEdit(new ActionEvent());
+             }       
+    }
+    
 	@FXML
 	void onClickedEdit(ActionEvent event) {
 		ObservableList<CloneQuestion> selected_q = qList.getSelectionModel().getSelectedItems();
@@ -450,7 +470,10 @@ public class PrimaryController {
 	void onClickedQuestion(ActionEvent event) {
 		
 		if(dbQuestion == null) {
-		addQuestionFields(qList.getSelectionModel().getSelectedItems().get(0));
+			if (question_combo.getValue() == null)
+				addQuestionFields(qList.getSelectionModel().getSelectedItems().get(0));
+			else
+				addQuestionFields(question_combo.getValue());
 		} else {
 			
 			if (question_combo.getValue() == null || question_combo.isDisable() == true) {
@@ -481,7 +504,7 @@ public class PrimaryController {
 	void onClickedSubmit(ActionEvent event) throws Exception {
 		try {
 			CloneQuestion q = new CloneQuestion();
-			q.clone(qToServer);
+			q.clone(question_combo.getValue());
 			if (subject_text.getText().isEmpty())
 				throw new Exception("Subject is empty");
 			q.setSubject(subject_text.getText());
@@ -518,6 +541,35 @@ public class PrimaryController {
 				throw new Exception("No correct answer");
 			}
 			sendUpdateToServer(q);
+			
+			while(dbUpdatedQ == null)
+			{
+				System.out.print("");
+			}
+			
+			if (question_combo.getItems().size() > 1) {
+				for(CloneQuestion q2:question_combo.getItems()) {
+					if(dbUpdatedQ.getId() == q2.getId())
+					{
+						question_combo.getItems().remove(q2);
+						CloneQuestion newItem = dbUpdatedQ;
+						question_combo.getItems().add(newItem);
+						break;
+					}
+				}
+			}
+			
+			for(CloneQuestion q2:qList.getItems()) {
+				if(dbUpdatedQ.getId() == q2.getId())
+				{
+					qList.getItems().remove(q2);
+					CloneQuestion newItem = dbUpdatedQ;
+					qList.getItems().add(newItem);
+					dbUpdatedQ = null;
+					return;
+				}
+			}
+			
 		} catch (Exception e) {
 			alert.setHeaderText("Invalid input");
 			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("Please fill all the fields")));

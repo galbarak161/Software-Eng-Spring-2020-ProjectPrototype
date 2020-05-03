@@ -55,8 +55,12 @@ public class ClientService extends AbstractClient {
 			case SendAllQuestion:
 				PrimaryController.setAllQuestion(de.getData());
 				break;
+			case UpdateQuestionResult:
+				PrimaryController.handleUpdateQuestionsFromServer((CloneQuestion)de.getData());
+				break;
 			default:
-				clientM.displayMessageOnConsole(de.getData());
+				PrimaryController.popError((String)de.getData());
+				break;
 			}
 
 		} catch (Exception e) {
@@ -75,4 +79,5 @@ public class ClientService extends AbstractClient {
 	private void handleGetQuestionsFromServer(Object object) {
 		PrimaryController.setDbQuestion(object);
 	}
+
 }
