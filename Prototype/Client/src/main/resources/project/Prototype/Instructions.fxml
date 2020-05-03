@@ -1,23 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="464.0" prefWidth="698.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label fx:id="title_label" layoutX="157.0" layoutY="22.0" text="How to update a question?" textFill="RED">
+      <Label fx:id="title_label" layoutX="205.0" layoutY="6.0" text="How to update a question?" textFill="RED">
          <font>
             <Font name="Book Antiqua" size="24.0" />
          </font>
       </Label>
-      <TextArea fx:id="text_area" editable="false" layoutY="68.0" prefHeight="332.0" prefWidth="600.0" text="1. Choose the desired field of study from the list.&#10;&#10;2. Every field of study has a list of courses.&#10;    After choosing a field of study, its list of courses will be available- choose a course.&#10;&#10;3. After choosing a course, its questions will be available on the relevant list- choose a question.&#10;&#10;4. The chosen question will appear on the text field below the list of questions, its 4 answer&#10;     will appear below the question as well.&#10;&#10;5.  Edit the question and its answers as you wish, be aware of filling the all 4 answers!&#10;&#10;6. Select the correct answer by choosing the radio button beside it.&#10;&#10;7. When you're done, click &quot;Update Request&quot;- the button should be colored in yellow which means&#10;     the request is proccessing.&#10;&#10;8. If the update was made successfully the button will be colored in green, otherwise&#10;     it will be colored in red.">
-         <effect>
-            <Blend />
-         </effect>
-      </TextArea>
+      <SplitPane dividerPositions="0.5" layoutY="139.0" prefHeight="326.0" prefWidth="698.0">
+        <items>
+            <TextArea fx:id="text_area1" editable="false" prefHeight="332.0" prefWidth="600.0" text="1. The tab will change to &quot;Editor&quot; and the question &#10;     will be displayed on it.&#10;&#10;2. The selected question's subject will be displayed&#10;     on the text field below the list of questions, &#10;     the question itself will be displayed after, and &#10;     the 4 answers will appear below the question &#10;     as well.&#10;&#10;3.  Edit the question and its answers as you wish,&#10;      be aware of filling the all 4 answers!&#10;&#10;4. Select the correct answer by choosing the &#10;     radio button beside it.&#10;&#10;5. When you're done, click &quot;Submit&quot;- &#10;    the button should be colored in yellow which&#10;     means the request is proccessing.&#10;&#10;6. If the update was made successfully the button &#10;    will be colored in green, otherwise it will be &#10;    colored in red.&#10;     ">
+               <effect>
+                  <Blend />
+               </effect>
+            </TextArea>
+            <TextArea fx:id="text_area11" editable="false" prefHeight="289.0" prefWidth="298.0" text="1. Every field of study has a list of courses.&#10;    After choosing a field of study,&#10;    its list of courses will be available- &#10;    choose a course.&#10;&#10;2. After choosing a course,&#10;     its questions will be available on&#10;     the relevant list- choose a question.&#10;&#10;3. The selected question's subject will be displayed&#10;     on the text field below the list of questions, &#10;     the question itself will be displayed after, and &#10;     the 4 answers will appear below the question &#10;     as well.&#10;&#10;4.  Edit the question and its answers as you wish,&#10;      be aware of filling the all 4 answers!&#10;&#10;5. Select the correct answer by choosing the &#10;     radio button beside it.&#10;&#10;6. When you're done, click &quot;Submit&quot;- &#10;    the button should be colored in yellow which&#10;     means the request is proccessing.&#10;&#10;7. If the update was made successfully the button &#10;    will be colored in green, otherwise it will be &#10;    colored in red.">
+               <effect>
+                  <Blend />
+               </effect>
+            </TextArea>
+        </items>
+      </SplitPane>
+      <TextArea layoutY="45.0" prefHeight="73.0" prefWidth="698.0" text="A list of all questions in the system will be presented on &quot;Selector&quot; tab.&#10;You can choose whether to select a question from the list presented (double-click or using &quot;Edit&quot; button)&#10;Or select a field of study on &quot;Editor&quot; tab." />
+      <Label layoutX="106.0" layoutY="121.0" prefHeight="19.0" prefWidth="103.0" text="Question Selector">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="480.0" layoutY="121.0" prefHeight="19.0" prefWidth="93.0" text="Question Editor">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
