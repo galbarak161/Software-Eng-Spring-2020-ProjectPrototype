@@ -51,6 +51,7 @@ public class CloneQuestion implements Serializable {
 		this.answer_3 = copyFrom.getAnswer_3();
 		this.answer_4 = copyFrom.getAnswer_4();
 		this.correctAnswer = copyFrom.getCorrectAnswer();
+		this.course = copyFrom.getCourse();
 	}
 
 	@Override
