@@ -149,81 +149,94 @@ public class HibernateMain {
 		// Generate questions
 		Question[] questions = new Question[NUMBER_OF_QUESTIONS];
 		String[] questionsSubject = new String[NUMBER_OF_QUESTIONS];
-		String questionsText = "What is the run time?";
+		String[] questionsText =  new String[NUMBER_OF_QUESTIONS];
 		String[][] questionsAnswers = new String[NUMBER_OF_QUESTIONS][4];
 		int[] correctAnswer = new int[NUMBER_OF_QUESTIONS];
-		questionsSubject[0] = "DFS";
-		questionsAnswers[0][0] = "O(n)";
-		questionsAnswers[0][1] = "O(n^2)";
-		questionsAnswers[0][2] = "O(n^3)";
-		questionsAnswers[0][3] = "O(n^4)";
+		
+		
+		questionsText[0]= "which machine has infinit possible states?";
+		questionsSubject[0] = "turing machines";
+		questionsAnswers[0][0] = "every machine has a finint number of states";
+		questionsAnswers[0][1] = "deterministic finite automaton";
+		questionsAnswers[0][2] = "Nondeterministic finite automaton";
+		questionsAnswers[0][3] = "turing machine";
 		correctAnswer[0] = 4;
 
+		questionsText[1] = "What is the worst case for BFS?";
 		questionsSubject[1] = "BFS";
-		questionsAnswers[1][0] = "O(n)";
-		questionsAnswers[1][1] = "O(n^2)";
-		questionsAnswers[1][2] = "O(n^3)";
-		questionsAnswers[1][3] = "O(n^4)";
+		questionsAnswers[1][0] = "O(|V||E|)";
+		questionsAnswers[1][1] = "O(|V|+|E|)^2";
+		questionsAnswers[1][2] = "O(|V|+|E|)";
+		questionsAnswers[1][3] = "O(|E|)";
 		correctAnswer[1] = 3;
 
-		questionsSubject[2] = "Fibo Heap";
-		questionsAnswers[2][0] = "O(n)";
-		questionsAnswers[2][1] = "O(n^2)";
-		questionsAnswers[2][2] = "O(n^3)";
-		questionsAnswers[2][3] = "O(n^4)";
+		questionsText[2] = "which state is the process in after it was running and got an interupt?";
+		questionsSubject[2] = "Operating system concepts";
+		questionsAnswers[2][0] = "waiting";
+		questionsAnswers[2][1] = "running";
+		questionsAnswers[2][2] = "terminated";
+		questionsAnswers[2][3] = "new";
 		correctAnswer[2] = 2;
 
-		questionsSubject[3] = "Arrays";
-		questionsAnswers[3][0] = "O(n)";
-		questionsAnswers[3][1] = "O(n^2)";
-		questionsAnswers[3][2] = "O(n^3)";
-		questionsAnswers[3][3] = "O(n^4)";
+		questionsText[3] = "what smallest component to self perserve an electric signal?";
+		questionsSubject[3] = "Hardware?";
+		questionsAnswers[3][0] = "Adder";
+		questionsAnswers[3][1] = "MUX";
+		questionsAnswers[3][2] = "flip-flop";
+		questionsAnswers[3][3] = "ALU";
 		correctAnswer[3] = 1;
-
-		questionsSubject[4] = "Sockets";
-		questionsAnswers[4][0] = "O(n)";
-		questionsAnswers[4][1] = "O(n^2)";
-		questionsAnswers[4][2] = "O(n^3)";
-		questionsAnswers[4][3] = "O(n^4)";
+		
+		questionsText[4] = "which activity in AVL takes the most time complexcity wise?";
+		questionsSubject[4] = "AVL";
+		questionsAnswers[4][0] = "insert";
+		questionsAnswers[4][1] = "delete";
+		questionsAnswers[4][2] = "search";
+		questionsAnswers[4][3] = "None of the above all take the same time";
 		correctAnswer[4] = 2;
 
-		questionsSubject[5] = "Ferma's Little";
-		questionsAnswers[5][0] = "O(n)";
-		questionsAnswers[5][1] = "O(n^2)";
-		questionsAnswers[5][2] = "O(n^3)";
-		questionsAnswers[5][3] = "O(n^4)";
+		questionsText[5] = "which string matches the regex (aab*|bc*)d";
+		questionsSubject[5] = "RegEX";
+		questionsAnswers[5][0] = "ad";
+		questionsAnswers[5][1] = "bbcd";
+		questionsAnswers[5][2] = "aabbbd";
+		questionsAnswers[5][3] = "d";
 		correctAnswer[5] = 3;
 
-		questionsSubject[6] = "Integrals";
-		questionsAnswers[6][0] = "O(n)";
-		questionsAnswers[6][1] = "O(n^2)";
-		questionsAnswers[6][2] = "O(n^3)";
-		questionsAnswers[6][3] = "O(n^4)";
+		questionsText[6] = "translation of the following statement,None of my friends are perfect";
+		questionsSubject[6] = "First Order Logic";
+		questionsAnswers[6][0] = "∃x(F(x)^P(x))";
+		questionsAnswers[6][1] = "∃x(¬F(x)^¬P(x))";
+		questionsAnswers[6][2] = "¬∃(F(x)^P(x))";
+		questionsAnswers[6][3] = "∃x(¬F(x)^P(x))";
 		correctAnswer[6] = 3;
 
-		questionsSubject[7] = "Graphics";
-		questionsAnswers[7][0] = "O(n)";
-		questionsAnswers[7][1] = "O(n^2)";
-		questionsAnswers[7][2] = "O(n^3)";
-		questionsAnswers[7][3] = "O(n^4)";
+		questionsText[7] = "How many registers are in in LC3?";
+		questionsSubject[7] = "LC3 Assembely";
+		questionsAnswers[7][0] = "32";
+		questionsAnswers[7][1] = "4";
+		questionsAnswers[7][2] = "8";
+		questionsAnswers[7][3] = "16";
 		correctAnswer[7] = 4;
 
-		questionsSubject[8] = "RegEx";
-		questionsAnswers[8][0] = "O(n)";
-		questionsAnswers[8][1] = "O(n^2)";
-		questionsAnswers[8][2] = "O(n^3)";
-		questionsAnswers[8][3] = "O(n^4)";
+		questionsText[8] = "what is theoretically the best encreption method that will never be broken?";
+		questionsSubject[8] = "Encreption";
+		questionsAnswers[8][0] = "AES";
+		questionsAnswers[8][1] = "one time pad";
+		questionsAnswers[8][2] = "RSA";
+		questionsAnswers[8][3] = "Diffie-Hellman";
 		correctAnswer[8] = 2;
 
-		questionsSubject[9] = "Binary Search";
-		questionsAnswers[9][0] = "O(n)";
-		questionsAnswers[9][1] = "O(n^2)";
-		questionsAnswers[9][2] = "O(n^3)";
-		questionsAnswers[9][3] = "O(n^4)";
+		
+		questionsText[9] = "who is the most handsome in this course?";
+		questionsSubject[9] = "Life";
+		questionsAnswers[9][0] = "everyone";
+		questionsAnswers[9][1] = "no one";
+		questionsAnswers[9][2] = "The professor";
+		questionsAnswers[9][3] = "IDK";
 		correctAnswer[9] = 3;
 
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
-			questions[i] = new Question(questionsSubject[i], questionsText, questionsAnswers[i][0],
+			questions[i] = new Question(questionsSubject[i], questionsText[i], questionsAnswers[i][0],
 					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i],
 					courses[i]);
 			questions[i].GenerateQuestionCode();
