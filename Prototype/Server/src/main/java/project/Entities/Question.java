@@ -1,7 +1,5 @@
 package project.Entities;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.*;
 import project.CloneEntities.CloneQuestion;
 
@@ -38,16 +36,16 @@ public class Question {
 	@Column(name = "correctAnswer")
 	private int correctAnswer;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "question_course", joinColumns = @JoinColumn(name = "questionId"), inverseJoinColumns = @JoinColumn(name = "courseId"))
-	private List<Course> courses;
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "courseId")
+	private Course course;
 
 	public Question() {
-		this.courses = new ArrayList<Course>();
 	}
 
 	public Question(String subject, String questionText, String answer_1, String answer_2, String answer_3,
-			String answer_4, int correctAnswer) {
+			String answer_4, int correctAnswer, Course course) {
+		this.setCourse(course);
 		this.questionCode = GenerateQuestionCode();
 		this.subject = subject;
 		this.questionText = questionText;
@@ -56,18 +54,18 @@ public class Question {
 		this.answer_3 = answer_3;
 		this.answer_4 = answer_4;
 		this.correctAnswer = correctAnswer;
-		this.courses = new ArrayList<Course>();
 	}
 
 	public CloneQuestion createClone() {
 		CloneQuestion clone = new CloneQuestion(this.id, this.questionCode, this.subject, this.questionText,
-				this.answer_1, this.answer_2, this.answer_3, this.answer_4, this.correctAnswer);
+				this.answer_1, this.answer_2, this.answer_3, this.answer_4, this.correctAnswer,
+				this.course.createClone());
 		return clone;
 	}
 
-	private int GenerateQuestionCode() {
-		// TODO Generate code according to CourseId and QuestionId
-		return 0;
+	public int GenerateQuestionCode() {
+		int courseID = course.getId();
+		return courseID * 1000 + id;
 	}
 
 	public int getId() {
@@ -138,14 +136,12 @@ public class Question {
 		this.correctAnswer = correctAnswer;
 	}
 
-	public List<Course> getCourses() {
-		return courses;
+	public Course getCourse() {
+		return course;
 	}
 
-	public void addCourses(Course... courses) {
-		for (Course course : courses) {
-			this.courses.add(course);
-			course.addQuestions(this);
-		}
+	public void setCourse(Course c) {
+		this.course = c;
+		c.getQuestions().add(this);
 	}
 }

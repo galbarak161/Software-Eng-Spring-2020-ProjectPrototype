@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import org.hibernate.Hibernate;
-
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 import project.CloneEntities.*;
@@ -15,12 +12,12 @@ import project.Prototype.DataElements;
 
 public class ServerMain extends AbstractServer {
 	static int numberOfConnectedClients;
+
 	public ServerMain(int port) {
 		super(port);
 		numberOfConnectedClients = 0;
 	}
 
-	
 	@Override
 	protected synchronized void clientDisconnected(ConnectionToClient client) {
 		System.out.println("Client disconnected from server");
@@ -28,16 +25,17 @@ public class ServerMain extends AbstractServer {
 		numberOfConnectedClients = this.getNumberOfClients() - 1;
 		System.out.println("Number of connected client(s): " + numberOfConnectedClients + "\n");
 		System.out.print("Do you want to close the server? (Yes \\ No): ");
-		
-		Scanner input = new Scanner(System.in);
-		String stringInput = input.nextLine().toLowerCase();
-        if(stringInput.equals("yes")){
-            try {
-				this.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+
+		try (Scanner input = new Scanner(System.in)) {
+			String stringInput = input.nextLine().toLowerCase();
+			if (stringInput.equals("yes")) {
+				try {
+					this.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-        }
+		}
 	}
 
 	@Override
@@ -47,13 +45,12 @@ public class ServerMain extends AbstractServer {
 		numberOfConnectedClients = this.getNumberOfClients();
 		System.out.println("Number of connected client(s): " + numberOfConnectedClients + "\n");
 	}
-	
+
 	@Override
 	protected void serverClosed() {
 		HibernateMain.closeSession();
 		super.serverClosed();
 	}
-
 
 	/**
 	 * The function gets new msg from client Parsing the opcode and data Handle the

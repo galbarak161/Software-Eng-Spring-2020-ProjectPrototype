@@ -1,10 +1,6 @@
 package project.CloneEntities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import project.Entities.Question;
 
 public class CloneQuestion implements Serializable {
 
@@ -26,14 +22,13 @@ public class CloneQuestion implements Serializable {
 
 	private int correctAnswer;
 
-	private List<CloneCourse> courses;
+	private CloneCourse course;
 
 	public CloneQuestion() {
-		this.courses = new ArrayList<CloneCourse>();
 	}
 
-	public CloneQuestion(int id, int questionCode, String subject, String questionText, String answer_1, String answer_2, String answer_3,
-			String answer_4, int correctAnswer) {
+	public CloneQuestion(int id, int questionCode, String subject, String questionText, String answer_1,
+			String answer_2, String answer_3, String answer_4, int correctAnswer, CloneCourse course) {
 		this.id = id;
 		this.questionCode = questionCode;
 		this.subject = subject;
@@ -43,7 +38,7 @@ public class CloneQuestion implements Serializable {
 		this.answer_3 = answer_3;
 		this.answer_4 = answer_4;
 		this.correctAnswer = correctAnswer;
-		this.courses = new ArrayList<CloneCourse>();
+		this.course = course;
 	}
 
 	public void clone(CloneQuestion copyFrom) {
@@ -57,12 +52,12 @@ public class CloneQuestion implements Serializable {
 		this.answer_4 = copyFrom.getAnswer_4();
 		this.correctAnswer = copyFrom.getCorrectAnswer();
 	}
-	
+
 	@Override
 	public String toString() {
-	    return this.getSubject();
+		return this.getSubject();
 	}
-	
+
 	public int getId() {
 		return id;
 	}
@@ -135,11 +130,11 @@ public class CloneQuestion implements Serializable {
 		this.correctAnswer = correctAnswer;
 	}
 
-	public List<CloneCourse> getCourses() {
-		return courses;
+	public CloneCourse getCourse() {
+		return course;
 	}
 
-	public void setCourses(List<CloneCourse> courses) {
-		this.courses = courses;
+	public void setCourse(CloneCourse course) {
+		this.course = course;
 	}
 }

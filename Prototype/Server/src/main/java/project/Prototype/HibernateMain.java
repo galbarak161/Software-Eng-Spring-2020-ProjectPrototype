@@ -1,6 +1,5 @@
 package project.Prototype;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -15,8 +14,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-
-import project.CloneEntities.CloneQuestion;
 import project.Entities.*;
 
 public class HibernateMain {
@@ -121,6 +118,34 @@ public class HibernateMain {
 		}
 		session.flush();
 
+		// Generate courses
+		Course[] courses = new Course[NUMBER_OF_COURSES];
+		String[] coursesName = new String[NUMBER_OF_COURSES];
+		coursesName[0] = "Music";
+		coursesName[1] = "Theatre and Dance";
+		coursesName[2] = "Health Sciences";
+		coursesName[3] = "Pharmacy";
+		coursesName[4] = "Low";
+		coursesName[5] = "Business management";
+		coursesName[6] = "Geography";
+		coursesName[7] = "Computer Science";
+		coursesName[8] = "Economics";
+		coursesName[9] = "Psychology";
+		for (int i = 0, j = 0; i < NUMBER_OF_COURSES && j < NUMBER_OF_STUDIES; j++) {
+			Course c1 = new Course(coursesName[i]);
+			c1.addStudies(studies[j]);
+			courses[i] = c1;
+			i++;
+			session.save(c1);
+			Course c2 = new Course(coursesName[i]);
+			c2.addStudies(studies[j]);
+			courses[i] = c2;
+
+			i++;
+			session.save(c2);
+		}
+		session.flush();
+
 		// Generate questions
 		Question[] questions = new Question[NUMBER_OF_QUESTIONS];
 		String[] questionsSubject = new String[NUMBER_OF_QUESTIONS];
@@ -199,39 +224,10 @@ public class HibernateMain {
 
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
 			questions[i] = new Question(questionsSubject[i], questionsText, questionsAnswers[i][0],
-					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i]);
-			questions[i].setQuestionCode(i * 10000);
+					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i],
+					courses[i]);
+			questions[i].GenerateQuestionCode();
 			session.save(questions[i]);
-		}
-		session.flush();
-
-		// Generate courses
-		Course[] courses = new Course[NUMBER_OF_COURSES];
-		String[] coursesName = new String[NUMBER_OF_COURSES];
-		coursesName[0] = "Music";
-		coursesName[1] = "Theatre and Dance";
-		coursesName[2] = "Health Sciences";
-		coursesName[3] = "Pharmacy";
-		coursesName[4] = "Low";
-		coursesName[5] = "Business management";
-		coursesName[6] = "Geography";
-		coursesName[7] = "Computer Science";
-		coursesName[8] = "Economics";
-		coursesName[9] = "Psychology";
-		for (int i = 0, j = 0; i < NUMBER_OF_COURSES && j < NUMBER_OF_STUDIES; j++) {
-			Course c1 = new Course(coursesName[i]);
-			c1.addStudies(studies[j]);
-			c1.addQuestions(questions[i]);
-			courses[i] = c1;
-			i++;
-			session.save(c1);
-			Course c2 = new Course(coursesName[i]);
-			c2.addStudies(studies[j]);
-			c2.addQuestions(questions[i]);
-			courses[i] = c2;
-
-			i++;
-			session.save(c2);
 		}
 		session.flush();
 
@@ -241,49 +237,11 @@ public class HibernateMain {
 	public static void main(String[] args) {
 		try {
 			initHibernate();
-			CheckUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			closeSession();
 		}
-	}
-
-	private static void CheckUpdate() {
-		Question orignalQustion = null;
-		List<Question> listFromDB = null;
-		try {
-			listFromDB = HibernateMain.getDataFromDB(Question.class);
-			for (Question question : listFromDB) {
-				if (question.getId() == 1) {
-					orignalQustion = question;
-					break;
-				}
-			}
-
-			if (orignalQustion == null)
-				throw new Exception("Question with id 1 was not found!");
-
-			orignalQustion.setAnswer_1("new answer");
-			orignalQustion.setAnswer_2("new answer");
-			orignalQustion.setAnswer_3("new answer");
-			orignalQustion.setAnswer_4("new answer");
-			orignalQustion.setCorrectAnswer(2);
-			orignalQustion.setQuestionText("New Question Text");
-			orignalQustion.setSubject("New subject");
-
-			int updateResult = HibernateMain.questionToUpdate(orignalQustion);
-
-			if (updateResult == -1)
-				orignalQustion = null;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
-		System.out.println("Question " + orignalQustion.getId() + " (QuestionCode = " + orignalQustion.getQuestionCode()
-				+ ") - Was updated.");
-		return;
 	}
 
 	public static void closeSession() {

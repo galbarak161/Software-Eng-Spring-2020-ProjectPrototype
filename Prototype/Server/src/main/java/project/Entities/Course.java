@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
-import project.CloneEntities.CloneCourse;
-import project.CloneEntities.CloneQuestion;
+import project.CloneEntities.*;
 
 @Entity
 @Table(name = "Course")
-public class Course{
+public class Course {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +18,7 @@ public class Course{
 	@Column(name = "courseName")
 	private String courseName;
 
-	@ManyToMany(mappedBy = "courses", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
 	private List<Question> questions;
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -43,7 +42,7 @@ public class Course{
 		CloneCourse clone = new CloneCourse(this.id, this.courseName);
 		return clone;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
@@ -60,11 +59,8 @@ public class Course{
 		return questions;
 	}
 
-	public void addQuestions(Question... questions) {
-		for (Question question : questions) {
-			this.questions.add(question);
-			question.getCourses().add(this);
-		}
+	public void addQuestions(Question question) {
+		this.questions.add(question);
 	}
 
 	public List<Study> getStudies() {

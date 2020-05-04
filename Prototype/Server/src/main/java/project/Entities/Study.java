@@ -3,13 +3,11 @@ package project.Entities;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-
-import project.CloneEntities.CloneCourse;
-import project.CloneEntities.CloneStudy;
+import project.CloneEntities.*;
 
 @Entity
 @Table(name = "Study")
-public class Study{
+public class Study {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,18 +24,18 @@ public class Study{
 		super();
 		this.courses = new ArrayList<Course>();
 	}
-	
+
 	public Study(String studyName) {
 		super();
 		this.studyName = studyName;
 		this.courses = new ArrayList<Course>();
 	}
-	
+
 	public CloneStudy createClone() {
 		CloneStudy clone = new CloneStudy(this.id, this.studyName);
 		return clone;
 	}
-	
+
 	public int getId() {
 		return id;
 	}

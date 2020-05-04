@@ -10,12 +10,12 @@ import java.io.Serializable;
  *
  */
 
-@SuppressWarnings("serial")
 public class DataElements implements Serializable {
 
 	// Opcodes 0-9
 	public enum ClientToServerOpcodes {
-		GetAllStudies(0), GetAllCoursesInStudy(1), GetAllQuestionInCourse(2), UpdateQuestion(3), GetAllQuestion(4), Error(-1);
+		GetAllStudies(0), GetAllCoursesInStudy(1), GetAllQuestionInCourse(2), UpdateQuestion(3), GetAllQuestion(4),
+		Error(-1);
 
 		public int value;
 
@@ -26,7 +26,8 @@ public class DataElements implements Serializable {
 
 	// Opcodes 10-19
 	public enum ServerToClientOpcodes {
-		SendAllStudies(10), SendAllCoursesInStudy(11), SendAllQuestionInCourse(12), UpdateQuestionResult(13), SendAllQuestion(14),  Error(-1);
+		SendAllStudies(10), SendAllCoursesInStudy(11), SendAllQuestionInCourse(12), UpdateQuestionResult(13),
+		SendAllQuestion(14), Error(-1);
 
 		public int value;
 
@@ -40,6 +41,9 @@ public class DataElements implements Serializable {
 	private Object data;
 
 	public DataElements() {
+		this.opcodeFromClient = ClientToServerOpcodes.Error;
+		this.opCodeFromServer = ServerToClientOpcodes.Error;
+		this.data = null;
 	}
 
 	public DataElements(ClientToServerOpcodes opCodeFromClient, Object data) {
@@ -76,5 +80,4 @@ public class DataElements implements Serializable {
 		this.data = data;
 	}
 
-	
 }
