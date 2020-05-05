@@ -65,7 +65,7 @@ public class Question {
 
 	public int GenerateQuestionCode() {
 		int courseID = course.getId();
-		return courseID * 1000 + id;
+		return courseID * 1000 + course.getQuestions().size();
 	}
 
 	public int getId() {
