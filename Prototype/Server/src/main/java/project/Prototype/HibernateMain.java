@@ -125,7 +125,7 @@ public class HibernateMain {
 		coursesName[1] = "Theatre and Dance";
 		coursesName[2] = "Health Sciences";
 		coursesName[3] = "Pharmacy";
-		coursesName[4] = "Low";
+		coursesName[4] = "Law";
 		coursesName[5] = "Business management";
 		coursesName[6] = "Geography";
 		coursesName[7] = "Computer Science";
@@ -154,60 +154,60 @@ public class HibernateMain {
 		int[] correctAnswer = new int[NUMBER_OF_QUESTIONS];
 		
 		
-		questionsText[0]= "which machine has infinit possible states?";
-		questionsSubject[0] = "turing machines";
-		questionsAnswers[0][0] = "every machine has a finint number of states";
-		questionsAnswers[0][1] = "deterministic finite automaton";
-		questionsAnswers[0][2] = "Nondeterministic finite automaton";
-		questionsAnswers[0][3] = "turing machine";
+		questionsText[0]= "who is best-selling music artist?";
+		questionsSubject[0] = "Music";
+		questionsAnswers[0][0] = "Eyal Golan";
+		questionsAnswers[0][1] = "Michael Jackson";
+		questionsAnswers[0][2] = "Madonna";
+		questionsAnswers[0][3] = "The Beatles";
 		correctAnswer[0] = 4;
 
-		questionsText[1] = "What is the worst case for BFS?";
-		questionsSubject[1] = "BFS";
-		questionsAnswers[1][0] = "O(|V||E|)";
-		questionsAnswers[1][1] = "O(|V|+|E|)^2";
-		questionsAnswers[1][2] = "O(|V|+|E|)";
-		questionsAnswers[1][3] = "O(|E|)";
+		questionsText[1] = "Rudolf Nureyev is known for what type of dance??";
+		questionsSubject[1] = "Theatre and Dance";
+		questionsAnswers[1][0] = "Contemporary";
+		questionsAnswers[1][1] = "Hip Hop";
+		questionsAnswers[1][2] = "Ballet";
+		questionsAnswers[1][3] = "ModernModern";
 		correctAnswer[1] = 3;
 
-		questionsText[2] = "which state is the process in after it was running and got an interupt?";
-		questionsSubject[2] = "Operating system concepts";
-		questionsAnswers[2][0] = "waiting";
-		questionsAnswers[2][1] = "running";
-		questionsAnswers[2][2] = "terminated";
-		questionsAnswers[2][3] = "new";
-		correctAnswer[2] = 2;
-
-		questionsText[3] = "what smallest component to self perserve an electric signal?";
-		questionsSubject[3] = "Hardware?";
-		questionsAnswers[3][0] = "Adder";
-		questionsAnswers[3][1] = "MUX";
-		questionsAnswers[3][2] = "flip-flop";
-		questionsAnswers[3][3] = "ALU";
-		correctAnswer[3] = 1;
+		questionsText[2] = "what is a bad things to do for your body?";
+		questionsSubject[2] = "Health Sciences?";
+		questionsAnswers[2][0] = "bing Netflix";
+		questionsAnswers[2][1] = "Exercise regularly";
+		questionsAnswers[2][2] = "Eat more fruits and vegetables";
+		questionsAnswers[2][3] = "Get a good night's sleep";
+		correctAnswer[2] = 1;
 		
-		questionsText[4] = "which activity in AVL takes the most time complexcity wise?";
-		questionsSubject[4] = "AVL";
-		questionsAnswers[4][0] = "insert";
-		questionsAnswers[4][1] = "delete";
-		questionsAnswers[4][2] = "search";
-		questionsAnswers[4][3] = "None of the above all take the same time";
+		questionsText[3] = "what type of drug is Heroin classfied as?";
+		questionsSubject[3] = "Pharmacy";
+		questionsAnswers[3][0] = "Depressants";
+		questionsAnswers[3][1] = "Opioids";
+		questionsAnswers[3][2] = "Dissociatives";
+		questionsAnswers[3][3] = "Inhalants";
+		correctAnswer[3] = 2;
+		
+		questionsText[4] = "In US law, a malicious act to 'intentionally' cause damage to property is called what?";
+		questionsSubject[4] = "Law";
+		questionsAnswers[4][0] = "Malicious mischief";
+		questionsAnswers[4][1] = "Vandalism";
+		questionsAnswers[4][2] = "Mandamus";
+		questionsAnswers[4][3] = "Intestacy";
 		correctAnswer[4] = 2;
 
-		questionsText[5] = "which string matches the regex (aab*|bc*)d";
-		questionsSubject[5] = "RegEX";
-		questionsAnswers[5][0] = "ad";
-		questionsAnswers[5][1] = "bbcd";
-		questionsAnswers[5][2] = "aabbbd";
-		questionsAnswers[5][3] = "d";
+		questionsText[5] = "when looking at management levelsis a hierarchical view where is Supervisors located?";
+		questionsSubject[5] = "Business management";
+		questionsAnswers[5][0] = "Top-level";
+		questionsAnswers[5][1] = "Middle-level";
+		questionsAnswers[5][2] = "Low-level";
+		questionsAnswers[5][3] = "Center-level";
 		correctAnswer[5] = 3;
 
-		questionsText[6] = "translation of the following statement,None of my friends are perfect";
-		questionsSubject[6] = "First Order Logic";
-		questionsAnswers[6][0] = "∃x(F(x)^P(x))";
-		questionsAnswers[6][1] = "∃x(¬F(x)^¬P(x))";
-		questionsAnswers[6][2] = "¬∃(F(x)^P(x))";
-		questionsAnswers[6][3] = "∃x(¬F(x)^P(x))";
+		questionsText[6] = "how many continents in the world?";
+		questionsSubject[6] = "Geography";
+		questionsAnswers[6][0] = "5";
+		questionsAnswers[6][1] = "6";
+		questionsAnswers[6][2] = "7";
+		questionsAnswers[6][3] = "4";
 		correctAnswer[6] = 3;
 
 		questionsText[7] = "How many registers are in in LC3?";
@@ -218,21 +218,21 @@ public class HibernateMain {
 		questionsAnswers[7][3] = "16";
 		correctAnswer[7] = 4;
 
-		questionsText[8] = "what is theoretically the best encreption method that will never be broken?";
-		questionsSubject[8] = "Encreption";
-		questionsAnswers[8][0] = "AES";
-		questionsAnswers[8][1] = "one time pad";
-		questionsAnswers[8][2] = "RSA";
-		questionsAnswers[8][3] = "Diffie-Hellman";
+		questionsText[8] = "when was the stock market crash?";
+		questionsSubject[8] = "Economics";
+		questionsAnswers[8][0] = "2008";
+		questionsAnswers[8][1] = "1929";
+		questionsAnswers[8][2] = "2020";
+		questionsAnswers[8][3] = "2010";
 		correctAnswer[8] = 2;
 
 		
-		questionsText[9] = "who is the most handsome in this course?";
-		questionsSubject[9] = "Life";
-		questionsAnswers[9][0] = "everyone";
-		questionsAnswers[9][1] = "no one";
-		questionsAnswers[9][2] = "The professor";
-		questionsAnswers[9][3] = "IDK";
+		questionsText[9] = "Who is regarded as the father of psychology?";
+		questionsSubject[9] = "Psychology";
+		questionsAnswers[9][0] = "Mary Whiton Calkins";
+		questionsAnswers[9][1] = "Sigmund Freud";
+		questionsAnswers[9][2] = "Wilhelm Wundt";
+		questionsAnswers[9][3] = "Kurt Lewin ";
 		correctAnswer[9] = 3;
 
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
