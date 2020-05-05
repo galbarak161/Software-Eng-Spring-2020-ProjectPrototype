@@ -4,14 +4,16 @@ import java.io.Serializable;
 
 /**
  * DataElements is a shared class for both server and client This file has to be
- * the same in both projects Last update - 30/04/20
+ * the same in both projects Last update - 05/05/20
  * 
- * @author Or!
+ * @author Gal
  *
  */
 
 public class DataElements implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	// Opcodes 0-9
 	public enum ClientToServerOpcodes {
 		GetAllStudies(0), GetAllCoursesInStudy(1), GetAllQuestionInCourse(2), UpdateQuestion(3), GetAllQuestion(4),
