@@ -100,7 +100,7 @@ public class HibernateMain {
 	private static void initializeData() throws Exception {
 
 		final int NUMBER_OF_STUDIES = 5;
-		final int NUMBER_OF_COURSES = 10;
+		final int NUMBER_OF_COURSES = 12;
 		final int NUMBER_OF_QUESTIONS = 10;
 
 		// Generate fields of study
@@ -171,7 +171,7 @@ public class HibernateMain {
 		correctAnswer[1] = 3;
 
 		questionsText[2] = "what is a bad things to do for your body?";
-		questionsSubject[2] = "Health Sciences?";
+		questionsSubject[2] = "Health Sciences";
 		questionsAnswers[2][0] = "bing Netflix";
 		questionsAnswers[2][1] = "Exercise regularly";
 		questionsAnswers[2][2] = "Eat more fruits and vegetables";
@@ -211,7 +211,7 @@ public class HibernateMain {
 		correctAnswer[6] = 3;
 
 		questionsText[7] = "How many registers are in in LC3?";
-		questionsSubject[7] = "LC3 Assembely";
+		questionsSubject[7] = "Computer Science";
 		questionsAnswers[7][0] = "32";
 		questionsAnswers[7][1] = "4";
 		questionsAnswers[7][2] = "8";
@@ -234,6 +234,22 @@ public class HibernateMain {
 		questionsAnswers[9][2] = "Wilhelm Wundt";
 		questionsAnswers[9][3] = "Kurt Lewin ";
 		correctAnswer[9] = 3;
+		
+		questionsText[10] = "what type of drug is Heroin classfied as?";
+		questionsSubject[10] = "Health Sciences";
+		questionsAnswers[10][0] = "Depressants";
+		questionsAnswers[10][1] = "Opioids";
+		questionsAnswers[10][2] = "Dissociatives";
+		questionsAnswers[10][3] = "Inhalants";
+		correctAnswer[10] = 2;
+		
+		questionsText[11] = "translation of the following statement,None of my friends are perfect";
+		questionsSubject[11] = "Computer Science";
+		questionsAnswers[11][0] = "∃x(F(x)^P(x))";
+		questionsAnswers[11][1] = "∃x(¬F(x)^¬P(x))";
+		questionsAnswers[11][2] = "¬∃(F(x)^P(x))";
+		questionsAnswers[11][3] = "∃x(¬F(x)^P(x))";
+		correctAnswer[11] = 3;
 
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
 			questions[i] = new Question(questionsSubject[i], questionsText[i], questionsAnswers[i][0],
