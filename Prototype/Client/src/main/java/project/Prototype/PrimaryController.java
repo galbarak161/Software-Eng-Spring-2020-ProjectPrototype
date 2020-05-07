@@ -22,7 +22,7 @@ import project.CloneEntities.*;
 import project.Prototype.DataElements.ClientToServerOpcodes;
 
 public class PrimaryController {
-	
+
 	/******************* Variables *******************/
 
 	@FXML
@@ -93,39 +93,43 @@ public class PrimaryController {
 
 	@FXML
 	private Button submitButton;
-	
-    @FXML
-    private Tab edtiorTab;
-    
-    @FXML
-    private TabPane mainTab;
+
+	@FXML
+	private Tab edtiorTab;
+
+	@FXML
+	private TabPane mainTab;
 
 	ToggleGroup radioGroup;
 
 	private static ObservableList<CloneStudy> dbStudy = null;
-	
+
 	private static ObservableList<CloneCourse> dbCourse = null;
 
 	private static ObservableList<CloneQuestion> dbQuestion = null;
 
 	private static List<CloneQuestion> allQuestions;
-	
+
 	private static CloneQuestion dbUpdatedQ = null;
 
 	private static Alert alert = new Alert(Alert.AlertType.ERROR);
 	
-	/************************************** Functions (non-attached to dialogs) **************************************/
-	
-	
+	private static String servError;
+
+	/**************************************
+	 * Functions (non-attached to dialogs)
+	 **************************************/
+
 	/**
-	 * Function called automatically when GUI is starting.
-	 * We get from DB all "Studies" and put them on study_combo ("Editor" tab)
-	 * Then we get all the questions from DB and put them on "qList" ListView ("Selector" tab)
+	 * Function called automatically when GUI is starting. We get from DB all
+	 * "Studies" and put them on study_combo ("Editor" tab) Then we get all the
+	 * questions from DB and put them on "qList" ListView ("Selector" tab)
 	 * 
 	 */
 	public void initialize() {
-		
-		ObservableList<CloneStudy> val = FXCollections.observableArrayList(GetDataFromDBStudy(ClientToServerOpcodes.GetAllStudies, null));
+
+		ObservableList<CloneStudy> val = FXCollections
+				.observableArrayList(GetDataFromDBStudy(ClientToServerOpcodes.GetAllStudies, null));
 		if (val == null)
 			return;
 		study_combo.setItems(val);
@@ -136,21 +140,23 @@ public class PrimaryController {
 		radio_4.setToggleGroup(radioGroup);
 
 		dbStudy = null;
-		
+
 		allQuestions = GetAllQuestions(ClientToServerOpcodes.GetAllQuestion, null);
 
 		if (allQuestions == null)
 			return;
-		
+
 		for (CloneQuestion item : allQuestions) {
 			qList.getItems().add(item);
 		}
 	}
-	
+
 	/**
-	 * Function makes a "DataElemnts" object that is used for a data request from the server
-	 * @param obj
-	 * Contains a required data for server ("Course" name when getting questions for a specific course for example)
+	 * Function makes a "DataElemnts" object that is used for a data request from
+	 * the server
+	 * 
+	 * @param obj Contains a required data for server ("Course" name when getting
+	 *            questions for a specific course for example)
 	 */
 	void sendUpdateToServer(Object obj) {
 		try {
@@ -162,18 +168,15 @@ public class PrimaryController {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	/**
 	 * Activate as a respond for an unknown returned value or an error from server
-	 * @param object
-	 * Contains the error description
+	 * 
+	 * @param object Contains the error description
 	 */
 	public static void popError(String object) {
-		
 		alert.setHeaderText("Error from server");
-		alert.getDialogPane()
-				.setExpandableContent(new ScrollPane(new TextArea(object)));
+		alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(object)));
 		alert.showAndWait();
 	}
 
@@ -193,65 +196,71 @@ public class PrimaryController {
 		}
 		return status;
 	}
-	
+
 	/**
-	 * Static function that is called from ClientService for handling returned "Studies" from server
-	 * @param object
-	 * Contains a list of "CloneStudy"
+	 * Static function that is called from ClientService for handling returned
+	 * "Studies" from server
+	 * 
+	 * @param object Contains a list of "CloneStudy"
 	 */
 	public static void setDbStudy(Object object) {
-		PrimaryController.dbStudy = FXCollections.observableArrayList((List<CloneStudy>)object);
+		PrimaryController.dbStudy = FXCollections.observableArrayList((List<CloneStudy>) object);
 		System.out.println("Recived all Studies from server\n");
 	}
-	
+
 	/**
-	 * Static function that is called from ClientService for handling returned "Courses" from server
-	 * @param object
-	 * Contains a list of "CloneCourse"
+	 * Static function that is called from ClientService for handling returned
+	 * "Courses" from server
+	 * 
+	 * @param object Contains a list of "CloneCourse"
 	 */
 	public static void setDbCourse(Object object) {
-		PrimaryController.dbCourse = FXCollections.observableArrayList((List<CloneCourse>)object);
+		PrimaryController.dbCourse = FXCollections.observableArrayList((List<CloneCourse>) object);
 		System.out.println("Recived Courses from server\n");
 	}
 
 	/**
-	 * Static function that is called from ClientService for handling returned "Questions" from server
-	 * @param object
-	 * Contains a list of "CloneQuestion"
+	 * Static function that is called from ClientService for handling returned
+	 * "Questions" from server
+	 * 
+	 * @param object Contains a list of "CloneQuestion"
 	 */
 	public static void setDbQuestion(Object object) {
-		PrimaryController.dbQuestion = FXCollections.observableArrayList((List<CloneQuestion>)object);
+		PrimaryController.dbQuestion = FXCollections.observableArrayList((List<CloneQuestion>) object);
 		System.out.println("Recived Questions from server\n");
 	}
-	
+
 	/**
-	 * Static function that is called from ClientService for handling getting all questions in DB from server
-	 * @param object
-	 * Contains a list of "CloneQuestion"
+	 * Static function that is called from ClientService for handling getting all
+	 * questions in DB from server
+	 * 
+	 * @param object Contains a list of "CloneQuestion"
 	 */
 	@SuppressWarnings("unchecked")
 	public static void setAllQuestion(Object object) {
-		PrimaryController.allQuestions = (List<CloneQuestion>)object;
+		PrimaryController.allQuestions = (List<CloneQuestion>) object;
 		System.out.println("Recived ALL Questions from server\n");
 	}
-	
-	
+
 	/**
-	 * Static function that is called from ClientService for handling getting updated "Question" from server
-	 * @param object
-	 * Contains a "CloneQuestion" (updated)
+	 * Static function that is called from ClientService for handling getting
+	 * updated "Question" from server
+	 * 
+	 * @param object Contains a "CloneQuestion" (updated)
 	 */
 	public static void handleUpdateQuestionsFromServer(CloneQuestion object) {
 		dbUpdatedQ = object;
 	}
-	
+
 	/**
-	 * Filling all text fields and radio buttons of question on "Editor" tab from "CurrentQuestion" argument
-	 * @param CurrentQuestion
-	 * Contains a question selected from questions_combo or qList
+	 * Filling all text fields and radio buttons of question on "Editor" tab from
+	 * "CurrentQuestion" argument
+	 * 
+	 * @param CurrentQuestion Contains a question selected from questions_combo or
+	 *                        qList
 	 */
 	void addQuestionFields(CloneQuestion CurrentQuestion) {
-		
+
 		course_combo.setDisable(false);
 		question_combo.setDisable(false);
 		subject_text.setText(CurrentQuestion.getSubject());
@@ -312,7 +321,7 @@ public class PrimaryController {
 		}
 		return dbStudy;
 	}
-	
+
 	/**
 	 * Creating request from server and getting a "Course" back from server
 	 * 
@@ -350,7 +359,7 @@ public class PrimaryController {
 		}
 		return dbQuestion;
 	}
-	
+
 	/**
 	 * Creating request from server and getting all questions back from server
 	 * 
@@ -392,12 +401,14 @@ public class PrimaryController {
 		radio_4.setSelected(false);
 
 	}
-	
 
-	/************************************** Functions (attached to dialogs) **************************************/
+	/**************************************
+	 * Functions (attached to dialogs)
+	 **************************************/
 
 	/**
 	 * Opens the Instructions window when clicked "Help" on the menubar
+	 * 
 	 * @param event- doesn't matter
 	 */
 	@FXML
@@ -418,19 +429,22 @@ public class PrimaryController {
 
 	/**
 	 * Handles double-click on the qList (Like clicking on "Edit" button)
+	 * 
 	 * @param event - Contains the clicking event on the mouse
 	 */
-    @FXML
-    void onDoubleClick(MouseEvent event) {
-        if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2 ) {
-        	onClickedEdit(new ActionEvent());
-             }       
-    }
-    
-    /**
-     * Handle clicking on "Edit" button and presenting the selected question from qList
-     * @param event
-     */
+	@FXML
+	void onDoubleClick(MouseEvent event) {
+		if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+			onClickedEdit(new ActionEvent());
+		}
+	}
+
+	/**
+	 * Handle clicking on "Edit" button and presenting the selected question from
+	 * qList
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void onClickedEdit(ActionEvent event) {
 		ObservableList<CloneQuestion> selected_q = qList.getSelectionModel().getSelectedItems();
@@ -440,26 +454,14 @@ public class PrimaryController {
 			alert.showAndWait();
 			return;
 		}
+		ObservableList<CloneQuestion> val = FXCollections.observableArrayList(
+				GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse, selected_q.get(0).getCourse()));
+		// ObservableList<CloneQuestion> allQ =
+		// FXCollections.observableArrayList(allQuestions);
 
-		if (selected_q.size() > 1) {
-			alert.setHeaderText("Please select only one question");
-			alert.getDialogPane()
-					.setExpandableContent(new ScrollPane(new TextArea("Multiple questions has benn selected")));
-			alert.showAndWait();
-			return;
-		}
-		//ObservableList<CloneQuestion> allQ = FXCollections.observableArrayList(allQuestions);
-		
-		EventHandler<ActionEvent> handler = question_combo.getOnAction();
-		//question_combo.setOnAction(null);
-		//question_combo.setItems(allQ);
-		//question_combo.setOnAction(handler);
-		
-		question_combo.setValue(selected_q.get(0));
-		
-		mainTab.getSelectionModel().select(edtiorTab);
-		
-		handler = study_combo.getOnAction();
+		dbQuestion = null;
+
+		EventHandler<ActionEvent> handler = study_combo.getOnAction();
 		study_combo.setOnAction(null);
 		study_combo.getSelectionModel().clearSelection();
 		study_combo.setOnAction(handler);
@@ -467,20 +469,33 @@ public class PrimaryController {
 		handler = course_combo.getOnAction();
 		course_combo.setOnAction(null);
 		course_combo.getItems().clear();
+		course_combo.setValue(selected_q.get(0).getCourse());
 		course_combo.setOnAction(handler);
+
+		handler = question_combo.getOnAction();
+		question_combo.setOnAction(null);
+		question_combo.getItems().clear();
+		question_combo.setItems(val);
+		question_combo.setValue(selected_q.get(0));
+		addQuestionFields(question_combo.getValue());
+		question_combo.setOnAction(handler);
+
+		mainTab.getSelectionModel().select(edtiorTab);
 	}
-	
+
 	/**
-	 * Display the retrieved "Studies" from server on study_combo
-	 * Reset other fields on "Editor" tab
+	 * Display the retrieved "Studies" from server on study_combo Reset other fields
+	 * on "Editor" tab
+	 * 
 	 * @param event - doesn't matter
 	 */
 	@FXML
 	void onClickedStudy(ActionEvent event) {
-		ObservableList<CloneCourse> val = FXCollections.observableArrayList(GetDataFromDBCourse(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue()));
+		ObservableList<CloneCourse> val = FXCollections.observableArrayList(
+				GetDataFromDBCourse(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue()));
 		if (val == null)
 			return;
-		
+		course_combo.getItems().clear();
 		course_combo.setItems(val);
 		ClearAllFields();
 		course_combo.setDisable(false);
@@ -502,8 +517,9 @@ public class PrimaryController {
 	}
 
 	/**
-	 * Display the retrieved "Courses" from server on course_combo
-	 * Reset other fields on "Editor" tab, except study_combo
+	 * Display the retrieved "Courses" from server on course_combo Reset other
+	 * fields on "Editor" tab, except study_combo
+	 * 
 	 * @param event - doesn't matter
 	 */
 	@FXML
@@ -526,8 +542,8 @@ public class PrimaryController {
 
 			return;
 		}
-		ObservableList<CloneQuestion> val = FXCollections.observableArrayList(GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse,
-				course_combo.getValue()));
+		ObservableList<CloneQuestion> val = FXCollections.observableArrayList(
+				GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse, course_combo.getValue()));
 		if (val == null)
 			return;
 		ClearAllFields();
@@ -551,55 +567,49 @@ public class PrimaryController {
 	}
 
 	/**
-	 * Display the a retrieved "Question" from server on the question text fields and radio buttons, also enable submit button.
+	 * Display the a retrieved "Question" from server on the question text fields
+	 * and radio buttons, also enable submit button.
+	 * 
 	 * @param event - doesn't matter
 	 */
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-		
-		if(dbQuestion == null) {
-			if (question_combo.getValue() == null)
-				addQuestionFields(qList.getSelectionModel().getSelectedItems().get(0));
-			else
-				addQuestionFields(question_combo.getValue());
-		} else {
-			
-			if (question_combo.getValue() == null || question_combo.isDisable() == true) {
-				course_combo.setDisable(false);
-				question_combo.setDisable(false);
-				subject_text.setDisable(true);
-				question_text.setDisable(true);
 
-				answer_line_1.setDisable(true);
-				answer_line_2.setDisable(true);
-				answer_line_3.setDisable(true);
-				answer_line_4.setDisable(true);
+		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
+			course_combo.setDisable(false);
+			question_combo.setDisable(false);
+			subject_text.setDisable(true);
+			question_text.setDisable(true);
 
-				radio_1.setDisable(true);
-				radio_2.setDisable(true);
-				radio_3.setDisable(true);
-				radio_4.setDisable(true);
-				return;
-			}
-			
-			addQuestionFields(question_combo.getValue());
-			dbQuestion = null; // check if we should change the place of the nulling
-		}	
+			answer_line_1.setDisable(true);
+			answer_line_2.setDisable(true);
+			answer_line_3.setDisable(true);
+			answer_line_4.setDisable(true);
 
+			radio_1.setDisable(true);
+			radio_2.setDisable(true);
+			radio_3.setDisable(true);
+			radio_4.setDisable(true);
+			return;
+		}
+
+		addQuestionFields(question_combo.getValue());
+		dbQuestion = null; // check if we should change the place of the nulling
 	}
-	
+
 	/**
 	 * Handles the click on "Submit" button- send an update question query to server
-	 * Updates qList with updated question retrieved from server and also question_combo if needed
-	 * On a success - "Submit" button changes its color to green
-	 * On a failure - "Submit" button changes its color to red
+	 * Updates qList with updated question retrieved from server and also
+	 * question_combo if needed On a success - "Submit" button changes its color to
+	 * green On a failure - "Submit" button changes its color to red
+	 * 
 	 * @param event - doesn't matter
 	 * @throws Exception - Used for checking all fields are filled
 	 */
 	@FXML
 	void onClickedSubmit(ActionEvent event) throws Exception {
 		try {
-			String bstyle=String.format("-fx-background-color: #FFFF00;");
+			String bstyle = String.format("-fx-background-color: #FFFF00;");
 			submitButton.setStyle(bstyle);
 			CloneQuestion q = new CloneQuestion();
 			q.clone(question_combo.getValue());
@@ -639,16 +649,14 @@ public class PrimaryController {
 				throw new Exception("No correct answer");
 			}
 			sendUpdateToServer(q);
-			
-			while(dbUpdatedQ == null)
-			{
+
+			while (dbUpdatedQ == null) {
 				System.out.print("");
 			}
-			
+
 			if (question_combo.getItems().size() > 1) {
-				for(CloneQuestion q2:question_combo.getItems()) {
-					if(dbUpdatedQ.getId() == q2.getId())
-					{
+				for (CloneQuestion q2 : question_combo.getItems()) {
+					if (dbUpdatedQ.getId() == q2.getId()) {
 						EventHandler<ActionEvent> handler = question_combo.getOnAction();
 						question_combo.setOnAction(null);
 						question_combo.getItems().remove(q2);
@@ -659,49 +667,50 @@ public class PrimaryController {
 					}
 				}
 			}
-			
-			for(CloneQuestion q2:qList.getItems()) {
-				if(dbUpdatedQ.getId() == q2.getId())
-				{
+
+			for (CloneQuestion q2 : qList.getItems()) {
+				if (dbUpdatedQ.getId() == q2.getId()) {
 					qList.getItems().remove(q2);
 					CloneQuestion newItem = dbUpdatedQ;
 					qList.getItems().add(newItem);
 					dbUpdatedQ = null;
-					bstyle=String.format("-fx-background-color: #00FF09;");
+					bstyle = String.format("-fx-background-color: #00FF09;");
 					submitButton.setStyle(bstyle);
 					return;
 				}
 			}
-			
+
 		} catch (Exception e) {
-			String bstyle=String.format("-fx-background-color: #FF0000;");
+			String bstyle = String.format("-fx-background-color: #FF0000;");
 			submitButton.setStyle(bstyle);
 			alert.setHeaderText("Invalid input");
 			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("Please fill all the fields")));
 			alert.showAndWait();
 		}
 	}
-	
+
 	/**
 	 * Limits the number of chars on TextArea to 100
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void countChars100(KeyEvent event) {
-		TextField n = (TextField)event.getSource();
-		n.setTextFormatter(new TextFormatter<String>(change -> 
-        change.getControlNewText().length() <= 100 ? change : null));
+		TextField n = (TextField) event.getSource();
+		n.setTextFormatter(
+				new TextFormatter<String>(change -> change.getControlNewText().length() <= 100 ? change : null));
 	}
-	
+
 	/**
 	 * Limits the number of chars on TextArea to 180
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void countChars180(KeyEvent event) {
-		TextArea n = (TextArea)event.getSource();
-		n.setTextFormatter(new TextFormatter<String>(change -> 
-        change.getControlNewText().length() <= 180 ? change : null));
+		TextArea n = (TextArea) event.getSource();
+		n.setTextFormatter(
+				new TextFormatter<String>(change -> change.getControlNewText().length() <= 180 ? change : null));
 	}
 
 }
