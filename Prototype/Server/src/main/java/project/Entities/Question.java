@@ -15,22 +15,22 @@ public class Question {
 	@Column(name = "questionCode")
 	private int questionCode;
 
-	@Column(name = "subject", length = 180)
+	@Column(name = "subject", length = 100)
 	private String subject;
 
-	@Column(name = "questionText", length = 180)
+	@Column(name = "questionText", length = 100)
 	private String questionText;
 
-	@Column(name = "answer_1", length = 180)
+	@Column(name = "answer_1", length = 100)
 	private String answer_1;
 
-	@Column(name = "answer_2", length = 180)
+	@Column(name = "answer_2", length = 100)
 	private String answer_2;
 
-	@Column(name = "answer_3", length = 180)
+	@Column(name = "answer_3", length = 100)
 	private String answer_3;
 
-	@Column(name = "answer_4", length = 180)
+	@Column(name = "answer_4", length = 100)
 	private String answer_4;
 
 	@Column(name = "correctAnswer")
@@ -46,7 +46,7 @@ public class Question {
 	public Question(String subject, String questionText, String answer_1, String answer_2, String answer_3,
 			String answer_4, int correctAnswer, Course course) {
 		this.setCourse(course);
-		this.questionCode = GenerateQuestionCode();
+		this.GenerateQuestionCode();
 		this.subject = subject;
 		this.questionText = questionText;
 		this.answer_1 = answer_1;
@@ -63,9 +63,9 @@ public class Question {
 		return clone;
 	}
 
-	public int GenerateQuestionCode() {
+	private void GenerateQuestionCode() {
 		int courseID = course.getId();
-		return courseID * 1000 + course.getQuestions().size();
+		this.questionCode = courseID * 1000 + course.getQuestions().size();
 	}
 
 	public int getId() {
@@ -74,10 +74,6 @@ public class Question {
 
 	public int getQuestionCode() {
 		return questionCode;
-	}
-
-	public void setQuestionCode(int questionCode) {
-		this.questionCode = questionCode;
 	}
 
 	public String getSubject() {

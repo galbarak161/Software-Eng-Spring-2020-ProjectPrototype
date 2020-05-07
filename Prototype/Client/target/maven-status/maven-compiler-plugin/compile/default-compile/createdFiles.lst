@@ -1,0 +1,17 @@
+project\Prototype\ClientMain$1.class
+project\Prototype\ClientService$1.class
+project\Prototype\DataElements$ClientToServerOpcodes.class
+module-info.class
+project\Prototype\DataElements$ServerToClientOpcodes.class
+ocsf\client\AbstractClient.class
+project\Prototype\App.class
+project\Prototype\DataElements.class
+ocsf\client\AdaptableClient.class
+project\Prototype\ClientService.class
+ocsf\client\ObservableSWRClient.class
+project\CloneEntities\CloneQuestion.class
+project\Prototype\PrimaryController.class
+ocsf\client\ObservableClient.class
+project\CloneEntities\CloneCourse.class
+project\CloneEntities\CloneStudy.class
+project\Prototype\ClientMain.class

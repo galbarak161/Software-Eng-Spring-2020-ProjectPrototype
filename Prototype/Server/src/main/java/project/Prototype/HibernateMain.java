@@ -100,7 +100,7 @@ public class HibernateMain {
 	private static void initializeData() throws Exception {
 
 		final int NUMBER_OF_STUDIES = 5;
-		final int NUMBER_OF_COURSES = 12;
+		final int NUMBER_OF_COURSES = 10;
 		final int NUMBER_OF_QUESTIONS = 10;
 
 		// Generate fields of study
@@ -149,12 +149,11 @@ public class HibernateMain {
 		// Generate questions
 		Question[] questions = new Question[NUMBER_OF_QUESTIONS];
 		String[] questionsSubject = new String[NUMBER_OF_QUESTIONS];
-		String[] questionsText =  new String[NUMBER_OF_QUESTIONS];
+		String[] questionsText = new String[NUMBER_OF_QUESTIONS];
 		String[][] questionsAnswers = new String[NUMBER_OF_QUESTIONS][4];
 		int[] correctAnswer = new int[NUMBER_OF_QUESTIONS];
-		
-		
-		questionsText[0]= "who is best-selling music artist?";
+
+		questionsText[0] = "who is best-selling music artist?";
 		questionsSubject[0] = "Music";
 		questionsAnswers[0][0] = "Eyal Golan";
 		questionsAnswers[0][1] = "Michael Jackson";
@@ -177,7 +176,7 @@ public class HibernateMain {
 		questionsAnswers[2][2] = "Eat more fruits and vegetables";
 		questionsAnswers[2][3] = "Get a good night's sleep";
 		correctAnswer[2] = 1;
-		
+
 		questionsText[3] = "what type of drug is Heroin classfied as?";
 		questionsSubject[3] = "Pharmacy";
 		questionsAnswers[3][0] = "Depressants";
@@ -185,7 +184,7 @@ public class HibernateMain {
 		questionsAnswers[3][2] = "Dissociatives";
 		questionsAnswers[3][3] = "Inhalants";
 		correctAnswer[3] = 2;
-		
+
 		questionsText[4] = "In US law, a malicious act to 'intentionally' cause damage to property is called what?";
 		questionsSubject[4] = "Law";
 		questionsAnswers[4][0] = "Malicious mischief";
@@ -218,15 +217,22 @@ public class HibernateMain {
 		questionsAnswers[7][3] = "16";
 		correctAnswer[7] = 4;
 
-		questionsText[8] = "when was the stock market crash?";
-		questionsSubject[8] = "Economics";
-		questionsAnswers[8][0] = "2008";
-		questionsAnswers[8][1] = "1929";
-		questionsAnswers[8][2] = "2020";
-		questionsAnswers[8][3] = "2010";
-		correctAnswer[8] = 2;
+		questionsText[8] = "translation of the following statement,None of my friends are perfect";
+		questionsSubject[8] = "Computer Science";
+		questionsAnswers[8][0] = "∃x(F(x)^P(x))";
+		questionsAnswers[8][1] = "∃x(¬F(x)^¬P(x))";
+		questionsAnswers[8][2] = "¬∃(F(x)^P(x))";
+		questionsAnswers[8][3] = "∃x(¬F(x)^P(x))";
+		correctAnswer[8] = 3;
 
-		
+		questionsText[9] = "when was the stock market crash?";
+		questionsSubject[9] = "Economics";
+		questionsAnswers[9][0] = "2008";
+		questionsAnswers[9][1] = "1929";
+		questionsAnswers[9][2] = "2020";
+		questionsAnswers[9][3] = "2010";
+		correctAnswer[9] = 2;
+
 		questionsText[9] = "Who is regarded as the father of psychology?";
 		questionsSubject[9] = "Psychology";
 		questionsAnswers[9][0] = "Mary Whiton Calkins";
@@ -234,28 +240,16 @@ public class HibernateMain {
 		questionsAnswers[9][2] = "Wilhelm Wundt";
 		questionsAnswers[9][3] = "Kurt Lewin ";
 		correctAnswer[9] = 3;
-		
-		questionsText[10] = "what type of drug is Heroin classfied as?";
-		questionsSubject[10] = "Health Sciences";
-		questionsAnswers[10][0] = "Depressants";
-		questionsAnswers[10][1] = "Opioids";
-		questionsAnswers[10][2] = "Dissociatives";
-		questionsAnswers[10][3] = "Inhalants";
-		correctAnswer[10] = 2;
-		
-		questionsText[11] = "translation of the following statement,None of my friends are perfect";
-		questionsSubject[11] = "Computer Science";
-		questionsAnswers[11][0] = "∃x(F(x)^P(x))";
-		questionsAnswers[11][1] = "∃x(¬F(x)^¬P(x))";
-		questionsAnswers[11][2] = "¬∃(F(x)^P(x))";
-		questionsAnswers[11][3] = "∃x(¬F(x)^P(x))";
-		correctAnswer[11] = 3;
 
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
+			Course c;
+			if (i == 7 || i == 8)
+				c = courses[7];
+			else
+				c = courses[i];
+
 			questions[i] = new Question(questionsSubject[i], questionsText[i], questionsAnswers[i][0],
-					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i],
-					courses[i]);
-			questions[i].GenerateQuestionCode();
+					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i], c);
 			session.save(questions[i]);
 		}
 		session.flush();

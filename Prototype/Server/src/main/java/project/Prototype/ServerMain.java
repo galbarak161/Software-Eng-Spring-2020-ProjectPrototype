@@ -24,16 +24,20 @@ public class ServerMain extends AbstractServer {
 		super.clientDisconnected(client);
 		numberOfConnectedClients = this.getNumberOfClients() - 1;
 		System.out.println("Number of connected client(s): " + numberOfConnectedClients + "\n");
-		System.out.print("Do you want to close the server? (Yes \\ No): ");
 
-		try (Scanner input = new Scanner(System.in)) {
-			String stringInput = input.nextLine().toLowerCase();
-			if (stringInput.equals("yes")) {
-				try {
-					this.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		if (numberOfConnectedClients == 0) {
+			System.out.print("Do you want to close the server? (Yes \\ No): ");
+
+			try (Scanner input = new Scanner(System.in)) {
+				String stringInput = input.nextLine().toLowerCase();
+				if (stringInput.equals("yes")) {
+					try {
+						this.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				} else
+					System.out.println("Server ready!");
 			}
 		}
 	}
@@ -101,8 +105,11 @@ public class ServerMain extends AbstractServer {
 			de.setData(e.getMessage());
 
 		} finally {
-			if (de.getData() == null)
+			if (de.getData() == null) {
 				de.setOpCodeFromServer(DataElements.ServerToClientOpcodes.Error);
+				de.setData("handleMessageFromClient: Unknown Error");
+			}
+
 			System.out.println("Send result to user! opcode = " + de.getOpCodeFromServer() + "\n");
 			sendToAllClients(de);
 		}
@@ -148,8 +155,9 @@ public class ServerMain extends AbstractServer {
 			e.printStackTrace();
 			return null;
 		}
-		System.out.println("Question " + originalQustion.getId() + " (QuestionCode = "
-				+ originalQustion.getQuestionCode() + ") - Was updated.");
+		// System.out.println("Question " + originalQustion.getId() + " (QuestionCode =
+		// "
+		// + originalQustion.getQuestionCode() + ") - Was updated.");
 		return originalQustion.createClone();
 	}
 
@@ -172,7 +180,8 @@ public class ServerMain extends AbstractServer {
 			return null;
 		}
 
-		cloneQuestion.forEach(q -> System.out.println(q.getQuestionCode() + " - " + q.getSubject()));
+		// cloneQuestion.forEach(q -> System.out.println(q.getQuestionCode() + " - " +
+		// q.getSubject()));
 		return cloneQuestion;
 	}
 
@@ -198,8 +207,9 @@ public class ServerMain extends AbstractServer {
 			return null;
 		}
 
-		System.out.println("List of questions from course " + cloneCourse.getCourseName());
-		questionsFromCourse.forEach(q -> System.out.println(q.getQuestionCode()));
+		// System.out.println("List of questions from course " +
+		// cloneCourse.getCourseName());
+		// questionsFromCourse.forEach(q -> System.out.println(q.getQuestionCode()));
 		return questionsFromCourse;
 	}
 
@@ -222,7 +232,7 @@ public class ServerMain extends AbstractServer {
 			return null;
 		}
 
-		cloneStudies.forEach(s -> System.out.println(s.getStudyName()));
+		// cloneStudies.forEach(s -> System.out.println(s.getStudyName()));
 		return cloneStudies;
 	}
 
@@ -248,8 +258,9 @@ public class ServerMain extends AbstractServer {
 			return null;
 		}
 
-		System.out.println("List of courses from study " + cloneStudy.getStudyName());
-		courses.forEach(q -> System.out.println(q.getCourseName()));
+		// System.out.println("List of courses from study " +
+		// cloneStudy.getStudyName());
+		// courses.forEach(q -> System.out.println(q.getCourseName()));
 		return courses;
 	}
 
