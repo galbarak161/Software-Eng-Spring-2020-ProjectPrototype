@@ -101,7 +101,7 @@ public class HibernateMain {
 
 		final int NUMBER_OF_STUDIES = 5;
 		final int NUMBER_OF_COURSES = 10;
-		final int NUMBER_OF_QUESTIONS = 10;
+		final int NUMBER_OF_QUESTIONS = 12;
 
 		// Generate fields of study
 		Study[] studies = new Study[NUMBER_OF_STUDIES];
@@ -153,7 +153,7 @@ public class HibernateMain {
 		String[][] questionsAnswers = new String[NUMBER_OF_QUESTIONS][4];
 		int[] correctAnswer = new int[NUMBER_OF_QUESTIONS];
 
-		questionsText[0] = "who is best-selling music artist?";
+		questionsText[0]= "who is best-selling music artist?";
 		questionsSubject[0] = "Music";
 		questionsAnswers[0][0] = "Eyal Golan";
 		questionsAnswers[0][1] = "Michael Jackson";
@@ -170,13 +170,13 @@ public class HibernateMain {
 		correctAnswer[1] = 3;
 
 		questionsText[2] = "what is a bad things to do for your body?";
-		questionsSubject[2] = "Health Sciences";
+		questionsSubject[2] = "Health Sciences 1";
 		questionsAnswers[2][0] = "bing Netflix";
 		questionsAnswers[2][1] = "Exercise regularly";
 		questionsAnswers[2][2] = "Eat more fruits and vegetables";
 		questionsAnswers[2][3] = "Get a good night's sleep";
 		correctAnswer[2] = 1;
-
+		
 		questionsText[3] = "what type of drug is Heroin classfied as?";
 		questionsSubject[3] = "Pharmacy";
 		questionsAnswers[3][0] = "Depressants";
@@ -184,7 +184,7 @@ public class HibernateMain {
 		questionsAnswers[3][2] = "Dissociatives";
 		questionsAnswers[3][3] = "Inhalants";
 		correctAnswer[3] = 2;
-
+		
 		questionsText[4] = "In US law, a malicious act to 'intentionally' cause damage to property is called what?";
 		questionsSubject[4] = "Law";
 		questionsAnswers[4][0] = "Malicious mischief";
@@ -210,29 +210,22 @@ public class HibernateMain {
 		correctAnswer[6] = 3;
 
 		questionsText[7] = "How many registers are in in LC3?";
-		questionsSubject[7] = "Computer Science";
+		questionsSubject[7] = "Computer Science 1";
 		questionsAnswers[7][0] = "32";
 		questionsAnswers[7][1] = "4";
 		questionsAnswers[7][2] = "8";
 		questionsAnswers[7][3] = "16";
 		correctAnswer[7] = 4;
 
-		questionsText[8] = "translation of the following statement,None of my friends are perfect";
-		questionsSubject[8] = "Computer Science";
-		questionsAnswers[8][0] = "∃x(F(x)^P(x))";
-		questionsAnswers[8][1] = "∃x(¬F(x)^¬P(x))";
-		questionsAnswers[8][2] = "¬∃(F(x)^P(x))";
-		questionsAnswers[8][3] = "∃x(¬F(x)^P(x))";
-		correctAnswer[8] = 3;
+		questionsText[8] = "when was the stock market crash?";
+		questionsSubject[8] = "Economics";
+		questionsAnswers[8][0] = "2008";
+		questionsAnswers[8][1] = "1929";
+		questionsAnswers[8][2] = "2020";
+		questionsAnswers[8][3] = "2010";
+		correctAnswer[8] = 2;
 
-		questionsText[9] = "when was the stock market crash?";
-		questionsSubject[9] = "Economics";
-		questionsAnswers[9][0] = "2008";
-		questionsAnswers[9][1] = "1929";
-		questionsAnswers[9][2] = "2020";
-		questionsAnswers[9][3] = "2010";
-		correctAnswer[9] = 2;
-
+		
 		questionsText[9] = "Who is regarded as the father of psychology?";
 		questionsSubject[9] = "Psychology";
 		questionsAnswers[9][0] = "Mary Whiton Calkins";
@@ -240,6 +233,24 @@ public class HibernateMain {
 		questionsAnswers[9][2] = "Wilhelm Wundt";
 		questionsAnswers[9][3] = "Kurt Lewin ";
 		correctAnswer[9] = 3;
+		
+		questionsText[10] = "what type of drug is Heroin classfied as?";
+		questionsSubject[10] = "Health Sciences 2";
+		questionsAnswers[10][0] = "Depressants";
+		questionsAnswers[10][1] = "Opioids";
+		questionsAnswers[10][2] = "Dissociatives";
+		questionsAnswers[10][3] = "Inhalants";
+		correctAnswer[10] = 2;
+		
+		questionsText[11] = "translation of the following statement,None of my friends are perfect";
+		questionsSubject[11] = "Computer Science 2";
+		questionsAnswers[11][0] = "∃x(F(x)^P(x))";
+		questionsAnswers[11][1] = "∃x(¬F(x)^¬P(x))";
+		questionsAnswers[11][2] = "¬∃(F(x)^P(x))";
+		questionsAnswers[11][3] = "∃x(¬F(x)^P(x))";
+		correctAnswer[11] = 3;
+		
+		
 
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
 			Course c;
