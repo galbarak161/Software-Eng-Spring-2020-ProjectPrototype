@@ -683,7 +683,7 @@ public class PrimaryController {
 				System.out.print("");
 			}
 
-			if (question_combo.getItems().size() > 1) {
+			if (question_combo.getItems().size() >= 1) {
 				for (CloneQuestion q2 : question_combo.getItems()) {
 					if (dbUpdatedQ.getId() == q2.getId()) {
 						EventHandler<ActionEvent> handler = question_combo.getOnAction();
@@ -691,6 +691,7 @@ public class PrimaryController {
 						question_combo.getItems().remove(q2);
 						CloneQuestion newItem = dbUpdatedQ;
 						question_combo.getItems().add(newItem);
+						question_combo.setValue(newItem);
 						question_combo.setOnAction(handler);
 						break;
 					}
