@@ -150,6 +150,18 @@ public class PrimaryController {
 			qList.getItems().add(item);
 		}
 	}
+	
+	/**
+	 * Changing Submit button color
+	 * @param color- color Submit would be changed to, #FFFFFF for example.
+	 */
+	void ChangeSubmitColor(String color)
+	{
+		if (color == null)
+			submitButton.setStyle(color);
+		else 
+			submitButton.setStyle(String.format("-fx-background-color: " + color +";"));
+	}
 
 	/**
 	 * Function makes a "DataElemnts" object that is used for a data request from
@@ -386,7 +398,6 @@ public class PrimaryController {
 	 */
 	public void ClearAllFields() {
 
-		question_combo.getItems().clear();
 		subject_text.clear();
 		question_text.clear();
 
@@ -399,6 +410,8 @@ public class PrimaryController {
 		radio_2.setSelected(false);
 		radio_3.setSelected(false);
 		radio_4.setSelected(false);
+		
+		question_combo.getItems().clear();
 
 	}
 
@@ -469,6 +482,7 @@ public class PrimaryController {
 		handler = course_combo.getOnAction();
 		course_combo.setOnAction(null);
 		course_combo.getItems().clear();
+		course_combo.setValue(null);
 		course_combo.setValue(selected_q.get(0).getCourse());
 		course_combo.setOnAction(handler);
 
@@ -476,11 +490,13 @@ public class PrimaryController {
 		question_combo.setOnAction(null);
 		question_combo.getItems().clear();
 		question_combo.setItems(val);
+		question_combo.setValue(null);
 		question_combo.setValue(selected_q.get(0));
 		addQuestionFields(question_combo.getValue());
 		question_combo.setOnAction(handler);
 
 		mainTab.getSelectionModel().select(edtiorTab);
+		ChangeSubmitColor(null);
 	}
 
 	/**
@@ -495,7 +511,8 @@ public class PrimaryController {
 				GetDataFromDBCourse(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue()));
 		if (val == null)
 			return;
-		course_combo.getItems().clear();
+		course_combo.setValue(null);
+		question_combo.setValue(null);
 		course_combo.setItems(val);
 		ClearAllFields();
 		course_combo.setDisable(false);
@@ -514,6 +531,8 @@ public class PrimaryController {
 		radio_4.setDisable(true);
 
 		dbStudy = null;
+		
+		ChangeSubmitColor(null);
 	}
 
 	/**
@@ -540,6 +559,10 @@ public class PrimaryController {
 			radio_3.setDisable(true);
 			radio_4.setDisable(true);
 
+			dbCourse = null;
+			
+			ChangeSubmitColor(null);
+			
 			return;
 		}
 		ObservableList<CloneQuestion> val = FXCollections.observableArrayList(
@@ -590,11 +613,17 @@ public class PrimaryController {
 			radio_2.setDisable(true);
 			radio_3.setDisable(true);
 			radio_4.setDisable(true);
+			
+			dbQuestion = null;
+			
+			ChangeSubmitColor(null);
+			
 			return;
 		}
 
 		addQuestionFields(question_combo.getValue());
-		dbQuestion = null; // check if we should change the place of the nulling
+		dbQuestion = null; 
+		ChangeSubmitColor(null);
 	}
 
 	/**
@@ -674,15 +703,13 @@ public class PrimaryController {
 					CloneQuestion newItem = dbUpdatedQ;
 					qList.getItems().add(newItem);
 					dbUpdatedQ = null;
-					bstyle = String.format("-fx-background-color: #00FF09;");
-					submitButton.setStyle(bstyle);
+					ChangeSubmitColor("#00FF09");
 					return;
 				}
 			}
 
 		} catch (Exception e) {
-			String bstyle = String.format("-fx-background-color: #FF0000;");
-			submitButton.setStyle(bstyle);
+			ChangeSubmitColor("#FF0000");
 			alert.setHeaderText("Invalid input");
 			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("Please fill all the fields")));
 			alert.showAndWait();
