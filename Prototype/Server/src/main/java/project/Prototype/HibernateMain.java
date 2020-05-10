@@ -261,9 +261,9 @@ public class HibernateMain {
 			Course c = new Course();
 			if (i == 0)
 				c = courses[i];
-			else if (0 < i && i < 7)
+			else if (0 < i && i <= 7)
 				c = courses[i-1];
-			else if (i >= 7 && i < 12)
+			else if (i > 7 && i < 12)
 				c = courses[i-2];
 			else if (i >= 12)
 				c = courses[i-3];
