@@ -101,16 +101,16 @@ public class HibernateMain {
 
 		final int NUMBER_OF_STUDIES = 5;
 		final int NUMBER_OF_COURSES = 10;
-		final int NUMBER_OF_QUESTIONS = 10;
+		final int NUMBER_OF_QUESTIONS = 13;
 
 		// Generate fields of study
 		Study[] studies = new Study[NUMBER_OF_STUDIES];
 		String[] studiesName = new String[NUMBER_OF_STUDIES];
-		studiesName[0] = "Arts";
-		studiesName[1] = "Health and welfare";
-		studiesName[2] = "Business Administration";
-		studiesName[3] = "Natural sciences";
-		studiesName[4] = "Social sciences";
+		studiesName[0] = "Math";
+		studiesName[1] = "English";
+		studiesName[2] = "History";
+		studiesName[3] = "Computer Science";
+		studiesName[4] = "Biology";
 		for (int i = 0; i < NUMBER_OF_STUDIES; i++) {
 			Study s = new Study(studiesName[i]);
 			studies[i] = s;
@@ -121,16 +121,16 @@ public class HibernateMain {
 		// Generate courses
 		Course[] courses = new Course[NUMBER_OF_COURSES];
 		String[] coursesName = new String[NUMBER_OF_COURSES];
-		coursesName[0] = "Music";
-		coursesName[1] = "Theatre and Dance";
-		coursesName[2] = "Health Sciences";
-		coursesName[3] = "Pharmacy";
-		coursesName[4] = "Law";
-		coursesName[5] = "Business management";
-		coursesName[6] = "Geography";
-		coursesName[7] = "Computer Science";
-		coursesName[8] = "Economics";
-		coursesName[9] = "Psychology";
+		coursesName[0] = "Geometry";
+		coursesName[1] = "Algebra";
+		coursesName[2] = "Grammer";
+		coursesName[3] = "Vocabulary";
+		coursesName[4] = "20th Century";
+		coursesName[5] = "19th Century";
+		coursesName[6] = "Intro to C";
+		coursesName[7] = "Data Structures";
+		coursesName[8] = "Digestive System";
+		coursesName[9] = "Animals";
 		for (int i = 0, j = 0; i < NUMBER_OF_COURSES && j < NUMBER_OF_STUDIES; j++) {
 			Course c1 = new Course(coursesName[i]);
 			c1.addStudies(studies[j]);
@@ -153,100 +153,120 @@ public class HibernateMain {
 		String[][] questionsAnswers = new String[NUMBER_OF_QUESTIONS][4];
 		int[] correctAnswer = new int[NUMBER_OF_QUESTIONS];
 
-		questionsText[0] = "who is best-selling music artist?";
-		questionsSubject[0] = "Music";
-		questionsAnswers[0][0] = "Eyal Golan";
-		questionsAnswers[0][1] = "Michael Jackson";
-		questionsAnswers[0][2] = "Madonna";
-		questionsAnswers[0][3] = "The Beatles";
-		correctAnswer[0] = 4;
+		questionsText[0] = "How many edges does a triangle have?";
+		questionsSubject[0] = "Triangles";
+		questionsAnswers[0][0] = "4";
+		questionsAnswers[0][1] = "3";
+		questionsAnswers[0][2] = "5";
+		questionsAnswers[0][3] = "6";
+		correctAnswer[0] = 2;
 
-		questionsText[1] = "Rudolf Nureyev is known for what type of dance??";
-		questionsSubject[1] = "Theatre and Dance";
-		questionsAnswers[1][0] = "Contemporary";
-		questionsAnswers[1][1] = "Hip Hop";
-		questionsAnswers[1][2] = "Ballet";
-		questionsAnswers[1][3] = "ModernModern";
+		questionsText[1] = "How many edges does a square have?";
+		questionsSubject[1] = "Squares";
+		questionsAnswers[1][0] = "7";
+		questionsAnswers[1][1] = "9";
+		questionsAnswers[1][2] = "4";
+		questionsAnswers[1][3] = "3";
 		correctAnswer[1] = 3;
 
-		questionsText[2] = "what is a bad things to do for your body?";
-		questionsSubject[2] = "Health Sciences";
-		questionsAnswers[2][0] = "bing Netflix";
-		questionsAnswers[2][1] = "Exercise regularly";
-		questionsAnswers[2][2] = "Eat more fruits and vegetables";
-		questionsAnswers[2][3] = "Get a good night's sleep";
+		questionsText[2] = "How many equations do we need to solve a 4 parameters matrix?";
+		questionsSubject[2] = "Matrices";
+		questionsAnswers[2][0] = "4";
+		questionsAnswers[2][1] = "1";
+		questionsAnswers[2][2] = "2";
+		questionsAnswers[2][3] = "6";
 		correctAnswer[2] = 1;
 
-		questionsText[3] = "what type of drug is Heroin classfied as?";
-		questionsSubject[3] = "Pharmacy";
-		questionsAnswers[3][0] = "Depressants";
-		questionsAnswers[3][1] = "Opioids";
-		questionsAnswers[3][2] = "Dissociatives";
-		questionsAnswers[3][3] = "Inhalants";
-		correctAnswer[3] = 2;
+		questionsText[3] = "When do we use a 'do' or a 'does'?";
+		questionsSubject[3] = "Present Simple";
+		questionsAnswers[3][0] = "To describe a person";
+		questionsAnswers[3][1] = "We use it for asking questions, but only a 'do'";
+		questionsAnswers[3][2] = "To describe somebody's act";
+		questionsAnswers[3][3] = "We use it for asking questions, 'does' for singular and 'do' for plural";
+		correctAnswer[3] = 4;
 
-		questionsText[4] = "In US law, a malicious act to 'intentionally' cause damage to property is called what?";
-		questionsSubject[4] = "Law";
-		questionsAnswers[4][0] = "Malicious mischief";
-		questionsAnswers[4][1] = "Vandalism";
-		questionsAnswers[4][2] = "Mandamus";
-		questionsAnswers[4][3] = "Intestacy";
-		correctAnswer[4] = 2;
+		questionsText[4] = "What is a Pavement?";
+		questionsSubject[4] = "Hard words";
+		questionsAnswers[4][0] = "Kind of a kitchen tool";
+		questionsAnswers[4][1] = "A laptop seating";
+		questionsAnswers[4][2] = "A passage on the street for walking people";
+		questionsAnswers[4][3] = "Main road";
+		correctAnswer[4] = 3;
 
-		questionsText[5] = "when looking at management levelsis a hierarchical view where is Supervisors located?";
-		questionsSubject[5] = "Business management";
-		questionsAnswers[5][0] = "Top-level";
-		questionsAnswers[5][1] = "Middle-level";
-		questionsAnswers[5][2] = "Low-level";
-		questionsAnswers[5][3] = "Center-level";
-		correctAnswer[5] = 3;
+		questionsText[5] = "When did World War I occurr?";
+		questionsSubject[5] = "World War I";
+		questionsAnswers[5][0] = "1914-1918";
+		questionsAnswers[5][1] = "1920-1940";
+		questionsAnswers[5][2] = "1939-1945";
+		questionsAnswers[5][3] = "1908-1911";
+		correctAnswer[5] = 1;
 
-		questionsText[6] = "how many continents in the world?";
-		questionsSubject[6] = "Geography";
-		questionsAnswers[6][0] = "5";
-		questionsAnswers[6][1] = "6";
-		questionsAnswers[6][2] = "7";
-		questionsAnswers[6][3] = "4";
-		correctAnswer[6] = 3;
+		questionsText[6] = "When did The American Civil War occurr?";
+		questionsSubject[6] = "The American Civil War";
+		questionsAnswers[6][0] = "1850-1855";
+		questionsAnswers[6][1] = "1861-1865";
+		questionsAnswers[6][2] = "1820-1830";
+		questionsAnswers[6][3] = "1888-1890";
+		correctAnswer[6] = 2;
 
-		questionsText[7] = "How many registers are in in LC3?";
-		questionsSubject[7] = "Computer Science";
-		questionsAnswers[7][0] = "32";
-		questionsAnswers[7][1] = "4";
-		questionsAnswers[7][2] = "8";
-		questionsAnswers[7][3] = "16";
-		correctAnswer[7] = 4;
+		questionsText[7] = "How do we focre-stopping a loop?";
+		questionsSubject[7] = "Loops";
+		questionsAnswers[7][0] = "Using 'Continue'";
+		questionsAnswers[7][1] = "Using 'Break'";
+		questionsAnswers[7][2] = "Using 'End'";
+		questionsAnswers[7][3] = "Using 'Stop'";
+		correctAnswer[7] = 2;
 
-		questionsText[8] = "translation of the following statement,None of my friends are perfect";
-		questionsSubject[8] = "Computer Science";
-		questionsAnswers[8][0] = "∃x(F(x)^P(x))";
-		questionsAnswers[8][1] = "∃x(¬F(x)^¬P(x))";
-		questionsAnswers[8][2] = "¬∃(F(x)^P(x))";
-		questionsAnswers[8][3] = "∃x(¬F(x)^P(x))";
-		correctAnswer[8] = 3;
+		questionsText[8] = "What command is used for printing to command prompt?";
+		questionsSubject[8] = "I/O";
+		questionsAnswers[8][0] = "printf";
+		questionsAnswers[8][1] = "cout";
+		questionsAnswers[8][2] = "print";
+		questionsAnswers[8][3] = "write";
+		correctAnswer[8] = 2;
 
-		questionsText[9] = "when was the stock market crash?";
-		questionsSubject[9] = "Economics";
-		questionsAnswers[9][0] = "2008";
-		questionsAnswers[9][1] = "1929";
-		questionsAnswers[9][2] = "2020";
-		questionsAnswers[9][3] = "2010";
-		correctAnswer[9] = 2;
+		questionsText[9] = "What is the lower bound (in time complexity) of sorting?";
+		questionsSubject[9] = "Sorting";
+		questionsAnswers[9][0] = "O(1)";
+		questionsAnswers[9][1] = "O(n)";
+		questionsAnswers[9][2] = "O(n^2)";
+		questionsAnswers[9][3] = "O(nlogn)";
+		correctAnswer[9] = 4;
 
-		questionsText[9] = "Who is regarded as the father of psychology?";
-		questionsSubject[9] = "Psychology";
-		questionsAnswers[9][0] = "Mary Whiton Calkins";
-		questionsAnswers[9][1] = "Sigmund Freud";
-		questionsAnswers[9][2] = "Wilhelm Wundt";
-		questionsAnswers[9][3] = "Kurt Lewin ";
-		correctAnswer[9] = 3;
+		questionsText[10] = "How long does it take to digest bread?";
+		questionsSubject[10] = "Digest of carbohydrates";
+		questionsAnswers[10][0] = "An hour";
+		questionsAnswers[10][1] = "Two hours";
+		questionsAnswers[10][2] = "An hour and a half";
+		questionsAnswers[10][3] = "Three hours";
+		correctAnswer[10] = 3;
+		
+		questionsText[11] = "How long is the pregnancy of a dog?";
+		questionsSubject[11] = "Reproduction";
+		questionsAnswers[11][0] = "8 months";
+		questionsAnswers[11][1] = "3 months";
+		questionsAnswers[11][2] = "2 months";
+		questionsAnswers[11][3] = "9 months";
+		correctAnswer[11] = 2;
+
+		questionsText[12] = "Who is at the top of the food chain?";
+		questionsSubject[12] = "The Food Chain";
+		questionsAnswers[12][0] = "Apex predator";
+		questionsAnswers[12][1] = "Predators";
+		questionsAnswers[12][2] = "Mammals";
+		questionsAnswers[12][3] = "Humans";
+		correctAnswer[12] = 1;
 
 		for (int i = 0; i < NUMBER_OF_QUESTIONS; i++) {
-			Course c;
-			if (i == 7 || i == 8)
-				c = courses[7];
-			else
+			Course c = new Course();
+			if (i == 0)
 				c = courses[i];
+			else if (0 < i && i < 7)
+				c = courses[i-1];
+			else if (i >= 7 && i < 12)
+				c = courses[i-2];
+			else if (i >= 12)
+				c = courses[i-3];
 
 			questions[i] = new Question(questionsSubject[i], questionsText[i], questionsAnswers[i][0],
 					questionsAnswers[i][1], questionsAnswers[i][2], questionsAnswers[i][3], correctAnswer[i], c);
