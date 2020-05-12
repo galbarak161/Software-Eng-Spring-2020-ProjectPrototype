@@ -17,6 +17,10 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import project.CloneEntities.*;
 import project.Prototype.DataElements.ClientToServerOpcodes;
@@ -112,7 +116,9 @@ public class PrimaryController {
 
 	private static CloneQuestion dbUpdatedQ = null;
 
-	private static Alert alert = new Alert(Alert.AlertType.ERROR);
+	private Alert alert = new Alert(Alert.AlertType.ERROR);
+	
+	private Alert info = new Alert(Alert.AlertType.INFORMATION);
 	
 	private static String servError;
 
@@ -179,17 +185,6 @@ public class PrimaryController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Activate as a respond for an unknown returned value or an error from server
-	 * 
-	 * @param object Contains the error description
-	 */
-	public static void popError(String object) {
-		alert.setHeaderText("Error from server");
-		alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(object)));
-		alert.showAndWait();
 	}
 
 	/**
@@ -482,7 +477,7 @@ public class PrimaryController {
 		handler = course_combo.getOnAction();
 		course_combo.setOnAction(null);
 		course_combo.getItems().clear();
-		course_combo.setValue(null);
+		//course_combo.setValue(null);
 		course_combo.setValue(selected_q.get(0).getCourse());
 		course_combo.setOnAction(handler);
 
@@ -490,7 +485,7 @@ public class PrimaryController {
 		question_combo.setOnAction(null);
 		question_combo.getItems().clear();
 		question_combo.setItems(val);
-		question_combo.setValue(null);
+		//question_combo.setValue(null);
 		question_combo.setValue(selected_q.get(0));
 		addQuestionFields(question_combo.getValue());
 		question_combo.setOnAction(handler);
@@ -690,7 +685,6 @@ public class PrimaryController {
 						question_combo.setOnAction(null);
 						question_combo.getItems().remove(q2);
 						CloneQuestion newItem = dbUpdatedQ;
-						question_combo.getItems().add(newItem);
 						question_combo.setValue(newItem);
 						question_combo.setOnAction(handler);
 						break;
@@ -705,6 +699,9 @@ public class PrimaryController {
 					qList.getItems().add(newItem);
 					dbUpdatedQ = null;
 					ChangeSubmitColor("#00FF09");
+					info.setTitle("Success");
+					info.setHeaderText("The question has been successfully updated!");
+					info.showAndWait();
 					return;
 				}
 			}

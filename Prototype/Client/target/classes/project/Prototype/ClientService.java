@@ -59,7 +59,7 @@ public class ClientService extends AbstractClient {
 				PrimaryController.handleUpdateQuestionsFromServer((CloneQuestion)de.getData());
 				break;
 			default:
-				PrimaryController.popError((String)de.getData());
+				//PrimaryController.popError((String)de.getData());
 				break;
 			}
 

@@ -13,6 +13,8 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
@@ -80,6 +82,11 @@
                               <Label layoutX="13.0" layoutY="180.0" prefHeight="18.0" prefWidth="59.0" text="Subject:" />
                               <TextField fx:id="subject_text" disable="true" layoutX="76.0" layoutY="177.0" onKeyTyped="#countChars100" prefHeight="26.0" prefWidth="316.0" />
                               <TextArea fx:id="question_text" disable="true" layoutX="51.0" layoutY="229.0" onKeyTyped="#countChars180" prefHeight="63.0" prefWidth="340.0" wrapText="true" />
+                              <ImageView fitHeight="39.0" fitWidth="33.0" layoutX="12.0" layoutY="244.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@bigQ.png" />
+                                 </image>
+                              </ImageView>
                            </children>
                         </AnchorPane>
                      </children>
