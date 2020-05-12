@@ -464,34 +464,33 @@ public class PrimaryController {
 		}
 		ObservableList<CloneQuestion> val = FXCollections.observableArrayList(
 				GetDataFromDBQuestion(ClientToServerOpcodes.GetAllQuestionInCourse, selected_q.get(0).getCourse()));
-		// ObservableList<CloneQuestion> allQ =
-		// FXCollections.observableArrayList(allQuestions);
 
 		dbQuestion = null;
-
+		
+		mainTab.getSelectionModel().select(edtiorTab);
+		
 		EventHandler<ActionEvent> handler = study_combo.getOnAction();
 		study_combo.setOnAction(null);
 		study_combo.getSelectionModel().clearSelection();
 		study_combo.setOnAction(handler);
 		
 		handler = course_combo.getOnAction();
-		course_combo.setOnAction(null);
+		course_combo = null;
 		course_combo.getItems().clear();
-		//course_combo.setValue(null);
 		course_combo.setValue(selected_q.get(0).getCourse());
 		course_combo.setOnAction(handler);
 
 		handler = question_combo.getOnAction();
-		question_combo.setOnAction(null);
-		question_combo.getItems().clear();
+		question_combo = null;
 		question_combo.setItems(val);
-		//question_combo.setValue(null);
-		question_combo.setValue(selected_q.get(0));
+		question_combo.getSelectionModel().select(selected_q.get(0));
 		addQuestionFields(question_combo.getValue());
 		question_combo.setOnAction(handler);
 
-		mainTab.getSelectionModel().select(edtiorTab);
 		ChangeSubmitColor(null);
+		System.out.println(question_combo.getValue());
+		System.out.println(question_combo.getValue());
+		return;
 	}
 
 	/**
