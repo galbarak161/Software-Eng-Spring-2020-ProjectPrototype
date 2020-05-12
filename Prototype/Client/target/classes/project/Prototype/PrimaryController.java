@@ -475,22 +475,21 @@ public class PrimaryController {
 		study_combo.setOnAction(handler);
 		
 		handler = course_combo.getOnAction();
-		course_combo = null;
+		course_combo.setOnAction(null);
 		course_combo.getItems().clear();
 		course_combo.setValue(selected_q.get(0).getCourse());
 		course_combo.setOnAction(handler);
 
 		handler = question_combo.getOnAction();
-		question_combo = null;
+		question_combo.setOnAction(null);
 		question_combo.setItems(val);
 		question_combo.getSelectionModel().select(selected_q.get(0));
 		addQuestionFields(question_combo.getValue());
 		question_combo.setOnAction(handler);
 
 		ChangeSubmitColor(null);
+		System.out.println(course_combo.getValue());
 		System.out.println(question_combo.getValue());
-		System.out.println(question_combo.getValue());
-		return;
 	}
 
 	/**
@@ -591,7 +590,6 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-
 		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
 			course_combo.setDisable(false);
 			question_combo.setDisable(false);
@@ -684,6 +682,7 @@ public class PrimaryController {
 						question_combo.setOnAction(null);
 						question_combo.getItems().remove(q2);
 						CloneQuestion newItem = dbUpdatedQ;
+						question_combo.getItems().add(newItem);
 						question_combo.setValue(newItem);
 						question_combo.setOnAction(handler);
 						break;
