@@ -3,6 +3,7 @@ package project.Prototype;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
 import ocsf.client.AbstractClient;
 import project.CloneEntities.*;
 
@@ -56,11 +57,10 @@ public class ClientService extends AbstractClient {
 				PrimaryController.setAllQuestion(de.getData());
 				break;
 			case UpdateQuestionResult:
-				PrimaryController.handleUpdateQuestionsFromServer((CloneQuestion)de.getData());
+				PrimaryController.handleUpdateQuestionsFromServer((CloneQuestion) de.getData());
 				break;
 			default:
-				//PrimaryController.popError((String)de.getData());
-				break;
+				System.out.println((String) de.getData());
 			}
 
 		} catch (Exception e) {
