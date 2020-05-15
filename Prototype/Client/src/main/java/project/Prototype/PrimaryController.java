@@ -1,6 +1,7 @@
 package project.Prototype;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -137,6 +138,7 @@ public class PrimaryController {
 				initErrors += "The system cannot retrieve studies from server\n";
 				study_combo.setDisable(true);
 			} else
+				
 				study_combo.setItems(dbStudy);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -206,6 +208,10 @@ public class PrimaryController {
 		return result;
 	}
 
+	/**
+	 * The function updates the static variable that inform the main GUI thread the
+	 * new message received from DB
+	 */
 	public static void recivedMessageFromServer() {
 		dataRecived = true;
 	}
@@ -318,6 +324,91 @@ public class PrimaryController {
 	}
 
 	/**
+	 * Filling all text fields and radio buttons of question on "Editor" tab from
+	 * "CurrentQuestion" argument
+	 * 
+	 * @param CurrentQuestion Contains a question selected from questions_combo or
+	 *                        qList
+	 */
+	void parseQuestionToFields(CloneQuestion CurrentQuestion) {
+
+		if (CurrentQuestion == null)
+			return;
+
+		// Parse all data
+		subject_text.setText(CurrentQuestion.getSubject());
+		question_text.setText(CurrentQuestion.getQuestionText());
+		answer_line_1.setText(CurrentQuestion.getAnswer_1());
+		answer_line_2.setText(CurrentQuestion.getAnswer_2());
+		answer_line_3.setText(CurrentQuestion.getAnswer_3());
+		answer_line_4.setText(CurrentQuestion.getAnswer_4());
+
+		switch (CurrentQuestion.getCorrectAnswer()) {
+		case 1:
+			radio_1.setSelected(true);
+			break;
+		case 2:
+			radio_2.setSelected(true);
+			break;
+		case 3:
+			radio_3.setSelected(true);
+			break;
+		case 4:
+			radio_4.setSelected(true);
+			break;
+		default:
+			break;
+		}
+
+		// Enable data editing
+		disableQuestionDataFields(false);
+	}
+
+	/**
+	 * toggle enable \ disable attribute for question form elements
+	 * 
+	 * @param disableEdit
+	 */
+	public void disableQuestionDataFields(boolean disableEdit) {
+		question_text.setDisable(disableEdit);
+		subject_text.setDisable(disableEdit);
+		answer_line_1.setDisable(disableEdit);
+		answer_line_2.setDisable(disableEdit);
+		answer_line_3.setDisable(disableEdit);
+		answer_line_4.setDisable(disableEdit);
+		radio_1.setDisable(disableEdit);
+		radio_2.setDisable(disableEdit);
+		radio_3.setDisable(disableEdit);
+		radio_4.setDisable(disableEdit);
+		submitButton.setDisable(disableEdit);
+	}
+
+	/**
+	 * 
+	 * we call this function every time there's change of a combo, therefore we want
+	 * to clear all fields that linked to the data of a question
+	 * 
+	 */
+	public void ClearAllFormFields() {
+
+		subject_text.clear();
+		question_text.clear();
+		answer_line_1.clear();
+		answer_line_2.clear();
+		answer_line_3.clear();
+		answer_line_4.clear();
+
+		radio_1.setSelected(false);
+		radio_2.setSelected(false);
+		radio_3.setSelected(false);
+		radio_4.setSelected(false);
+	}
+
+	/***********************
+	 * Layout functions **
+	 ***********************/
+
+	/**
 	 * Opens the Instructions window when clicked "Help" on the menubar
 	 * 
 	 * @param event- doesn't matter
@@ -380,22 +471,30 @@ public class PrimaryController {
 		ChangeSubmitColor(null);
 
 		EventHandler<ActionEvent> handler;
-
+		
 		handler = study_combo.getOnAction();
+		study_combo.setOnAction(null);
 		study_combo.getSelectionModel().clearSelection();
 		study_combo.setOnAction(handler);
 
 		handler = course_combo.getOnAction();
+		course_combo.setOnAction(null);
 		course_combo.getItems().clear();
-		course_combo.setValue(selected_q.get(0).getCourse());
+		List <CloneCourse> tempCourse = new ArrayList<CloneCourse>();
+		tempCourse.add(selected_q.get(0).getCourse());
+		course_combo.setItems(FXCollections.observableArrayList(tempCourse));
+		course_combo.setValue(tempCourse.get(0));
 		course_combo.setDisable(false);
 		course_combo.setOnAction(handler);
 
 		handler = question_combo.getOnAction();
+		question_combo.setOnAction(null);
 		question_combo.getItems().clear();
-		question_combo.setItems(dbQuestion);
-		question_combo.setValue(selected_q.get(0));
+		ObservableList<CloneQuestion> temp = dbQuestion;
+		question_combo.setItems(temp);
+		question_combo.setValue(temp.get(0));
 		parseQuestionToFields(question_combo.getValue());
+		question_combo.setDisable(false);
 		question_combo.setOnAction(handler);
 	}
 
@@ -407,9 +506,9 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onClickedStudy(ActionEvent event) {
-		if(study_combo.getValue() == null)
+		if (study_combo.getValue() == null)
 			return;
-		
+
 		try {
 			dbCourse = null;
 			dbQuestion = null;
@@ -426,7 +525,8 @@ public class PrimaryController {
 
 		course_combo.getItems().clear();
 		course_combo.setDisable(false);
-		course_combo.setItems(dbCourse);
+		ObservableList<CloneCourse> temp = dbCourse;
+		course_combo.setItems(temp);
 		course_combo.setValue(null);
 
 		question_combo.getItems().clear();
@@ -445,9 +545,9 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onCourseClicked(ActionEvent event) {
-		if(course_combo.getValue() == null)
+		if (course_combo.getValue() == null)
 			return;
-		
+
 		try {
 			dbQuestion = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, course_combo.getValue());
@@ -463,8 +563,10 @@ public class PrimaryController {
 
 		ClearAllFormFields();
 		question_combo.setDisable(false);
-		question_combo.setItems(dbQuestion);
+		ObservableList<CloneQuestion> temp = dbQuestion;
+		question_combo.setItems(temp);
 		question_combo.setValue(null);
+		ChangeSubmitColor(null);
 		disableQuestionDataFields(true);
 	}
 
@@ -476,9 +578,9 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-		if(question_combo.getValue() == null)
+		if (question_combo.getValue() == null)
 			return;
-		
+
 		parseQuestionToFields(question_combo.getValue());
 		ChangeSubmitColor(null);
 	}
@@ -493,30 +595,38 @@ public class PrimaryController {
 	 * @throws Exception - Used for checking all fields are filled
 	 */
 	@FXML
-	void onClickedSubmit(MouseEvent event) throws Exception {
+	void onClickedSubmit(ActionEvent event) throws Exception {
 		try {
-			String bstyle = String.format("-fx-background-color: #FFFF00;");
-			submitButton.setStyle(bstyle);
+			ChangeSubmitColor("#FF0000");
+			Thread.sleep(2000);
+
 			CloneQuestion q = new CloneQuestion();
 			q.clone(question_combo.getValue());
+
 			if (subject_text.getText().isEmpty())
 				throw new Exception("Subject is empty");
 			q.setSubject(subject_text.getText());
+
 			if (question_text.getText().isEmpty())
 				throw new Exception("Question is empty");
 			q.setQuestionText(question_text.getText());
+
 			if (answer_line_1.getText().isEmpty())
 				throw new Exception("Answer 1 is empty");
 			q.setAnswer_1(answer_line_1.getText());
+
 			if (answer_line_2.getText().isEmpty())
 				throw new Exception("Answer 2 is empty");
 			q.setAnswer_2(answer_line_2.getText());
+
 			if (answer_line_3.getText().isEmpty())
 				throw new Exception("Answer 3 is empty");
 			q.setAnswer_3(answer_line_3.getText());
+
 			if (answer_line_4.getText().isEmpty())
 				throw new Exception("Answer 4 is empty");
 			q.setAnswer_4(answer_line_4.getText());
+
 			RadioButton chk = (RadioButton) radioGroup.getSelectedToggle();
 			switch (chk.getText()) {
 			case "a.":
@@ -534,6 +644,7 @@ public class PrimaryController {
 			default:
 				throw new Exception("No correct answer");
 			}
+
 			sendQuestionUpdateRequestToServer(q);
 
 			while (dbUpdatedQ == null) {
@@ -598,79 +709,4 @@ public class PrimaryController {
 				new TextFormatter<String>(change -> change.getControlNewText().length() <= 180 ? change : null));
 	}
 
-	/**
-	 * Filling all text fields and radio buttons of question on "Editor" tab from
-	 * "CurrentQuestion" argument
-	 * 
-	 * @param CurrentQuestion Contains a question selected from questions_combo or
-	 *                        qList
-	 */
-	void parseQuestionToFields(CloneQuestion CurrentQuestion) {
-
-		if(CurrentQuestion == null)
-			return;
-				
-		// Parse all data
-		subject_text.setText(CurrentQuestion.getSubject());
-		question_text.setText(CurrentQuestion.getQuestionText());
-		answer_line_1.setText(CurrentQuestion.getAnswer_1());
-		answer_line_2.setText(CurrentQuestion.getAnswer_2());
-		answer_line_3.setText(CurrentQuestion.getAnswer_3());
-		answer_line_4.setText(CurrentQuestion.getAnswer_4());
-
-		switch (CurrentQuestion.getCorrectAnswer()) {
-		case 1:
-			radio_1.setSelected(true);
-			break;
-		case 2:
-			radio_2.setSelected(true);
-			break;
-		case 3:
-			radio_3.setSelected(true);
-			break;
-		case 4:
-			radio_4.setSelected(true);
-			break;
-		default:
-			break;
-		}
-
-		// Enable data editing
-		disableQuestionDataFields(false);
-	}
-
-	public void disableQuestionDataFields(boolean disableEdit) {
-		question_text.setDisable(disableEdit);
-		subject_text.setDisable(disableEdit);
-		answer_line_1.setDisable(disableEdit);
-		answer_line_2.setDisable(disableEdit);
-		answer_line_3.setDisable(disableEdit);
-		answer_line_4.setDisable(disableEdit);
-		radio_1.setDisable(disableEdit);
-		radio_2.setDisable(disableEdit);
-		radio_3.setDisable(disableEdit);
-		radio_4.setDisable(disableEdit);
-		submitButton.setDisable(disableEdit);
-	}
-
-	/**
-	 * 
-	 * we call this function every time there's change of a combo, therefore we want
-	 * to clear all fields that linked to the data of a question
-	 * 
-	 */
-	public void ClearAllFormFields() {
-
-		subject_text.clear();
-		question_text.clear();
-		answer_line_1.clear();
-		answer_line_2.clear();
-		answer_line_3.clear();
-		answer_line_4.clear();
-
-		radio_1.setSelected(false);
-		radio_2.setSelected(false);
-		radio_3.setSelected(false);
-		radio_4.setSelected(false);
-	}
 }
