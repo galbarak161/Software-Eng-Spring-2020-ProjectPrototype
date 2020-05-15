@@ -2,7 +2,6 @@ package project.Prototype;
 
 import java.io.IOException;
 import java.util.List;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,8 +21,9 @@ import project.Prototype.DataElements.ClientToServerOpcodes;
 
 public class PrimaryController {
 
-	/******************* Variables *******************/
-
+	/**************************************
+	 ************* Variables **************
+	 **************************************/
 	@FXML
 	private MenuBar menu;
 
@@ -111,17 +111,13 @@ public class PrimaryController {
 
 	private static ObservableList<CloneQuestion> dbQuestion = null;
 
-	private static ObservableList<CloneQuestion> allQuestions = null;
+	private static ObservableList<CloneQuestion> dbQuestionList = null;
 
 	private static CloneQuestion dbUpdatedQ = null;
 
 	private static boolean dataRecived = false;
-	
-	private static Alert alert = new Alert(Alert.AlertType.ERROR);
 
-	/**************************************
-	 * Functions (non-attached to dialogs)
-	 **************************************/
+	private static Alert alert = new Alert(Alert.AlertType.ERROR);
 
 	/**
 	 * Function called automatically when GUI is starting. We get from DB all
@@ -133,9 +129,11 @@ public class PrimaryController {
 	 */
 	public void initialize() {
 
-		String initErrors = "";	
+		String initErrors = "";
 		try {
-			if ((GetDataFromDB(ClientToServerOpcodes.GetAllStudies, null) == -1) || dbStudy == null) {
+			dbStudy = null;
+			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllStudies, null);
+			if ((dbStatus == -1) || dbStudy == null) {
 				initErrors += "The system cannot retrieve studies from server\n";
 				study_combo.setDisable(true);
 			} else
@@ -150,14 +148,14 @@ public class PrimaryController {
 		radio_3.setToggleGroup(radioGroup);
 		radio_4.setToggleGroup(radioGroup);
 
-		dbStudy = null;
-
 		try {
-			if ((GetDataFromDB(ClientToServerOpcodes.GetAllQuestion, null) == -1) || allQuestions == null) {
+			dbQuestionList = null;
+			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestion, null);
+			if ((dbStatus == -1) || dbQuestionList == null) {
 				initErrors += "The system cannot retrieve questions list from server\n";
 				editButton.setDisable(true);
 			} else {
-				for (CloneQuestion item : allQuestions) {
+				for (CloneQuestion item : dbQuestionList) {
 					qList.getItems().add(item);
 				}
 			}
@@ -167,6 +165,49 @@ public class PrimaryController {
 
 		if (!initErrors.isEmpty())
 			popErrorFromServer(initErrors);
+	}
+
+	/**
+	 * getDataFromServer(DataElements) The function calls the
+	 * ClientMain.sendMessageToServer(Object) function
+	 * 
+	 * @param DataElements with opcode and data
+	 * @return -1 for fail
+	 */
+	private int sendRequestForDataFromServer(DataElements de) {
+		int status;
+		try {
+			status = ClientMain.sendMessageToServer(de);
+		} catch (IOException e) {
+			status = -1;
+			popErrorFromClient("The system could not receive data from server. please reconnect and try again");
+			e.printStackTrace();
+		}
+
+		return status;
+	}
+
+	/**
+	 * Creating request to get data from server
+	 * 
+	 * @param op   - what type of request do we want (Enum)
+	 * @param data - the date we want to send to server
+	 * @return
+	 * @throws InterruptedException Pause the main GUI thread
+	 */
+	public int GetDataFromDB(ClientToServerOpcodes op, Object data) throws InterruptedException {
+		dataRecived = false;
+		DataElements de = new DataElements(op, data);
+		int result = sendRequestForDataFromServer(de);
+		while (dataRecived == false) {
+			Thread.onSpinWait();
+		}
+		dataRecived = false;
+		return result;
+	}
+
+	public static void recivedMessageFromServer() {
+		dataRecived = true;
 	}
 
 	/**
@@ -189,55 +230,6 @@ public class PrimaryController {
 		alert.setHeaderText("An error occurred while the system was hanaling your actions");
 		alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(errorMessage)));
 		alert.showAndWait();
-	}
-
-	/**
-	 * Changing Submit button color
-	 * 
-	 * @param color- color Submit would be changed to, #FFFFFF for example.
-	 */
-	void ChangeSubmitColor(String color) {
-		if (color == null)
-			submitButton.setStyle(color);
-		else
-			submitButton.setStyle(String.format("-fx-background-color: " + color + ";"));
-	}
-
-	/**
-	 * Function makes a "DataElemnts" object that is used for a data request from
-	 * the server
-	 * 
-	 * @param obj Contains a required data for server ("Course" name when getting
-	 *            questions for a specific course for example)
-	 */
-	void sendQuestionUpdateRequestToServer(Object obj) {
-		try {
-			DataElements de = new DataElements();
-			de.setData(obj);
-			de.setOpcodeFromClient(ClientToServerOpcodes.UpdateQuestion);
-			ClientMain.sendMessageToServer(de);
-		} catch (IOException e) {
-			popErrorFromClient("The system could not commit your update request. Please try again");
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * getDataFromServer(DataElements) The function calls the
-	 * ClientMain.sendMessageToServer(Object) function
-	 * 
-	 * @param DataElements with opcode and data
-	 * @return -1 for fail
-	 */
-	private int sendRequestForDataFromServer(DataElements de) {
-		int status = -1;
-		try {
-			status = ClientMain.sendMessageToServer(de);
-		} catch (IOException e) {
-			popErrorFromClient("The system could not receive data from server. please reconnect and try again");
-			e.printStackTrace();
-		}
-		return status;
 	}
 
 	/**
@@ -279,9 +271,9 @@ public class PrimaryController {
 	 * 
 	 * @param object Contains a list of "CloneQuestion"
 	 */
-	public static void setAllQuestion(Object object) {
-		PrimaryController.allQuestions = FXCollections.observableArrayList((List<CloneQuestion>) object);
-		System.out.println("Recived ALL Questions from server\n");
+	public static void setDbQuestionList(Object object) {
+		PrimaryController.dbQuestionList = FXCollections.observableArrayList((List<CloneQuestion>) object);
+		System.out.println("Recived all Questions from server\n");
 	}
 
 	/**
@@ -295,103 +287,35 @@ public class PrimaryController {
 	}
 
 	/**
-	 * Filling all text fields and radio buttons of question on "Editor" tab from
-	 * "CurrentQuestion" argument
+	 * Function makes a "DataElemnts" object that is used for a data request from
+	 * the server
 	 * 
-	 * @param CurrentQuestion Contains a question selected from questions_combo or
-	 *                        qList
+	 * @param obj Contains a required data for server ("Course" name when getting
+	 *            questions for a specific course for example)
 	 */
-	void addQuestionFields(CloneQuestion CurrentQuestion) {
-
-		course_combo.setDisable(false);
-		question_combo.setDisable(false);
-		subject_text.setText(CurrentQuestion.getSubject());
-		question_text.setText(CurrentQuestion.getQuestionText());
-
-		answer_line_1.setText(CurrentQuestion.getAnswer_1());
-		answer_line_2.setText(CurrentQuestion.getAnswer_2());
-		answer_line_3.setText(CurrentQuestion.getAnswer_3());
-		answer_line_4.setText(CurrentQuestion.getAnswer_4());
-
-		switch (CurrentQuestion.getCorrectAnswer()) {
-		case 1:
-			radio_1.setSelected(true);
-			break;
-		case 2:
-			radio_2.setSelected(true);
-			break;
-		case 3:
-			radio_3.setSelected(true);
-			break;
-		case 4:
-			radio_4.setSelected(true);
-			break;
-		default:
-			break;
+	void sendQuestionUpdateRequestToServer(Object obj) {
+		try {
+			DataElements de = new DataElements();
+			de.setData(obj);
+			de.setOpcodeFromClient(ClientToServerOpcodes.UpdateQuestion);
+			ClientMain.sendMessageToServer(de);
+		} catch (IOException e) {
+			popErrorFromClient("The system could not commit your update request. Please try again");
+			e.printStackTrace();
 		}
-
-		question_text.setDisable(false);
-		subject_text.setDisable(false);
-		answer_line_1.setDisable(false);
-		answer_line_2.setDisable(false);
-		answer_line_3.setDisable(false);
-		answer_line_4.setDisable(false);
-		radio_1.setDisable(false);
-		radio_2.setDisable(false);
-		radio_3.setDisable(false);
-		radio_4.setDisable(false);
-		submitButton.setDisable(false);
 	}
 
 	/**
-	 * Creating request to get data from server
+	 * Changing Submit button color
 	 * 
-	 * @param op   - what type of request do we want (Enum)
-	 * @param data - the date we want to send to server
-	 * @return
-	 * @throws InterruptedException Pause the main GUI thread
+	 * @param color- color Submit would be changed to, #FFFFFF for example.
 	 */
-	public int GetDataFromDB(ClientToServerOpcodes op, Object data) throws InterruptedException {
-		dataRecived = false;
-		DataElements de = new DataElements(op, data);
-		int result = sendRequestForDataFromServer(de);
-		//Thread.sleep(1500);
-	    while(dataRecived == false) {
-	        Thread.onSpinWait();
-	    }
-		return result;
+	void ChangeSubmitColor(String color) {
+		if (color == null)
+			submitButton.setStyle(color);
+		else
+			submitButton.setStyle(String.format("-fx-background-color: " + color + ";"));
 	}
-
-	public static void recivedMessageFromServer() {
-		dataRecived = true;
-	}
-	/**
-	 * 
-	 * we call this function every time there's change of a combo, therefore we want
-	 * to clear all fields that linked to the data of a question
-	 * 
-	 */
-	public void ClearAllFields() {
-
-		subject_text.clear();
-		question_text.clear();
-
-		answer_line_1.clear();
-		answer_line_2.clear();
-		answer_line_3.clear();
-		answer_line_4.clear();
-
-		radio_1.setSelected(false);
-		radio_2.setSelected(false);
-		radio_3.setSelected(false);
-		radio_4.setSelected(false);
-
-		question_combo.getItems().clear();
-	}
-
-	/**************************************
-	 * Functions (attached to dialogs)
-	 **************************************/
 
 	/**
 	 * Opens the Instructions window when clicked "Help" on the menubar
@@ -421,19 +345,18 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onDoubleClick(MouseEvent event) {
-		if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+		if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2)
 			onClickedEdit(new ActionEvent());
-		}
 	}
 
 	/**
 	 * Handle clicking on "Edit" button and presenting the selected question from
 	 * qList
 	 * 
-	 * @param event
+	 * @param actionEvent
 	 */
 	@FXML
-	void onClickedEdit(ActionEvent event) {
+	void onClickedEdit(ActionEvent actionEvent) {
 		ObservableList<CloneQuestion> selected_q = qList.getSelectionModel().getSelectedItems();
 		if (selected_q.isEmpty()) {
 			popErrorFromClient("No question has been selected. \nPlease select a question");
@@ -441,8 +364,9 @@ public class PrimaryController {
 		}
 
 		try {
-			if ((GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, selected_q.get(0).getCourse()) == -1)
-					|| dbQuestion == null) {
+			dbQuestion = null;
+			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, selected_q.get(0).getCourse());
+			if ((dbStatus == -1) || dbQuestion == null) {
 				popErrorFromClient("The system cannot retrieve question data from server\n Please try again");
 				return;
 			}
@@ -452,29 +376,27 @@ public class PrimaryController {
 			return;
 		}
 
-		EventHandler<ActionEvent> handler = study_combo.getOnAction();
-		study_combo.setOnAction(null);
+		mainTab.getSelectionModel().select(edtiorTab);
+		ChangeSubmitColor(null);
+
+		EventHandler<ActionEvent> handler;
+
+		handler = study_combo.getOnAction();
 		study_combo.getSelectionModel().clearSelection();
 		study_combo.setOnAction(handler);
 
 		handler = course_combo.getOnAction();
-		course_combo.setOnAction(null);
 		course_combo.getItems().clear();
-		course_combo.setValue(null);
 		course_combo.setValue(selected_q.get(0).getCourse());
+		course_combo.setDisable(false);
 		course_combo.setOnAction(handler);
 
 		handler = question_combo.getOnAction();
-		question_combo.setOnAction(null);
 		question_combo.getItems().clear();
 		question_combo.setItems(dbQuestion);
-		question_combo.setValue(null);
 		question_combo.setValue(selected_q.get(0));
-		addQuestionFields(question_combo.getValue());
+		parseQuestionToFields(question_combo.getValue());
 		question_combo.setOnAction(handler);
-
-		mainTab.getSelectionModel().select(edtiorTab);
-		ChangeSubmitColor(null);
 	}
 
 	/**
@@ -485,42 +407,34 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onClickedStudy(ActionEvent event) {
-
+		if(study_combo.getValue() == null)
+			return;
+		
 		try {
-			if ((GetDataFromDB(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue()) == -1)
-					|| dbCourse == null) {
-				popErrorFromClient("The system cannot retrieve courses from server\n Please try again");
+			dbCourse = null;
+			dbQuestion = null;
+			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue());
+			if ((dbStatus == -1) || dbCourse == null) {
+				popErrorFromClient("The system cannot retrieve courses from server \nPlease try again");
 				return;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			popErrorFromClient("The system cannot retrieve courses from server\n Please try again");
+			popErrorFromClient("The system cannot retrieve courses from server \nPlease try again");
 			return;
 		}
 
-		course_combo.setValue(null);
-		question_combo.setValue(null);
-		course_combo.setItems(dbCourse);
-		ClearAllFields();
+		course_combo.getItems().clear();
 		course_combo.setDisable(false);
+		course_combo.setItems(dbCourse);
+		course_combo.setValue(null);
+
+		question_combo.getItems().clear();
 		question_combo.setDisable(true);
-		subject_text.setDisable(true);
-		question_text.setDisable(true);
-
-		answer_line_1.setDisable(true);
-		answer_line_2.setDisable(true);
-		answer_line_3.setDisable(true);
-		answer_line_4.setDisable(true);
-
-		radio_1.setDisable(true);
-		radio_2.setDisable(true);
-		radio_3.setDisable(true);
-		radio_4.setDisable(true);
-
-		dbStudy = null;
-
+		question_combo.setValue(null);
+		disableQuestionDataFields(true);
+		ClearAllFormFields();
 		ChangeSubmitColor(null);
-
 	}
 
 	/**
@@ -531,59 +445,27 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onCourseClicked(ActionEvent event) {
-		if (course_combo.getValue() == null || course_combo.isDisable() == true) {
-			ClearAllFields();
-			course_combo.setDisable(false);
-			subject_text.setDisable(true);
-			question_text.setDisable(true);
-
-			answer_line_1.setDisable(true);
-			answer_line_2.setDisable(true);
-			answer_line_3.setDisable(true);
-			answer_line_4.setDisable(true);
-
-			radio_1.setDisable(true);
-			radio_2.setDisable(true);
-			radio_3.setDisable(true);
-			radio_4.setDisable(true);
-
-			dbCourse = null;
-
-			ChangeSubmitColor(null);
-
+		if(course_combo.getValue() == null)
 			return;
-		}
-
+		
 		try {
-			if ((GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, course_combo.getValue()) == -1)
-					|| dbQuestion == null) {
-				popErrorFromClient("The system cannot retrieve the questions from server\n Please try again");
+			dbQuestion = null;
+			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, course_combo.getValue());
+			if ((dbStatus == -1) || dbQuestion == null) {
+				popErrorFromClient("The system cannot retrieve the questions from server \nPlease try again");
 				return;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			popErrorFromClient("The system cannot retrieve questions from server\n Please try again");
+			popErrorFromClient("The system cannot retrieve questions from server \nPlease try again");
 			return;
 		}
 
-		ClearAllFields();
-		question_combo.setItems(dbQuestion);
-		course_combo.setDisable(false);
+		ClearAllFormFields();
 		question_combo.setDisable(false);
-		subject_text.setDisable(true);
-		question_text.setDisable(true);
-
-		answer_line_1.setDisable(true);
-		answer_line_2.setDisable(true);
-		answer_line_3.setDisable(true);
-		answer_line_4.setDisable(true);
-
-		radio_1.setDisable(true);
-		radio_2.setDisable(true);
-		radio_3.setDisable(true);
-		radio_4.setDisable(true);
-
-		dbCourse = null;
+		question_combo.setItems(dbQuestion);
+		question_combo.setValue(null);
+		disableQuestionDataFields(true);
 	}
 
 	/**
@@ -594,32 +476,10 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onClickedQuestion(ActionEvent event) {
-
-		if (question_combo.getValue() == null || question_combo.isDisable() == true) {
-			course_combo.setDisable(false);
-			question_combo.setDisable(false);
-			subject_text.setDisable(true);
-			question_text.setDisable(true);
-
-			answer_line_1.setDisable(true);
-			answer_line_2.setDisable(true);
-			answer_line_3.setDisable(true);
-			answer_line_4.setDisable(true);
-
-			radio_1.setDisable(true);
-			radio_2.setDisable(true);
-			radio_3.setDisable(true);
-			radio_4.setDisable(true);
-
-			dbQuestion = null;
-
-			ChangeSubmitColor(null);
-
+		if(question_combo.getValue() == null)
 			return;
-		}
-
-		addQuestionFields(question_combo.getValue());
-		dbQuestion = null;
+		
+		parseQuestionToFields(question_combo.getValue());
 		ChangeSubmitColor(null);
 	}
 
@@ -633,7 +493,7 @@ public class PrimaryController {
 	 * @throws Exception - Used for checking all fields are filled
 	 */
 	@FXML
-	void onClickedSubmit(ActionEvent event) throws Exception {
+	void onClickedSubmit(MouseEvent event) throws Exception {
 		try {
 			String bstyle = String.format("-fx-background-color: #FFFF00;");
 			submitButton.setStyle(bstyle);
@@ -738,4 +598,79 @@ public class PrimaryController {
 				new TextFormatter<String>(change -> change.getControlNewText().length() <= 180 ? change : null));
 	}
 
+	/**
+	 * Filling all text fields and radio buttons of question on "Editor" tab from
+	 * "CurrentQuestion" argument
+	 * 
+	 * @param CurrentQuestion Contains a question selected from questions_combo or
+	 *                        qList
+	 */
+	void parseQuestionToFields(CloneQuestion CurrentQuestion) {
+
+		if(CurrentQuestion == null)
+			return;
+				
+		// Parse all data
+		subject_text.setText(CurrentQuestion.getSubject());
+		question_text.setText(CurrentQuestion.getQuestionText());
+		answer_line_1.setText(CurrentQuestion.getAnswer_1());
+		answer_line_2.setText(CurrentQuestion.getAnswer_2());
+		answer_line_3.setText(CurrentQuestion.getAnswer_3());
+		answer_line_4.setText(CurrentQuestion.getAnswer_4());
+
+		switch (CurrentQuestion.getCorrectAnswer()) {
+		case 1:
+			radio_1.setSelected(true);
+			break;
+		case 2:
+			radio_2.setSelected(true);
+			break;
+		case 3:
+			radio_3.setSelected(true);
+			break;
+		case 4:
+			radio_4.setSelected(true);
+			break;
+		default:
+			break;
+		}
+
+		// Enable data editing
+		disableQuestionDataFields(false);
+	}
+
+	public void disableQuestionDataFields(boolean disableEdit) {
+		question_text.setDisable(disableEdit);
+		subject_text.setDisable(disableEdit);
+		answer_line_1.setDisable(disableEdit);
+		answer_line_2.setDisable(disableEdit);
+		answer_line_3.setDisable(disableEdit);
+		answer_line_4.setDisable(disableEdit);
+		radio_1.setDisable(disableEdit);
+		radio_2.setDisable(disableEdit);
+		radio_3.setDisable(disableEdit);
+		radio_4.setDisable(disableEdit);
+		submitButton.setDisable(disableEdit);
+	}
+
+	/**
+	 * 
+	 * we call this function every time there's change of a combo, therefore we want
+	 * to clear all fields that linked to the data of a question
+	 * 
+	 */
+	public void ClearAllFormFields() {
+
+		subject_text.clear();
+		question_text.clear();
+		answer_line_1.clear();
+		answer_line_2.clear();
+		answer_line_3.clear();
+		answer_line_4.clear();
+
+		radio_1.setSelected(false);
+		radio_2.setSelected(false);
+		radio_3.setSelected(false);
+		radio_4.setSelected(false);
+	}
 }

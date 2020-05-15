@@ -42,19 +42,19 @@ public class ClientService extends AbstractClient {
 	protected void handleMessageFromServer(Object msg) {
 		try {
 			DataElements de = (DataElements) msg;
-			System.out.println("Received message from server: opcode = " + de.getOpcodeFromClient());			
+			System.out.println("Received message from server: opcode = " + de.getOpcodeFromClient());
 			switch (de.getOpCodeFromServer()) {
 			case SendAllStudies:
-				handleGetStudiesFromServer(de.getData());
+				PrimaryController.setDbStudy(de.getData());
 				break;
 			case SendAllCoursesInStudy:
-				handleGetCoursesFromServer(de.getData());
+				PrimaryController.setDbCourse(de.getData());
 				break;
 			case SendAllQuestionInCourse:
-				handleGetQuestionsFromServer(de.getData());
+				PrimaryController.setDbQuestion(de.getData());
 				break;
 			case SendAllQuestion:
-				PrimaryController.setAllQuestion(de.getData());
+				PrimaryController.setDbQuestionList(de.getData());
 				break;
 			case UpdateQuestionResult:
 				PrimaryController.handleUpdateQuestionsFromServer((CloneQuestion) de.getData());
@@ -65,22 +65,10 @@ public class ClientService extends AbstractClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		finally {
+		} finally {
 			PrimaryController.recivedMessageFromServer();
 		}
 	}
-
-	private void handleGetStudiesFromServer(Object object) {
-		PrimaryController.setDbStudy(object);
-	}
-
-	private void handleGetCoursesFromServer(Object object) {
-		PrimaryController.setDbCourse(object);
-	}
-
-	private void handleGetQuestionsFromServer(Object object) {
-		PrimaryController.setDbQuestion(object);
-	}
+	
 
 }
