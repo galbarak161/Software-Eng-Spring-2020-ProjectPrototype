@@ -115,6 +115,8 @@ public class PrimaryController {
 
 	private static CloneQuestion dbUpdatedQ = null;
 
+	private static boolean dataRecived = false;
+	
 	private static Alert alert = new Alert(Alert.AlertType.ERROR);
 
 	/**************************************
@@ -131,7 +133,7 @@ public class PrimaryController {
 	 */
 	public void initialize() {
 
-		String initErrors = "";
+		String initErrors = "";	
 		try {
 			if ((GetDataFromDB(ClientToServerOpcodes.GetAllStudies, null) == -1) || dbStudy == null) {
 				initErrors += "The system cannot retrieve studies from server\n";
@@ -350,12 +352,19 @@ public class PrimaryController {
 	 * @throws InterruptedException Pause the main GUI thread
 	 */
 	public int GetDataFromDB(ClientToServerOpcodes op, Object data) throws InterruptedException {
+		dataRecived = false;
 		DataElements de = new DataElements(op, data);
 		int result = sendRequestForDataFromServer(de);
-		Thread.sleep(3500);
+		//Thread.sleep(1500);
+	    while(dataRecived == false) {
+	        Thread.onSpinWait();
+	    }
 		return result;
 	}
 
+	public static void recivedMessageFromServer() {
+		dataRecived = true;
+	}
 	/**
 	 * 
 	 * we call this function every time there's change of a combo, therefore we want

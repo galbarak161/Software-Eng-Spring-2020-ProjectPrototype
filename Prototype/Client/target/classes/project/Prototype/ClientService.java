@@ -42,7 +42,7 @@ public class ClientService extends AbstractClient {
 	protected void handleMessageFromServer(Object msg) {
 		try {
 			DataElements de = (DataElements) msg;
-			System.out.println("Received message from server: opcode = " + de.getOpcodeFromClient());
+			System.out.println("Received message from server: opcode = " + de.getOpcodeFromClient());			
 			switch (de.getOpCodeFromServer()) {
 			case SendAllStudies:
 				handleGetStudiesFromServer(de.getData());
@@ -65,6 +65,9 @@ public class ClientService extends AbstractClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		finally {
+			PrimaryController.recivedMessageFromServer();
 		}
 	}
 
