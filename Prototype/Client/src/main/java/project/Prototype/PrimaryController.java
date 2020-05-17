@@ -138,7 +138,7 @@ public class PrimaryController {
 				initErrors += "The system cannot retrieve studies from server\n";
 				study_combo.setDisable(true);
 			} else
-				
+
 				study_combo.setItems(dbStudy);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -290,25 +290,6 @@ public class PrimaryController {
 	 */
 	public static void handleUpdateQuestionsFromServer(CloneQuestion object) {
 		dbUpdatedQ = object;
-	}
-
-	/**
-	 * Function makes a "DataElemnts" object that is used for a data request from
-	 * the server
-	 * 
-	 * @param obj Contains a required data for server ("Course" name when getting
-	 *            questions for a specific course for example)
-	 */
-	void sendQuestionUpdateRequestToServer(Object obj) {
-		try {
-			DataElements de = new DataElements();
-			de.setData(obj);
-			de.setOpcodeFromClient(ClientToServerOpcodes.UpdateQuestion);
-			ClientMain.sendMessageToServer(de);
-		} catch (IOException e) {
-			popErrorFromClient("The system could not commit your update request. Please try again");
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -471,7 +452,7 @@ public class PrimaryController {
 		ChangeSubmitColor(null);
 
 		EventHandler<ActionEvent> handler;
-		
+
 		handler = study_combo.getOnAction();
 		study_combo.setOnAction(null);
 		study_combo.getSelectionModel().clearSelection();
@@ -480,7 +461,7 @@ public class PrimaryController {
 		handler = course_combo.getOnAction();
 		course_combo.setOnAction(null);
 		course_combo.getItems().clear();
-		List <CloneCourse> tempCourse = new ArrayList<CloneCourse>();
+		List<CloneCourse> tempCourse = new ArrayList<CloneCourse>();
 		tempCourse.add(selected_q.get(0).getCourse());
 		course_combo.setItems(FXCollections.observableArrayList(tempCourse));
 		course_combo.setValue(tempCourse.get(0));
@@ -598,7 +579,6 @@ public class PrimaryController {
 	void onClickedSubmit(ActionEvent event) throws Exception {
 		try {
 			ChangeSubmitColor("#FF0000");
-			Thread.sleep(2000);
 
 			CloneQuestion q = new CloneQuestion();
 			q.clone(question_combo.getValue());
@@ -645,10 +625,11 @@ public class PrimaryController {
 				throw new Exception("No correct answer");
 			}
 
-			sendQuestionUpdateRequestToServer(q);
+			int dbStatus = GetDataFromDB(ClientToServerOpcodes.UpdateQuestion, q);
 
-			while (dbUpdatedQ == null) {
-				System.out.print("");
+			if ((dbStatus == -1) || dbUpdatedQ == null) {
+				popErrorFromClient("The system could not commit your update request.\n Please try again");
+				return;
 			}
 
 			if (question_combo.getItems().size() >= 1) {
