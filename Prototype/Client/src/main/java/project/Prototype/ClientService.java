@@ -35,7 +35,7 @@ public class ClientService extends AbstractClient {
 	}
 
 	/**
-	 * The function gets new msg from server Parsing the opcode and data Handle the
+	 * The function gets new message from server Parsing the opcode and data Handle the
 	 * server results
 	 */
 	@Override
@@ -43,32 +43,11 @@ public class ClientService extends AbstractClient {
 		try {
 			DataElements de = (DataElements) msg;
 			System.out.println("Received message from server: opcode = " + de.getOpcodeFromClient());
-			switch (de.getOpCodeFromServer()) {
-			case SendAllStudies:
-				PrimaryController.setDbStudy(de.getData());
-				break;
-			case SendAllCoursesInStudy:
-				PrimaryController.setDbCourse(de.getData());
-				break;
-			case SendAllQuestionInCourse:
-				PrimaryController.setDbQuestion(de.getData());
-				break;
-			case SendAllQuestion:
-				PrimaryController.setDbQuestionList(de.getData());
-				break;
-			case UpdateQuestionResult:
-				PrimaryController.handleUpdateQuestionsFromServer((CloneQuestion) de.getData());
-				break;
-			default:
-				System.out.println((String) de.getData());
-			}
+			PrimaryController.recivedMessageFromServer(de.getData());
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			PrimaryController.recivedMessageFromServer();
 		}
 	}
-	
 
 }

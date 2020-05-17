@@ -106,19 +106,13 @@ public class PrimaryController {
 	@FXML
 	private ComboBox<CloneStudy> study_combo;
 
-	private static ObservableList<CloneStudy> dbStudy = null;
+	private static boolean msgRecived = false;
 
-	private static ObservableList<CloneCourse> dbCourse = null;
+	private static Object dataRecived = null;
 
-	private static ObservableList<CloneQuestion> dbQuestion = null;
+	private Alert alert = new Alert(Alert.AlertType.ERROR);
 
-	private static ObservableList<CloneQuestion> dbQuestionList = null;
-
-	private static CloneQuestion dbUpdatedQ = null;
-
-	private static boolean dataRecived = false;
-
-	private static Alert alert = new Alert(Alert.AlertType.ERROR);
+	private Alert info = new Alert(Alert.AlertType.INFORMATION);
 
 	/**
 	 * Function called automatically when GUI is starting. We get from DB all
@@ -132,14 +126,14 @@ public class PrimaryController {
 
 		String initErrors = "";
 		try {
-			dbStudy = null;
+			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllStudies, null);
-			if ((dbStatus == -1) || dbStudy == null) {
+			if ((dbStatus == -1) || dataRecived == null) {
 				initErrors += "The system cannot retrieve studies from server\n";
 				study_combo.setDisable(true);
-			} else
-
-				study_combo.setItems(dbStudy);
+			} else {
+				study_combo.setItems(FXCollections.observableArrayList((List<CloneStudy>) dataRecived));
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -151,13 +145,13 @@ public class PrimaryController {
 		radio_4.setToggleGroup(radioGroup);
 
 		try {
-			dbQuestionList = null;
+			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestion, null);
-			if ((dbStatus == -1) || dbQuestionList == null) {
+			if ((dbStatus == -1) || dataRecived == null) {
 				initErrors += "The system cannot retrieve questions list from server\n";
 				editButton.setDisable(true);
 			} else {
-				for (CloneQuestion item : dbQuestionList) {
+				for (CloneQuestion item : (List<CloneQuestion>) dataRecived) {
 					qList.getItems().add(item);
 				}
 			}
@@ -198,13 +192,13 @@ public class PrimaryController {
 	 * @throws InterruptedException Pause the main GUI thread
 	 */
 	public int GetDataFromDB(ClientToServerOpcodes op, Object data) throws InterruptedException {
-		dataRecived = false;
+		msgRecived = false;
 		DataElements de = new DataElements(op, data);
 		int result = sendRequestForDataFromServer(de);
-		while (dataRecived == false) {
+		while (msgRecived == false) {
 			Thread.onSpinWait();
 		}
-		dataRecived = false;
+		msgRecived = false;
 		return result;
 	}
 
@@ -212,8 +206,9 @@ public class PrimaryController {
 	 * The function updates the static variable that inform the main GUI thread the
 	 * new message received from DB
 	 */
-	public static void recivedMessageFromServer() {
-		dataRecived = true;
+	public static void recivedMessageFromServer(Object obj) {
+		dataRecived = obj;
+		msgRecived = true;
 	}
 
 	/**
@@ -221,7 +216,7 @@ public class PrimaryController {
 	 * 
 	 * @param object Contains the error description
 	 */
-	public static void popErrorFromServer(String errorMessage) {
+	public void popErrorFromServer(String errorMessage) {
 		alert.setHeaderText("An error occurred while retrieving data from server.");
 		alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(errorMessage)));
 		alert.showAndWait();
@@ -232,64 +227,10 @@ public class PrimaryController {
 	 * 
 	 * @param object Contains the error description
 	 */
-	public static void popErrorFromClient(String errorMessage) {
+	public void popErrorFromClient(String errorMessage) {
 		alert.setHeaderText("An error occurred while the system was hanaling your actions");
 		alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(errorMessage)));
 		alert.showAndWait();
-	}
-
-	/**
-	 * Static function that is called from ClientService for handling returned
-	 * "Studies" from server
-	 * 
-	 * @param object Contains a list of "CloneStudy"
-	 */
-	public static void setDbStudy(Object object) {
-		PrimaryController.dbStudy = FXCollections.observableArrayList((List<CloneStudy>) object);
-		System.out.println("Recived all Studies from server\n");
-	}
-
-	/**
-	 * Static function that is called from ClientService for handling returned
-	 * "Courses" from server
-	 * 
-	 * @param object Contains a list of "CloneCourse"
-	 */
-	public static void setDbCourse(Object object) {
-		PrimaryController.dbCourse = FXCollections.observableArrayList((List<CloneCourse>) object);
-		System.out.println("Recived Courses from server\n");
-	}
-
-	/**
-	 * Static function that is called from ClientService for handling returned
-	 * "Questions" from server
-	 * 
-	 * @param object Contains a list of "CloneQuestion"
-	 */
-	public static void setDbQuestion(Object object) {
-		PrimaryController.dbQuestion = FXCollections.observableArrayList((List<CloneQuestion>) object);
-		System.out.println("Recived Questions from server\n");
-	}
-
-	/**
-	 * Static function that is called from ClientService for handling getting all
-	 * questions in DB from server
-	 * 
-	 * @param object Contains a list of "CloneQuestion"
-	 */
-	public static void setDbQuestionList(Object object) {
-		PrimaryController.dbQuestionList = FXCollections.observableArrayList((List<CloneQuestion>) object);
-		System.out.println("Recived all Questions from server\n");
-	}
-
-	/**
-	 * Static function that is called from ClientService for handling getting
-	 * updated "Question" from server
-	 * 
-	 * @param object Contains a "CloneQuestion" (updated)
-	 */
-	public static void handleUpdateQuestionsFromServer(CloneQuestion object) {
-		dbUpdatedQ = object;
 	}
 
 	/**
@@ -436,9 +377,9 @@ public class PrimaryController {
 		}
 
 		try {
-			dbQuestion = null;
+			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, selected_q.get(0).getCourse());
-			if ((dbStatus == -1) || dbQuestion == null) {
+			if ((dbStatus == -1) || dataRecived == null) {
 				popErrorFromClient("The system cannot retrieve question data from server\n Please try again");
 				return;
 			}
@@ -471,7 +412,7 @@ public class PrimaryController {
 		handler = question_combo.getOnAction();
 		question_combo.setOnAction(null);
 		question_combo.getItems().clear();
-		ObservableList<CloneQuestion> temp = dbQuestion;
+		ObservableList<CloneQuestion> temp = FXCollections.observableArrayList((List<CloneQuestion>) dataRecived);
 		question_combo.setItems(temp);
 		question_combo.setValue(temp.get(0));
 		parseQuestionToFields(question_combo.getValue());
@@ -491,10 +432,9 @@ public class PrimaryController {
 			return;
 
 		try {
-			dbCourse = null;
-			dbQuestion = null;
+			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue());
-			if ((dbStatus == -1) || dbCourse == null) {
+			if ((dbStatus == -1) || dataRecived == null) {
 				popErrorFromClient("The system cannot retrieve courses from server \nPlease try again");
 				return;
 			}
@@ -506,8 +446,7 @@ public class PrimaryController {
 
 		course_combo.getItems().clear();
 		course_combo.setDisable(false);
-		ObservableList<CloneCourse> temp = dbCourse;
-		course_combo.setItems(temp);
+		course_combo.setItems(FXCollections.observableArrayList((List<CloneCourse>) dataRecived));
 		course_combo.setValue(null);
 
 		question_combo.getItems().clear();
@@ -530,9 +469,9 @@ public class PrimaryController {
 			return;
 
 		try {
-			dbQuestion = null;
+			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, course_combo.getValue());
-			if ((dbStatus == -1) || dbQuestion == null) {
+			if ((dbStatus == -1) || dataRecived == null) {
 				popErrorFromClient("The system cannot retrieve the questions from server \nPlease try again");
 				return;
 			}
@@ -544,8 +483,7 @@ public class PrimaryController {
 
 		ClearAllFormFields();
 		question_combo.setDisable(false);
-		ObservableList<CloneQuestion> temp = dbQuestion;
-		question_combo.setItems(temp);
+		question_combo.setItems(FXCollections.observableArrayList((List<CloneQuestion>) dataRecived));
 		question_combo.setValue(null);
 		ChangeSubmitColor(null);
 		disableQuestionDataFields(true);
@@ -577,34 +515,35 @@ public class PrimaryController {
 	 */
 	@FXML
 	void onClickedSubmit(ActionEvent event) throws Exception {
+		CloneQuestion q = new CloneQuestion();
 		try {
+			List<String> errorsList = new ArrayList<String>();
 			ChangeSubmitColor("#FF0000");
 
-			CloneQuestion q = new CloneQuestion();
 			q.clone(question_combo.getValue());
 
 			if (subject_text.getText().isEmpty())
-				throw new Exception("Subject is empty");
+				errorsList.add("Subject is empty");
 			q.setSubject(subject_text.getText());
 
 			if (question_text.getText().isEmpty())
-				throw new Exception("Question is empty");
+				errorsList.add("Question is empty");
 			q.setQuestionText(question_text.getText());
 
 			if (answer_line_1.getText().isEmpty())
-				throw new Exception("Answer 1 is empty");
+				errorsList.add("Answer 1 is empty");
 			q.setAnswer_1(answer_line_1.getText());
 
 			if (answer_line_2.getText().isEmpty())
-				throw new Exception("Answer 2 is empty");
+				errorsList.add("Answer 2 is empty");
 			q.setAnswer_2(answer_line_2.getText());
 
 			if (answer_line_3.getText().isEmpty())
-				throw new Exception("Answer 3 is empty");
+				errorsList.add("Answer 3 is empty");
 			q.setAnswer_3(answer_line_3.getText());
 
 			if (answer_line_4.getText().isEmpty())
-				throw new Exception("Answer 4 is empty");
+				errorsList.add("Answer 4 is empty");
 			q.setAnswer_4(answer_line_4.getText());
 
 			RadioButton chk = (RadioButton) radioGroup.getSelectedToggle();
@@ -622,47 +561,57 @@ public class PrimaryController {
 				q.setCorrectAnswer(4);
 				break;
 			default:
-				throw new Exception("No correct answer");
+				errorsList.add("No correct answer");
 			}
-
-			int dbStatus = GetDataFromDB(ClientToServerOpcodes.UpdateQuestion, q);
-
-			if ((dbStatus == -1) || dbUpdatedQ == null) {
-				popErrorFromClient("The system could not commit your update request.\n Please try again");
-				return;
+			if (!errorsList.isEmpty()) {
+				throw new Exception(errorsList.toString().substring(1, errorsList.toString().length()-1));
 			}
-
-			if (question_combo.getItems().size() >= 1) {
-				for (CloneQuestion q2 : question_combo.getItems()) {
-					if (dbUpdatedQ.getId() == q2.getId()) {
-						EventHandler<ActionEvent> handler = question_combo.getOnAction();
-						question_combo.setOnAction(null);
-						question_combo.getItems().remove(q2);
-						CloneQuestion newItem = dbUpdatedQ;
-						question_combo.getItems().add(newItem);
-						question_combo.setValue(newItem);
-						question_combo.setOnAction(handler);
-						break;
-					}
-				}
-			}
-
-			for (CloneQuestion q2 : qList.getItems()) {
-				if (dbUpdatedQ.getId() == q2.getId()) {
-					qList.getItems().remove(q2);
-					CloneQuestion newItem = dbUpdatedQ;
-					qList.getItems().add(newItem);
-					dbUpdatedQ = null;
-					ChangeSubmitColor("#00FF09");
-					return;
-				}
-			}
-
 		} catch (Exception e) {
 			ChangeSubmitColor("#FF0000");
-			alert.setHeaderText("Invalid input");
-			alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea("Please fill all the fields")));
+			alert.setHeaderText("Not all fields are filled");
+			TextArea errArea = new TextArea();
+			for (String s:e.getMessage().split(", "))
+				errArea.appendText(s + "\n");
+			errArea.setEditable(false);
+			alert.getDialogPane().setExpandableContent(new ScrollPane(errArea));
 			alert.showAndWait();
+			return;
+		}
+		dataRecived = null;
+		int dbStatus = GetDataFromDB(ClientToServerOpcodes.UpdateQuestion, q);
+
+		if ((dbStatus == -1) || dataRecived == null) {
+			popErrorFromClient("The system could not commit your update request.\n Please try again");
+			return;
+		}
+
+		CloneQuestion newItem = (CloneQuestion) dataRecived;
+
+		if (question_combo.getItems().size() >= 1) {
+			for (CloneQuestion q2 : question_combo.getItems()) {
+				if (newItem.getId() == q2.getId()) {
+					EventHandler<ActionEvent> handler = question_combo.getOnAction();
+					question_combo.setOnAction(null);
+					question_combo.getItems().remove(q2);
+					question_combo.getItems().add(newItem);
+					question_combo.setValue(newItem);
+					question_combo.setOnAction(handler);
+					break;
+				}
+			}
+		}
+
+		for (CloneQuestion q2 : qList.getItems()) {
+			if (newItem.getId() == q2.getId()) {
+				qList.getItems().remove(q2);
+				qList.getItems().add(newItem);
+				dataRecived = null;
+				ChangeSubmitColor("#00FF09");
+				info.setHeaderText("The question has been successfully updated!");
+				info.setTitle("Success");
+				info.showAndWait();
+				return;
+			}
 		}
 	}
 
