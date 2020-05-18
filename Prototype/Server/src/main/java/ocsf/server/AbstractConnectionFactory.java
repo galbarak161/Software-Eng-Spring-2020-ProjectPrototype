@@ -30,8 +30,8 @@ import java.io.*;
 * @author Fran&ccedil;ois B&eacute;langer
 * @author Paul Holden
 * @version August 2003 (2.3)
-* @see com.lloseng.ocsf.server.AbstractServer
-* @see com.lloseng.ocsf.server.ConnectionToClient
+* @see ocsf.server.lloseng.ocsf.server.AbstractServer
+* @see ocsf.server.lloseng.ocsf.server.ConnectionToClient
 */
 public abstract class AbstractConnectionFactory
 {

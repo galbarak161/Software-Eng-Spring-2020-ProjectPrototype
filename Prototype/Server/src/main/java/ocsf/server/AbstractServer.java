@@ -64,8 +64,8 @@ import java.io.*;
  * @author Fran&ccedil;ois B&eacute;langer
  * @author Paul Holden
  * @version December 2003 (2.31)
- * @see com.lloseng.ocsf.server.ConnectionToClient
- * @see com.lloseng.ocsf.server.AbstractConnectionFactory
+ * @see ocsf.server.lloseng.ocsf.server.ConnectionToClient
+ * @see ocsf.server.lloseng.ocsf.server.AbstractConnectionFactory
  */
 public abstract class AbstractServer implements Runnable {
 	// INSTANCE VARIABLES *********************************************

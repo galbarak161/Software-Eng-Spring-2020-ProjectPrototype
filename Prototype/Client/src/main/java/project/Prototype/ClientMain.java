@@ -51,11 +51,18 @@ public class ClientMain {
 		} else {
 			String host = args[0];
 			int port = Integer.parseInt(args[1]);
-
 			ClientService client = new ClientService(host, port);
-			client.openConnection();
-			App.main(args);
-			client.closeConnection();
+			
+			try {				
+				client.openConnection();
+				App.main(args);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			} finally {
+				client.closeConnection();
+			}
+			
+			
 		}
 	}
 }

@@ -18,7 +18,7 @@ package ocsf.server;
 * @author Fran&ccedil;ois B&eacute;langer
 * @author Paul Holden
 * @version February 2001 (2.12)
-* @see com.lloseng.ocsf.server.OriginatorMessage
+* @see ocsf.server.lloseng.ocsf.server.OriginatorMessage
 */
 public class ObservableOriginatorServer extends ObservableServer
 {
