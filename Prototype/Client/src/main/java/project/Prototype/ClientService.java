@@ -35,8 +35,8 @@ public class ClientService extends AbstractClient {
 	}
 
 	/**
-	 * The function gets new message from server Parsing the opcode and data Handle the
-	 * server results
+	 * The function gets new message from server Parsing the opcode and data Handle
+	 * the server results
 	 */
 	@Override
 	protected void handleMessageFromServer(Object msg) {

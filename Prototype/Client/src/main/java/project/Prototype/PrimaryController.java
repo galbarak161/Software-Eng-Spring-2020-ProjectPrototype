@@ -378,6 +378,7 @@ public class PrimaryController {
 
 		try {
 			dataRecived = null;
+
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, selected_q.get(0).getCourse());
 			if ((dbStatus == -1) || dataRecived == null) {
 				popErrorFromClient("The system cannot retrieve question data from server\n Please try again");
@@ -389,8 +390,11 @@ public class PrimaryController {
 			return;
 		}
 
-		mainTab.getSelectionModel().select(edtiorTab);
-		ChangeSubmitColor(null);
+		int qIndex = (selected_q.get(0).getQuestionCode() % 1000) - 1;
+		if (qIndex < 0) {
+			popErrorFromClient("The system cannot retrieve question data from server\nPlease try again");
+			return;
+		}
 
 		EventHandler<ActionEvent> handler;
 
@@ -414,10 +418,13 @@ public class PrimaryController {
 		question_combo.getItems().clear();
 		ObservableList<CloneQuestion> temp = FXCollections.observableArrayList((List<CloneQuestion>) dataRecived);
 		question_combo.setItems(temp);
-		question_combo.setValue(temp.get(0));
+		question_combo.setValue(temp.get(qIndex));
 		parseQuestionToFields(question_combo.getValue());
 		question_combo.setDisable(false);
 		question_combo.setOnAction(handler);
+
+		mainTab.getSelectionModel().select(edtiorTab);
+		ChangeSubmitColor(null);
 	}
 
 	/**
@@ -444,15 +451,22 @@ public class PrimaryController {
 			return;
 		}
 
+		EventHandler<ActionEvent> handler;
+
+		handler = course_combo.getOnAction();
 		course_combo.getItems().clear();
 		course_combo.setDisable(false);
 		course_combo.setItems(FXCollections.observableArrayList((List<CloneCourse>) dataRecived));
 		course_combo.setValue(null);
+		course_combo.setOnAction(handler);
 
+		handler = question_combo.getOnAction();
 		question_combo.getItems().clear();
 		question_combo.setDisable(true);
 		question_combo.setValue(null);
 		disableQuestionDataFields(true);
+		question_combo.setOnAction(handler);
+
 		ClearAllFormFields();
 		ChangeSubmitColor(null);
 	}
@@ -482,9 +496,15 @@ public class PrimaryController {
 		}
 
 		ClearAllFormFields();
+
+		EventHandler<ActionEvent> handler;
+
+		handler = question_combo.getOnAction();
 		question_combo.setDisable(false);
 		question_combo.setItems(FXCollections.observableArrayList((List<CloneQuestion>) dataRecived));
 		question_combo.setValue(null);
+		question_combo.setOnAction(handler);
+
 		ChangeSubmitColor(null);
 		disableQuestionDataFields(true);
 	}
@@ -516,35 +536,40 @@ public class PrimaryController {
 	@FXML
 	void onClickedSubmit(ActionEvent event) throws Exception {
 		CloneQuestion q = new CloneQuestion();
-		try {
-			List<String> errorsList = new ArrayList<String>();
-			ChangeSubmitColor("#FF0000");
 
+		try {
+			StringBuilder errorsList = new StringBuilder();
 			q.clone(question_combo.getValue());
 
 			if (subject_text.getText().isEmpty())
-				errorsList.add("Subject is empty");
-			q.setSubject(subject_text.getText());
+				errorsList.append("Subject is empty\n");
+			else
+				q.setSubject(subject_text.getText());
 
 			if (question_text.getText().isEmpty())
-				errorsList.add("Question is empty");
-			q.setQuestionText(question_text.getText());
+				errorsList.append("Question is empty\n");
+			else
+				q.setQuestionText(question_text.getText());
 
 			if (answer_line_1.getText().isEmpty())
-				errorsList.add("Answer 1 is empty");
-			q.setAnswer_1(answer_line_1.getText());
+				errorsList.append("Answer 1 is empty\n");
+			else
+				q.setAnswer_1(answer_line_1.getText());
 
 			if (answer_line_2.getText().isEmpty())
-				errorsList.add("Answer 2 is empty");
-			q.setAnswer_2(answer_line_2.getText());
+				errorsList.append("Answer 2 is empty\n");
+			else
+				q.setAnswer_2(answer_line_2.getText());
 
 			if (answer_line_3.getText().isEmpty())
-				errorsList.add("Answer 3 is empty");
-			q.setAnswer_3(answer_line_3.getText());
+				errorsList.append("Answer 3 is empty\n");
+			else
+				q.setAnswer_3(answer_line_3.getText());
 
 			if (answer_line_4.getText().isEmpty())
-				errorsList.add("Answer 4 is empty");
-			q.setAnswer_4(answer_line_4.getText());
+				errorsList.append("Answer 4 is empty\n");
+			else
+				q.setAnswer_4(answer_line_4.getText());
 
 			RadioButton chk = (RadioButton) radioGroup.getSelectedToggle();
 			switch (chk.getText()) {
@@ -561,27 +586,24 @@ public class PrimaryController {
 				q.setCorrectAnswer(4);
 				break;
 			default:
-				errorsList.add("No correct answer");
+				errorsList.append("No correct answer\n");
 			}
-			if (!errorsList.isEmpty()) {
-				throw new Exception(errorsList.toString().substring(1, errorsList.toString().length()-1));
+
+			if (errorsList.length() != 0) {
+				throw new Exception(errorsList.toString());
 			}
 		} catch (Exception e) {
 			ChangeSubmitColor("#FF0000");
-			alert.setHeaderText("Not all fields are filled");
-			TextArea errArea = new TextArea();
-			for (String s:e.getMessage().split(", "))
-				errArea.appendText(s + "\n");
-			errArea.setEditable(false);
-			alert.getDialogPane().setExpandableContent(new ScrollPane(errArea));
-			alert.showAndWait();
+			popErrorFromClient(e.getMessage());
 			return;
 		}
+
 		dataRecived = null;
 		int dbStatus = GetDataFromDB(ClientToServerOpcodes.UpdateQuestion, q);
 
 		if ((dbStatus == -1) || dataRecived == null) {
-			popErrorFromClient("The system could not commit your update request.\n Please try again");
+			ChangeSubmitColor("#FF0000");
+			popErrorFromClient("The system could not commit your update request.\nPlease try again");
 			return;
 		}
 
@@ -603,16 +625,20 @@ public class PrimaryController {
 
 		for (CloneQuestion q2 : qList.getItems()) {
 			if (newItem.getId() == q2.getId()) {
+				int index = qList.getItems().indexOf(q2);
 				qList.getItems().remove(q2);
-				qList.getItems().add(newItem);
+				qList.getItems().add(index, newItem);
+				// qList.getItems().add(newItem);
 				dataRecived = null;
-				ChangeSubmitColor("#00FF09");
-				info.setHeaderText("The question has been successfully updated!");
-				info.setTitle("Success");
-				info.showAndWait();
-				return;
+				break;
 			}
 		}
+
+		ChangeSubmitColor("#00FF09");
+		info.setHeaderText("The question has been successfully updated!");
+		info.setTitle("Success");
+		info.showAndWait();
+
 	}
 
 	/**
