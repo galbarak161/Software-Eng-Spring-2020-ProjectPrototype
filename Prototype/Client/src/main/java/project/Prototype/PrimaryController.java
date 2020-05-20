@@ -113,6 +113,10 @@ public class PrimaryController {
 	private Alert alert = new Alert(Alert.AlertType.ERROR);
 
 	private Alert info = new Alert(Alert.AlertType.INFORMATION);
+	
+	private static final String ERROR_TITLE_SERVER = "An error occurred while retrieving data from server";
+	
+	private static final String ERROR_TITLE_Client = "An error occurred while the system was hanaling your actions";
 
 	/**
 	 * Function called automatically when GUI is starting. We get from DB all
@@ -160,7 +164,7 @@ public class PrimaryController {
 		}
 
 		if (!initErrors.isEmpty())
-			popErrorFromServer(initErrors);
+			popError(ERROR_TITLE_SERVER,initErrors);
 	}
 
 	/**
@@ -176,7 +180,8 @@ public class PrimaryController {
 			status = ClientMain.sendMessageToServer(de);
 		} catch (IOException e) {
 			status = -1;
-			popErrorFromClient("The system could not receive data from server. please reconnect and try again", null);
+			String errorMessage = "The system could not receive data from server. please reconnect and try again";
+			popError(ERROR_TITLE_SERVER, errorMessage);
 			e.printStackTrace();
 		}
 
@@ -199,6 +204,9 @@ public class PrimaryController {
 			Thread.onSpinWait();
 		}
 		msgRecived = false;
+		
+		if(dataRecived == null)
+			result = -1;
 		return result;
 	}
 
@@ -212,24 +220,11 @@ public class PrimaryController {
 	}
 
 	/**
-	 * Activate as a respond for an unknown returned value or an error from server
-	 * 
-	 * @param object Contains the error description
-	 */
-	public void popErrorFromServer(String errorMessage) {
-		alert.setHeaderText("An error occurred while retrieving data from server.");
-		alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(errorMessage)));
-		alert.showAndWait();
-	}
-
-	/**
 	 * Activate as a respond for an unknown exception in client
 	 * 
 	 * @param object Contains the error description
 	 */
-	public void popErrorFromClient(String errorMessage, String title) {
-		if (title == null)
-			title = "An error occurred while the system was hanaling your actions";
+	public void popError(String title, String errorMessage) {
 		alert.setHeaderText(title);
 		alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(errorMessage)));
 		alert.showAndWait();
@@ -374,7 +369,7 @@ public class PrimaryController {
 	void onClickedEdit(ActionEvent actionEvent) {
 		ObservableList<CloneQuestion> selected_q = qList.getSelectionModel().getSelectedItems();
 		if (selected_q.isEmpty()) {
-			popErrorFromClient("No question has been selected. \nPlease select a question", null);
+			popError(ERROR_TITLE_Client,"No question has been selected. \nPlease select a question");
 			return;
 		}
 
@@ -383,18 +378,18 @@ public class PrimaryController {
 
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, selected_q.get(0).getCourse());
 			if ((dbStatus == -1) || dataRecived == null) {
-				popErrorFromClient("The system cannot retrieve question data from server\n Please try again", null);
+				popError(ERROR_TITLE_Client,"The system cannot retrieve question data from server. \nPlease try again");
 				return;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			popErrorFromClient("The system cannot retrieve question data from server\n Please try again", null);
+			popError(ERROR_TITLE_Client,"The system cannot retrieve question data from server. \nPlease try again");
 			return;
 		}
 
 		int qIndex = (selected_q.get(0).getQuestionCode() % 1000) - 1;
 		if (qIndex < 0) {
-			popErrorFromClient("The system cannot retrieve question data from server\nPlease try again", null);
+			popError(ERROR_TITLE_Client,"The system cannot retrieve question data from server. \nPlease try again");
 			return;
 		}
 
@@ -444,12 +439,12 @@ public class PrimaryController {
 			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue());
 			if ((dbStatus == -1) || dataRecived == null) {
-				popErrorFromClient("The system cannot retrieve courses from server \nPlease try again", null);
+				popError(ERROR_TITLE_Client,"The system cannot retrieve courses from server \nPlease try again");
 				return;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			popErrorFromClient("The system cannot retrieve courses from server \nPlease try again", null);
+			popError(ERROR_TITLE_Client,"The system cannot retrieve courses from server \nPlease try again");
 			return;
 		}
 
@@ -488,12 +483,11 @@ public class PrimaryController {
 			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, course_combo.getValue());
 			if ((dbStatus == -1) || dataRecived == null) {
-				popErrorFromClient("The system cannot retrieve the questions from server \nPlease try again", null);
-				return;
+				throw new InterruptedException();
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			popErrorFromClient("The system cannot retrieve questions from server \nPlease try again", null);
+			popError(ERROR_TITLE_Client, "The system cannot retrieve questions from server. \nPlease try again");
 			return;
 		}
 
@@ -596,7 +590,7 @@ public class PrimaryController {
 			}
 		} catch (Exception e) {
 			ChangeSubmitColor("#FF0000");
-			popErrorFromClient(e.getMessage(), "Please fill all question fields");
+			popError("Please fill all question fields", e.getMessage());
 			return;
 		}
 
@@ -605,7 +599,7 @@ public class PrimaryController {
 
 		if ((dbStatus == -1) || dataRecived == null) {
 			ChangeSubmitColor("#FF0000");
-			popErrorFromClient("The system could not commit your update request.\nPlease try again", null);
+			popError(ERROR_TITLE_Client, "The system could not commit your update request.\nPlease try again");
 			return;
 		}
 

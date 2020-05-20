@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import ocsf.client.AbstractClient;
 import project.CloneEntities.*;
+import project.Prototype.DataElements.ServerToClientOpcodes;
 
 public class ClientService extends AbstractClient {
 	private static final Logger LOGGER = Logger.getLogger(ClientService.class.getName());
@@ -42,8 +43,13 @@ public class ClientService extends AbstractClient {
 	protected void handleMessageFromServer(Object msg) {
 		try {
 			DataElements de = (DataElements) msg;
-			System.out.println("Received message from server: opcode = " + de.getOpcodeFromClient());
-			PrimaryController.recivedMessageFromServer(de.getData());
+			System.out.println("Received message from server: opcode = " + de.getOpCodeFromServer());
+			
+			if (de.getOpCodeFromServer() == ServerToClientOpcodes.Error)
+				PrimaryController.recivedMessageFromServer(null);
+			else
+
+				PrimaryController.recivedMessageFromServer(de.getData());
 
 		} catch (Exception e) {
 			e.printStackTrace();
