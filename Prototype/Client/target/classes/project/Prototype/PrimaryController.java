@@ -176,7 +176,7 @@ public class PrimaryController {
 			status = ClientMain.sendMessageToServer(de);
 		} catch (IOException e) {
 			status = -1;
-			popErrorFromClient("The system could not receive data from server. please reconnect and try again");
+			popErrorFromClient("The system could not receive data from server. please reconnect and try again", null);
 			e.printStackTrace();
 		}
 
@@ -227,8 +227,10 @@ public class PrimaryController {
 	 * 
 	 * @param object Contains the error description
 	 */
-	public void popErrorFromClient(String errorMessage) {
-		alert.setHeaderText("An error occurred while the system was hanaling your actions");
+	public void popErrorFromClient(String errorMessage, String title) {
+		if (title == null)
+			title = "An error occurred while the system was hanaling your actions";
+		alert.setHeaderText(title);
 		alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(errorMessage)));
 		alert.showAndWait();
 	}
@@ -372,28 +374,27 @@ public class PrimaryController {
 	void onClickedEdit(ActionEvent actionEvent) {
 		ObservableList<CloneQuestion> selected_q = qList.getSelectionModel().getSelectedItems();
 		if (selected_q.isEmpty()) {
-			popErrorFromClient("No question has been selected. \nPlease select a question");
+			popErrorFromClient("No question has been selected. \nPlease select a question", null);
 			return;
 		}
 
 		try {
 			dataRecived = null;
-			
+
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, selected_q.get(0).getCourse());
 			if ((dbStatus == -1) || dataRecived == null) {
-				popErrorFromClient("The system cannot retrieve question data from server\n Please try again");
+				popErrorFromClient("The system cannot retrieve question data from server\n Please try again", null);
 				return;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			popErrorFromClient("The system cannot retrieve question data from server\n Please try again");
+			popErrorFromClient("The system cannot retrieve question data from server\n Please try again", null);
 			return;
 		}
 
 		int qIndex = (selected_q.get(0).getQuestionCode() % 1000) - 1;
-		if(qIndex < 0)
-		{
-			popErrorFromClient("The system cannot retrieve question data from server\nPlease try again");
+		if (qIndex < 0) {
+			popErrorFromClient("The system cannot retrieve question data from server\nPlease try again", null);
 			return;
 		}
 
@@ -423,7 +424,7 @@ public class PrimaryController {
 		parseQuestionToFields(question_combo.getValue());
 		question_combo.setDisable(false);
 		question_combo.setOnAction(handler);
-		
+
 		mainTab.getSelectionModel().select(edtiorTab);
 		ChangeSubmitColor(null);
 	}
@@ -438,17 +439,17 @@ public class PrimaryController {
 	void onClickedStudy(ActionEvent event) {
 		if (study_combo.getValue() == null)
 			return;
-		
+
 		try {
 			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllCoursesInStudy, study_combo.getValue());
 			if ((dbStatus == -1) || dataRecived == null) {
-				popErrorFromClient("The system cannot retrieve courses from server \nPlease try again");
+				popErrorFromClient("The system cannot retrieve courses from server \nPlease try again", null);
 				return;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			popErrorFromClient("The system cannot retrieve courses from server \nPlease try again");
+			popErrorFromClient("The system cannot retrieve courses from server \nPlease try again", null);
 			return;
 		}
 
@@ -460,14 +461,14 @@ public class PrimaryController {
 		course_combo.setItems(FXCollections.observableArrayList((List<CloneCourse>) dataRecived));
 		course_combo.setValue(null);
 		course_combo.setOnAction(handler);
-		
+
 		handler = question_combo.getOnAction();
 		question_combo.getItems().clear();
 		question_combo.setDisable(true);
 		question_combo.setValue(null);
 		disableQuestionDataFields(true);
 		question_combo.setOnAction(handler);
-		
+
 		ClearAllFormFields();
 		ChangeSubmitColor(null);
 	}
@@ -482,22 +483,22 @@ public class PrimaryController {
 	void onCourseClicked(ActionEvent event) {
 		if (course_combo.getValue() == null)
 			return;
-		
+
 		try {
 			dataRecived = null;
 			int dbStatus = GetDataFromDB(ClientToServerOpcodes.GetAllQuestionInCourse, course_combo.getValue());
 			if ((dbStatus == -1) || dataRecived == null) {
-				popErrorFromClient("The system cannot retrieve the questions from server \nPlease try again");
+				popErrorFromClient("The system cannot retrieve the questions from server \nPlease try again", null);
 				return;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			popErrorFromClient("The system cannot retrieve questions from server \nPlease try again");
+			popErrorFromClient("The system cannot retrieve questions from server \nPlease try again", null);
 			return;
 		}
 
 		ClearAllFormFields();
-		
+
 		EventHandler<ActionEvent> handler;
 
 		handler = question_combo.getOnAction();
@@ -505,7 +506,7 @@ public class PrimaryController {
 		question_combo.setItems(FXCollections.observableArrayList((List<CloneQuestion>) dataRecived));
 		question_combo.setValue(null);
 		question_combo.setOnAction(handler);
-		
+
 		ChangeSubmitColor(null);
 		disableQuestionDataFields(true);
 	}
@@ -537,7 +538,7 @@ public class PrimaryController {
 	@FXML
 	void onClickedSubmit(ActionEvent event) throws Exception {
 		CloneQuestion q = new CloneQuestion();
-		
+
 		try {
 			StringBuilder errorsList = new StringBuilder();
 			q.clone(question_combo.getValue());
@@ -550,27 +551,27 @@ public class PrimaryController {
 			if (question_text.getText().isEmpty())
 				errorsList.append("Question is empty\n");
 			else
-			q.setQuestionText(question_text.getText());
+				q.setQuestionText(question_text.getText());
 
 			if (answer_line_1.getText().isEmpty())
 				errorsList.append("Answer 1 is empty\n");
 			else
-			q.setAnswer_1(answer_line_1.getText());
+				q.setAnswer_1(answer_line_1.getText());
 
 			if (answer_line_2.getText().isEmpty())
 				errorsList.append("Answer 2 is empty\n");
 			else
-			q.setAnswer_2(answer_line_2.getText());
+				q.setAnswer_2(answer_line_2.getText());
 
 			if (answer_line_3.getText().isEmpty())
 				errorsList.append("Answer 3 is empty\n");
 			else
-			q.setAnswer_3(answer_line_3.getText());
+				q.setAnswer_3(answer_line_3.getText());
 
 			if (answer_line_4.getText().isEmpty())
 				errorsList.append("Answer 4 is empty\n");
 			else
-			q.setAnswer_4(answer_line_4.getText());
+				q.setAnswer_4(answer_line_4.getText());
 
 			RadioButton chk = (RadioButton) radioGroup.getSelectedToggle();
 			switch (chk.getText()) {
@@ -589,27 +590,27 @@ public class PrimaryController {
 			default:
 				errorsList.append("No correct answer\n");
 			}
-			
+
 			if (errorsList.length() != 0) {
 				throw new Exception(errorsList.toString());
 			}
 		} catch (Exception e) {
 			ChangeSubmitColor("#FF0000");
-			popErrorFromClient(e.getMessage());
+			popErrorFromClient(e.getMessage(), "Please fill all question fields");
 			return;
 		}
-		
+
 		dataRecived = null;
 		int dbStatus = GetDataFromDB(ClientToServerOpcodes.UpdateQuestion, q);
 
 		if ((dbStatus == -1) || dataRecived == null) {
 			ChangeSubmitColor("#FF0000");
-			popErrorFromClient("The system could not commit your update request.\nPlease try again");
+			popErrorFromClient("The system could not commit your update request.\nPlease try again", null);
 			return;
 		}
 
 		CloneQuestion newItem = (CloneQuestion) dataRecived;
-		
+
 		if (question_combo.getItems().size() >= 1) {
 			for (CloneQuestion q2 : question_combo.getItems()) {
 				if (newItem.getId() == q2.getId()) {
@@ -623,26 +624,23 @@ public class PrimaryController {
 				}
 			}
 		}
-		
+
 		for (CloneQuestion q2 : qList.getItems()) {
 			if (newItem.getId() == q2.getId()) {
 				int index = qList.getItems().indexOf(q2);
 				qList.getItems().remove(q2);
 				qList.getItems().add(index, newItem);
-				//qList.getItems().add(newItem);
+				// qList.getItems().add(newItem);
 				dataRecived = null;
 				break;
 			}
 		}
-		
+
 		ChangeSubmitColor("#00FF09");
 		info.setHeaderText("The question has been successfully updated!");
 		info.setTitle("Success");
 		info.showAndWait();
-		
-		
-		
-		
+
 	}
 
 	/**
